@@ -11,7 +11,7 @@ internal data class AttackOutcomes(
 )
 
 /**
- * Computes shared hit prefixes once, then scales every hit-count outcome to a common denominator.
+ * 共通する命中途中までの計算を再利用し、命中回数ごとの結果を共通の分母にそろえる。
  */
 internal class AttackConvolution(
     private val health: HealthEvents,
@@ -27,6 +27,7 @@ internal class AttackConvolution(
         val actualMaximum = counts.keys.max()
         val conditionalMaximum = sharedConditionalCounts?.keys?.max() ?: 0
         val maximum = maxOf(actualMaximum, conditionalMaximum)
+        // 各命中回数の分布を共通の分母にそろえる
         val denominators =
             attack.hits.take(maximum).runningFold(BigInteger.ONE) { total, hit ->
                 total * hit.totalWeight
@@ -65,6 +66,7 @@ internal class AttackConvolution(
             val hit = attack.hits[hitIndex]
             val next = linkedMapOf<BattleProgress, BigInteger>()
             for ((state, weight) in current) {
+                // ひんしの分岐はHPを固定し、残りの乱数の重みだけ反映
                 if (state.hp == 0) {
                     next.merge(state, weight * hit.totalWeight, BigInteger::add)
                     if (!budget.spend(1, next.size)) {
@@ -73,6 +75,7 @@ internal class AttackConvolution(
                 } else {
                     for ((damage, rollWeight) in hit.weights) {
                         val advanced = health.damage(state, damage, attack.turn, trackAttackDamage)
+                        // 同じ状態に到達した分岐の重みを合算
                         next.merge(advanced, weight * rollWeight, BigInteger::add)
                         if (!budget.spend(1, next.size)) {
                             return failure()

@@ -10,7 +10,7 @@ import dev.pokemondamage.model.PokemonType
 import dev.pokemondamage.model.PokemonTypes
 import dev.pokemondamage.model.Weather
 
-/** Resolves persistent battle conditions, independently of a particular damage formula. */
+/** ダメージ計算式に依存しない、場の状態や特性・持ち物の有効判定。 */
 internal object BattleEffects {
     private val abilityShield = ItemId("AbilityShield")
     private val neutralizingGas = AbilityId("NeutralizingGas")
@@ -26,8 +26,7 @@ internal object BattleEffects {
         opponent: PokemonState? = null,
         itemConsumed: Boolean = pokemon.itemConsumed,
     ): AbilityId? {
-        // The shield protects even an explicitly suppressed ability. Klutz does not disable this
-        // protection.
+        // とくせいガードは特性の無効化を防ぎ、ぶきようでも保護は有効
         val shielded =
             pokemon.item == abilityShield &&
                 !itemConsumed &&
@@ -39,6 +38,7 @@ internal object BattleEffects {
         if (pokemon.flags[PokemonFlag.ABILITY_SUPPRESSED] == true) {
             return null
         }
+        // かがくへんかガス
         if (
             pokemon.ability != neutralizingGas &&
             (
@@ -61,6 +61,7 @@ internal object BattleEffects {
         itemConsumed: Boolean = pokemon.itemConsumed,
         ignoreConsumption: Boolean = false,
     ): ItemId? {
+        // 持ち物の消費･無効化、マジックルーム･ぶきよう
         if (
             (!ignoreConsumption && itemConsumed) ||
             pokemon.flags[PokemonFlag.ITEM_SUPPRESSED] == true ||
@@ -81,6 +82,7 @@ internal object BattleEffects {
         ability: AbilityId?,
         item: ItemId?,
     ): Boolean {
+        // じゅうりょく･くろいてっきゅう
         if (field.gravity || item == ironBall) {
             return true
         }
@@ -92,6 +94,7 @@ internal object BattleEffects {
             item != airBalloon
     }
 
+    // ノーてんき･エアロック
     fun weatherSuppressed(abilities: Iterable<AbilityId?>): Boolean =
         abilities.any {
             it in weatherSuppressors
@@ -102,7 +105,7 @@ internal object BattleEffects {
         abilities: Iterable<AbilityId?>,
     ): Weather? = if (weatherSuppressed(abilities)) null else field.weather
 
-    /** Every halving floors independently, with a minimum weight of 0.1 kg. */
+    // 半減ごとに切り捨て、重さの下限は0.1kg
     fun weightHectograms(
         pokemon: PokemonState,
         ability: AbilityId?,
@@ -111,10 +114,15 @@ internal object BattleEffects {
         val originalWeight = pokemon.profile.weight.hectograms
         val abilityWeight =
             when (ability) {
+                // ヘヴィメタル
                 AbilityId("HeavyMetal") -> originalWeight * 2
+
+                // ライトメタル
                 AbilityId("LightMetal") -> maxOf(1, originalWeight / 2)
+
                 else -> originalWeight
             }
+        // かるいし
         return if (item == ItemId("FloatStone")) maxOf(1, abilityWeight / 2) else abilityWeight
     }
 }

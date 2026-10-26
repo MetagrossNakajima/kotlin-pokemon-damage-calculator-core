@@ -9,21 +9,23 @@ import dev.pokemondamage.model.PokemonFlag
 import dev.pokemondamage.model.TeraType
 import dev.pokemondamage.rules.BattleEffects
 
-/** Move-specific power before the ordered fixed-point modifier chain. */
+/** 補正を適用する前の、技固有の威力計算。 */
 internal object BasePower {
-    // Signed 64-bit operations preserve native Dart arithmetic at extreme hit positions.
+    // 大きな命中位置でも移植元と同じ計算になるよう64ビット整数を使う
     fun calculate(context: DamageContext): Long {
         val attacker = context.attacker
         val defender = context.defender
         val power = context.move.power.toLong()
         val attackerItem = context.attackerItem
         return when (context.move.original.id.value) {
+            // トリプルアクセル･トリプルキック
             "TripleAxel",
             "TripleKick",
             -> {
                 power * (context.request.hitIndex + 1)
             }
 
+            // けたぐり･くさむすび
             "LowKick",
             "GrassKnot",
             -> {
@@ -36,6 +38,7 @@ internal object BasePower {
                 20L + 20 * weightThresholds.count { weight >= it }
             }
 
+            // ヘビーボンバー･ヒートスタンプ
             "HeavySlam",
             "HeatCrash",
             -> {
@@ -54,6 +57,7 @@ internal object BasePower {
                 40L + 20 * weightRatios.count { attackerWeight >= defenderWeight * it }
             }
 
+            // アクロバット
             "Acrobatics" -> {
                 if (
                     attackerItem == null ||
@@ -70,6 +74,7 @@ internal object BasePower {
                 }
             }
 
+            // たたりめ
             "Hex" -> {
                 if (defender.status != null || context.defenderAbility == AbilityId("Comatose")) {
                     power * 2
@@ -78,24 +83,29 @@ internal object BasePower {
                 }
             }
 
+            // エラがみ･でんげきくちばし
             "FishiousRend",
             "BoltBeak",
             -> {
                 if (attacker.flags[PokemonFlag.MOVES_FIRST] == true) power * 2 else power
             }
 
+            // ダメおし
             "Assurance" -> {
                 if (defender.flags[PokemonFlag.DAMAGED_THIS_TURN] == true) power * 2 else power
             }
 
+            // おはかまいり
             "LastRespects" -> {
                 attacker.faintedAllies.lastRespectsPower
             }
 
+            // ふんどのこぶし
             "RageFist" -> {
                 attacker.timesHit.rageFistPower
             }
 
+            // ふんか･しおふき･ドラゴンエナジー
             "Eruption",
             "WaterSpout",
             "DragonEnergy",
@@ -103,6 +113,7 @@ internal object BasePower {
                 maxOf(1, 150L * attacker.hp / attacker.stats.hp)
             }
 
+            // じたばた･きしかいせい
             "Flail",
             "Reversal",
             -> {
@@ -117,6 +128,7 @@ internal object BasePower {
                 }
             }
 
+            // にぎりつぶす･しぼりとる･ハードプレス
             "CrushGrip",
             "WringOut",
             "HardPress",
@@ -126,6 +138,7 @@ internal object BasePower {
                 maxOf(1L, ((maximum * hpFraction + 2047) / 4096) / 100)
             }
 
+            // アシストパワー･つけあがる
             "StoredPower",
             "PowerTrip",
             -> {

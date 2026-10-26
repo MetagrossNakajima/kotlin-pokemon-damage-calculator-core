@@ -9,9 +9,10 @@ import dev.pokemondamage.model.PokemonType
 import dev.pokemondamage.model.TeraType
 import dev.pokemondamage.rules.TypeChart
 
-/** Type-chart exceptions are separate from ability/item immunities and Tera Shell. */
+/** タイプ相性の例外と、特性・持ち物による無効判定やテラスシェルを分けて処理する。 */
 internal object TypeEffectiveness {
     fun typeMultiplier(context: DamageContext): Double {
+        // ステラ技はテラスタルした相手に効果抜群
         val attackType =
             context.move.type.pokemonType
                 ?: return if (context.defender.teraType == null) 1.0 else 2.0
@@ -19,6 +20,7 @@ internal object TypeEffectiveness {
         val result =
             context.defenderTypes.toList().fold(1.0) { multiplier, type ->
                 val chartFactor = TypeChart.effectiveness(attackType, type)
+                // じゅうりょく･接地状態によるひこうの無効解除
                 val groundedFlying =
                     attackType == PokemonType.GROUND &&
                         type == PokemonType.FLYING &&
@@ -26,24 +28,31 @@ internal object TypeEffectiveness {
                             context.field.gravity ||
                                 context.defender.flags[PokemonFlag.GROUNDED] == true
                         )
+                // きもったま･しんがん
                 val revealedGhost =
                     context.attackerAbility in ghostRevealingAbilities &&
                         attackType in ghostBlockedTypes && type == PokemonType.GHOST
                 val factor =
                     when {
+                        // フリーズドライ
                         moveId == "FreezeDry" && type == PokemonType.WATER -> 2.0
+
                         groundedFlying || revealedGhost -> 1.0
+
+                        // ねらいのまと
                         chartFactor == 0.0 && context.defenderItem == ItemId("RingTarget") -> 1.0
+
                         else -> chartFactor
                     }
                 val combined = multiplier * factor
+                // フライングプレス
                 if (moveId == "FlyingPress") {
                     combined * TypeChart.effectiveness(PokemonType.FLYING, type)
                 } else {
                     combined
                 }
             }
-        // Unlike Gravity, Iron Ball and Thousand Arrows neutralize the combined Flying immunity.
+        // くろいてっきゅう･サウザンアローは、複合タイプ計算後の無効を等倍にする
         if (
             result == 0.0 &&
             attackType == PokemonType.GROUND &&
@@ -58,12 +67,14 @@ internal object TypeEffectiveness {
         val type = context.move.type
         val ability = context.defenderAbility
         val typeMultiplier = typeMultiplier(context)
+        // テラスシェル
         val result =
             if (typeMultiplier != 0.0 && ability == AbilityId("TeraShell")) {
                 0.5
             } else {
                 typeMultiplier
             }
+        // 浮遊特性･ふうせん（サウザンアローは対象外）
         val airborneImmunity =
             type == TeraType.GROUND &&
                 context.move.original.id != MoveId("ThousandArrows") &&
@@ -71,14 +82,25 @@ internal object TypeEffectiveness {
                 (ability in levitation || context.defenderItem == ItemId("AirBalloon"))
         val typeImmunity =
             when (type) {
+                // どしょく
                 TeraType.GROUND -> ability == AbilityId("EarthEater")
+
+                // もらいび･こんがりボディ
                 TeraType.FIRE -> ability in fireAbsorbers
+
+                // ちょすい･よびみず･かんそうはだ
                 TeraType.WATER -> ability in waterAbsorbers
+
+                // ちくでん･ひらいしん･でんきエンジン
                 TeraType.ELECTRIC -> ability in electricAbsorbers
+
+                // そうしょく
                 TeraType.GRASS -> ability == AbilityId("SapSipper")
+
                 else -> false
             }
         val flags = context.move.flags
+        // ぼうおん･ぼうだん･かぜのり
         val traitImmunity =
             (MoveFlag.SOUND in flags && ability == AbilityId("Soundproof")) ||
                 (MoveFlag.BULLET in flags && ability == AbilityId("Bulletproof")) ||
@@ -87,6 +109,7 @@ internal object TypeEffectiveness {
             airborneImmunity ||
             typeImmunity ||
             traitImmunity ||
+            // ふしぎなまもり
             (ability == AbilityId("WonderGuard") && result <= 1.0)
         ) {
             0.0

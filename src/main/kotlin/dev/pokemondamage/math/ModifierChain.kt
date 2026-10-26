@@ -3,7 +3,7 @@ package dev.pokemondamage.math
 import dev.pokemondamage.model.ModifierStage
 import dev.pokemondamage.model.ModifierTrace
 
-/** Ordered 4096-based modifiers. Chaining and stat application have distinct rounding rules. */
+/** 4096を基準とする補正列。連結時と能力値への適用時で丸め方が異なる。 */
 internal class ModifierChain(
     private val name: String,
     private val stage: ModifierStage,
@@ -33,10 +33,10 @@ internal class ModifierChain(
             )
     }
 
-    /** Used for damage modifiers, which are applied independently to each random roll. */
+    /** 乱数ごとに適用する最終ダメージ補正を返す。 */
     fun finish(): TracedValue = TracedValue(multiplier, trace)
 
-    /** Applies the chain to a stat or power, including minimum-one and 16-bit wrap. */
+    /** 能力値や威力に補正を適用し、最低1にして16ビットに収める。 */
     fun apply(
         input: Int,
         valueStage: ModifierStage,
@@ -46,6 +46,7 @@ internal class ModifierChain(
         input: Long,
         valueStage: ModifierStage,
     ): TracedValue {
+        // 補正をまとめて適用し、五捨五超入
         val modified = (input * multiplier * 2 + BattleMath.UNIT - 1) / (BattleMath.UNIT * 2L)
         val application =
             ModifierTrace(
@@ -56,6 +57,7 @@ internal class ModifierChain(
                 input,
                 modified,
             )
+        // 最低1にしてから16ビットに収める
         return TracedValue((maxOf(1, modified) and 0xffff).toInt(), trace + application)
     }
 }

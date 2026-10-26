@@ -17,6 +17,7 @@ internal object DefenseModifiers {
         val physical = context.physicalDefense
         val effects = context.field.effects
         return ModifierChain("defense", ModifierStage.DEFENSE_MODIFIER).apply {
+            // わざわいのたま
             add(
                 "BeadsofRuin",
                 3072,
@@ -24,6 +25,7 @@ internal object DefenseModifiers {
                     activeDefender != "BeadsofRuin" &&
                     (attackerAbility == "BeadsofRuin" || FieldEffect.BEADS_OF_RUIN in effects),
             )
+            // わざわいのつるぎ
             add(
                 "SwordofRuin",
                 3072,
@@ -31,6 +33,7 @@ internal object DefenseModifiers {
                     activeDefender != "SwordofRuin" &&
                     (attackerAbility == "SwordofRuin" || FieldEffect.SWORD_OF_RUIN in effects),
             )
+            // こだいかっせい･クォークチャージ
             add(
                 ability,
                 5324,
@@ -40,22 +43,30 @@ internal object DefenseModifiers {
                     if (physical) Stat.DEFENSE else Stat.SPECIAL_DEFENSE,
                 ),
             )
+            // フラワーギフト
             add(
                 "FlowerGift",
                 6144,
                 !physical &&
                     (ability == "FlowerGift" || FieldEffect.DEFENDER_FLOWER_GIFT in effects),
             )
+            // ふしぎなうろこ
             add("MarvelScale", 6144, ability == "MarvelScale" && physical)
+            // くさのけがわ
             add("GrassPelt", 6144, ability == "GrassPelt" && physical)
+            // ファーコート
             add("FurCoat", 8192, ability == "FurCoat" && physical)
+            // しんかのきせき
             add(
                 "Eviolite",
                 6144,
                 item == "Eviolite" && context.defender.flags[PokemonFlag.CAN_EVOLVE] == true,
             )
+            // とつげきチョッキ
             add("AssaultVest", 6144, item == "AssaultVest" && !physical)
+            // しんかいのウロコ
             add("DeepSeaScale", 8192, item == "DeepSeaScale" && species == "Clamperl" && !physical)
+            // メタルパウダー
             add(
                 "MetalPowder",
                 8192,

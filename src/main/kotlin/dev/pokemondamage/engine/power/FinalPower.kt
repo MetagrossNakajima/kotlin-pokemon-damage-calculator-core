@@ -10,7 +10,7 @@ import dev.pokemondamage.model.PokemonId
 import dev.pokemondamage.model.TeraType
 import dev.pokemondamage.rules.MoveRules
 
-/** Move power, ordered modifiers, unsigned wrapping, then the Terastallization minimum. */
+/** 技威力に補正を順に適用し、符号なし整数に収めてからテラスタルの最低威力を適用する。 */
 internal object FinalPower {
     fun calculate(context: DamageContext): TracedValue {
         val move = context.move.original
@@ -27,6 +27,7 @@ internal object FinalPower {
             )
         val trace = listOf(baseTrace) + modified.trace
         val attacker = context.attacker
+        // テラスタルのタイプ強化対象か判定
         val teraBoost =
             attacker.teraType == context.move.type ||
                 (
@@ -36,6 +37,7 @@ internal object FinalPower {
                                 attacker.profile.id == PokemonId("Terapagos-Stellar")
                         )
                 )
+        // 対象技の威力を最低60に引き上げる
         return if (
             teraBoost &&
             !MoveRules.isNaturalMultiHit(move.id) &&

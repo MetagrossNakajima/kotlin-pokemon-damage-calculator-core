@@ -12,7 +12,7 @@ import dev.pokemondamage.model.ToxicCounter
 import dev.pokemondamage.model.Weather
 import dev.pokemondamage.rules.BattleEffects
 
-/** Supported end-of-turn events in their battle order, with berry checks after each HP loss. */
+/** ターン終了時の効果を順に適用し、HP減少ごとにきのみを判定する。 */
 internal class TurnEnd(
     private val defender: PokemonState,
     private val field: BattleField,
@@ -23,6 +23,7 @@ internal class TurnEnd(
         state: BattleProgress,
         turn: Long,
     ): BattleProgress {
+        // すなあらし→グラスフィールド→たべのこし→状態異常→はんすう
         val afterSand = sand(state, turn)
         val afterGrass = grass(afterSand)
         val afterLeftovers = leftovers(afterGrass)
@@ -41,6 +42,7 @@ internal class TurnEnd(
         amount: Int,
     ) = state.copy(hp = minOf(defender.stats.hp, state.hp + amount))
 
+    // すなあらし
     private fun sand(
         state: BattleProgress,
         turn: Long,
@@ -58,6 +60,7 @@ internal class TurnEnd(
         return health.damage(state, maxOf(1, defender.stats.hp / 16).toBigInteger(), turn)
     }
 
+    // グラスフィールド
     private fun grass(state: BattleProgress): BattleProgress {
         if (
             state.hp == 0 ||
@@ -69,6 +72,7 @@ internal class TurnEnd(
         return heal(state, maxOf(1, defender.stats.hp / 16))
     }
 
+    // たべのこし
     private fun leftovers(state: BattleProgress): BattleProgress {
         if (state.hp == 0 || state.hp == defender.stats.hp || item(state) != ItemId("Leftovers")) {
             return state
@@ -87,15 +91,18 @@ internal class TurnEnd(
         val status = defender.status
         val damage =
             when (status) {
+                // やけど･たいねつ
                 Status.BURN -> {
                     val divisor = if (ability == AbilityId("Heatproof")) 32 else 16
                     defender.stats.hp / divisor
                 }
 
+                // どく
                 Status.POISON -> {
                     defender.stats.hp / 8
                 }
 
+                // もうどく：経過ターンに応じたダメージ
                 Status.TOXIC -> {
                     defender.stats.hp * (state.toxicCounter ?: ToxicCounter.INITIAL).value /
                         16
@@ -106,6 +113,7 @@ internal class TurnEnd(
                 }
             }
         val poisoned = status == Status.POISON || status == Status.TOXIC
+        // ポイズンヒール
         val updated =
             if (poisoned && ability == AbilityId("PoisonHeal")) {
                 heal(state, maxOf(1, defender.stats.hp / 8))
@@ -119,6 +127,7 @@ internal class TurnEnd(
         return updated
     }
 
+    // はんすう
     private fun cudChew(
         state: BattleProgress,
         turn: Long,
@@ -142,6 +151,8 @@ internal class TurnEnd(
 
     private companion object {
         private val sandTypes = setOf(PokemonType.ROCK, PokemonType.GROUND, PokemonType.STEEL)
+
+        // すながくれ･すなかき･すなのちから･ぼうじん･マジックガード
         private val sandAbilities =
             setOf("SandVeil", "SandRush", "SandForce", "Overcoat", "MagicGuard")
                 .map(::AbilityId)

@@ -19,11 +19,13 @@ internal object DefenseStat {
         val defender = context.defender
         val physical = context.physicalDefense
         val wonderRoom = FieldEffect.WONDER_ROOM in context.field.effects
-        // Wonder Room swaps raw values; the selected defensive rank and modifiers stay in place.
+        // ワンダールームは実数値だけ入れ替え、ランクと補正はそのまま適用
         val raw =
             if (physical != wonderRoom) defender.stats.defense else defender.stats.specialDefense
         val stage = if (physical) defender.stages.defense else defender.stages.specialDefense
+        // 急所では防御側のプラスランクを無視
         val criticalStage = if (critical) stage.ignoringPositive() else stage
+        // てんねん･せいなるつるぎ･なしくずし･DDラリアット
         val ignoreStage =
             context.attackerAbility == AbilityId("Unaware") ||
                 context.move.original.id.value in rankIgnoringMoves
@@ -40,6 +42,7 @@ internal object DefenseStat {
                     value.toLong(),
                 ),
             )
+        // すなあらしではいわの特防、ゆきではこおりの防御を強化
         val weatherBoost =
             (
                 context.weather == Weather.SANDSTORM &&

@@ -5,8 +5,9 @@ import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.PokemonState
 import dev.pokemondamage.model.Stat
 
-/** Already-active paradox abilities select the highest staged stat; ties use battle stat order. */
+/** 発動済みのこだいかっせい・クォークチャージはランク込みの最高能力を選ぶ。同値なら能力順で優先する。 */
 internal object ParadoxBoost {
+    // こだいかっせい･クォークチャージ
     fun applies(
         pokemon: PokemonState,
         ability: AbilityId?,
@@ -21,6 +22,7 @@ internal object ParadoxBoost {
     private fun highestStat(pokemon: PokemonState): Stat {
         val stats = pokemon.stats
         val stages = pokemon.stages
+        // ランク込みの最高能力を選び、同値なら攻撃→防御→特攻→特防→素早さを優先
         return listOf(
             Stat.ATTACK to BattleMath.rankedStat(stats.attack, stages.attack),
             Stat.DEFENSE to BattleMath.rankedStat(stats.defense, stages.defense),

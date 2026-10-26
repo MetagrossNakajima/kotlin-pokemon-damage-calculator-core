@@ -15,6 +15,7 @@ internal object AttackStat {
         context: DamageContext,
         critical: Boolean,
     ): TracedValue {
+        // イカサマ
         val source =
             if (context.move.original.id == MoveId("FoulPlay")) {
                 context.defender
@@ -23,7 +24,9 @@ internal object AttackStat {
             }
         val (raw, stage) =
             when {
+                // ボディプレス
                 context.move.original.id == MoveId("BodyPress") -> {
+                    // ワンダールーム
                     val defenseStage =
                         if (FieldEffect.WONDER_ROOM in context.field.effects) {
                             source.stages.specialDefense
@@ -41,7 +44,9 @@ internal object AttackStat {
                     source.stats.specialAttack to source.stages.specialAttack
                 }
             }
+        // 急所では攻撃側のマイナスランクを無視
         val criticalStage = if (critical) stage.ignoringNegative() else stage
+        // てんねん
         val effectiveStage =
             if (context.defenderAbility ==
                 AbilityId("Unaware")
@@ -63,6 +68,7 @@ internal object AttackStat {
                 ),
             )
         val ranked = TracedValue(value, trace)
+        // はりきり
         val adjusted =
             if (context.attackerAbility == AbilityId("Hustle") && context.physical) {
                 ranked.step(

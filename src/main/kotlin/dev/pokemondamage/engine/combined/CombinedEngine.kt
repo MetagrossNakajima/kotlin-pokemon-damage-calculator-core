@@ -12,7 +12,7 @@ import dev.pokemondamage.model.KoStatus
 import dev.pokemondamage.model.WeightedBattleState
 import java.math.BigInteger
 
-/** Runs fixed attack distributions; future damage is not recalculated from branch HP. */
+/** 固定の攻撃分布を順に適用する。分岐後のHPによるダメージ再計算は行わない。 */
 internal object CombinedEngine {
     fun calculate(request: CombinedDamageRequest): Calculation<CombinedDamageResult> {
         val budget = CalculationBudget(request.limits)

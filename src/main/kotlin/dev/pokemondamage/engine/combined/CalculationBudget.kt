@@ -2,7 +2,7 @@ package dev.pokemondamage.engine.combined
 
 import dev.pokemondamage.model.CalculationLimits
 
-/** Shared by every phase of a combined calculation; failure never resets spent work. */
+/** 連続計算全体で共有する処理量の上限。失敗しても消費量は戻さない。 */
 internal class CalculationBudget(
     private val limits: CalculationLimits,
 ) {

@@ -10,7 +10,7 @@ import dev.pokemondamage.model.Weather
 import dev.pokemondamage.rules.AbilityRules
 import dev.pokemondamage.rules.BattleEffects
 
-/** Immutable per-hit resolution. Suppression is resolved before move transformations. */
+/** 1発分の計算条件。特性・持ち物の無効判定を技の変化より先に解決する。 */
 internal class DamageContext(
     val request: DamageRequest,
 ) {
@@ -37,6 +37,7 @@ internal class DamageContext(
     val unnerve: Boolean
         get() = FieldEffect.UNNERVE in this.field.effects || attackerAbility in berryBlockers
 
+    // えんかく･パンチグローブ
     val contact: Boolean
         get() =
             MoveFlag.CONTACT in move.flags &&
@@ -44,9 +45,11 @@ internal class DamageContext(
                 !(attackerItem == ItemId("PunchingGlove") && MoveFlag.PUNCH in move.flags)
 
     private fun resolveDefenderAbility(): AbilityId? {
+        // とくせいガード
         if (defenderItem == ItemId("AbilityShield")) {
             return activeDefenderAbility
         }
+        // かたやぶり系特性･特性を無視する技
         val ignores =
             attackerAbility in moldBreakers || request.move.id.value in abilityIgnoringMoves
         return if (ignores && AbilityRules.canIgnore(activeDefenderAbility)) {
@@ -67,10 +70,17 @@ internal class DamageContext(
     }
 
     private companion object {
+        // かたやぶり･テラボルテージ･ターボブレイズ
         private val moldBreakers =
             setOf(AbilityId("MoldBreaker"), AbilityId("Teravolt"), AbilityId("Turboblaze"))
+
+        // メテオドライブ･シャドーレイ･フォトンゲイザー
         private val abilityIgnoringMoves = setOf("SunsteelStrike", "MoongeistBeam", "PhotonGeyser")
+
+        // サイコショック･サイコブレイク･しんぴのつるぎ
         private val physicalDefenseMoves = setOf("Psyshock", "Psystrike", "SecretSword")
+
+        // きんちょうかん･じんばいったい
         private val berryBlockers =
             setOf(AbilityId("Unnerve"), AbilityId("AsOneGlastrier"), AbilityId("AsOneSpectrier"))
     }

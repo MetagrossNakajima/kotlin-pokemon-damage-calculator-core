@@ -11,6 +11,7 @@ internal object CriticalHit {
             context.request.critical ||
                 MoveRules.isGuaranteedCritical(context.move.original.id) ||
                 (
+                    // ひとでなし
                     context.attackerAbility == AbilityId("Merciless") &&
                         context.defender.status in poisonStatuses
                 )
@@ -18,5 +19,7 @@ internal object CriticalHit {
             context.defenderAbility !in preventingAbilities
 
     private val poisonStatuses = setOf(Status.POISON, Status.TOXIC)
+
+    // カブトアーマー･シェルアーマー
     private val preventingAbilities = setOf(AbilityId("BattleArmor"), AbilityId("ShellArmor"))
 }

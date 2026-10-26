@@ -18,6 +18,7 @@ internal object FixedDamage {
         val id = move.id.value
         val hp = context.defender.hp
         val attackerHp = context.attacker.hp
+        // タイプ無効･ぜったいれいどのこおり無効･がんじょうを判定
         val immune =
             TypeEffectiveness.calculate(context) == 0.0 ||
                 (id == "SheerCold" && PokemonType.ICE in context.defenderTypes) ||
@@ -27,13 +28,28 @@ internal object FixedDamage {
                 )
         val damage =
             when (kind) {
+                // いかりのまえば･しぜんのいかり･カタストロフィ
                 FixedDamageKind.HALF_CURRENT_HP -> maxOf(1, hp / 2)
+
+                // ガーディアン・デ・アローラ
                 FixedDamageKind.THREE_QUARTERS_CURRENT_HP -> hp * 3 / 4
+
+                // いのちがけ
                 FixedDamageKind.ATTACKER_HP -> attackerHp
+
+                // がむしゃら
                 FixedDamageKind.HP_DIFFERENCE -> maxOf(0, hp - attackerHp)
+
+                // ソニックブーム
                 FixedDamageKind.TWENTY -> 20
+
+                // りゅうのいかり
                 FixedDamageKind.FORTY -> 40
+
+                // ちきゅうなげ･ナイトヘッド（レベル50固定）
                 FixedDamageKind.LEVEL -> 50
+
+                // じわれ･ぜったいれいど･つのドリル･ハサミギロチン
                 FixedDamageKind.ONE_HIT_KO -> hp
             }
         val physical = move.category == Category.PHYSICAL

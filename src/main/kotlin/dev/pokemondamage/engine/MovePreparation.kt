@@ -15,7 +15,7 @@ import dev.pokemondamage.model.Weather
 import dev.pokemondamage.rules.AbilityRules
 import dev.pokemondamage.rules.ItemRules
 
-/** Resolves type, power, category and contact in the order required by each move. */
+/** 技ごとの順序に従い、タイプ・威力・分類・接触判定を確定する。 */
 internal object MovePreparation {
     fun prepare(context: DamageContext): EffectiveMove {
         val original = context.request.move
@@ -27,6 +27,7 @@ internal object MovePreparation {
                 original.category,
             )
         val prepared = specific(context, initial) ?: ability(context, initial)
+        // フォトンゲイザー
         return if (original.id == MoveId("PhotonGeyser")) {
             prepared.copy(category = adaptiveCategory(context.attacker))
         } else {
@@ -34,6 +35,7 @@ internal object MovePreparation {
         }
     }
 
+    // ランク込みの攻撃が特攻を上回る場合は物理技
     private fun adaptiveCategory(pokemon: PokemonState): Category =
         if (
             BattleMath.rankedStat(pokemon.stats.attack, pokemon.stages.attack) >
@@ -50,18 +52,22 @@ internal object MovePreparation {
     ): EffectiveMove? {
         val attacker = context.attacker
         return when (move.original.id.value) {
+            // さばきのつぶて
             "Judgment" -> {
                 move.copy(type = ItemRules.plateType(context.attackerItem) ?: move.type)
             }
 
+            // ツタこんぼう
             "IvyCudgel" -> {
                 ability(context, move.copy(type = ivyCudgelType(attacker.profile.id, move.type)))
             }
 
+            // シェルアームズ
             "ShellSideArm" -> {
                 shellSideArm(context, ability(context, move))
             }
 
+            // テラバースト
             "TeraBlast" -> {
                 attacker.teraType?.let {
                     move.copy(
@@ -72,6 +78,7 @@ internal object MovePreparation {
                 }
             }
 
+            // テラクラスター
             "TeraStarstorm" -> {
                 if (attacker.profile.id == PokemonId("Terapagos-Stellar")) {
                     move.copy(
@@ -88,10 +95,12 @@ internal object MovePreparation {
                 }
             }
 
+            // ウェザーボール
             "WeatherBall" -> {
                 weatherBall(context, move)
             }
 
+            // だいちのはどう
             "TerrainPulse" -> {
                 context.field.terrain
                     ?.takeIf { context.attackerGrounded }
@@ -103,8 +112,10 @@ internal object MovePreparation {
                     }
             }
 
+            // レイジングブル
             "RagingBull" -> {
                 move.copy(
+                    // ノーマルスキン
                     type =
                         if (context.attackerAbility == AbilityId("Normalize")) {
                             TeraType.NORMAL
@@ -125,6 +136,7 @@ internal object MovePreparation {
         }
     }
 
+    // ツタこんぼう：フォルムに応じたタイプ
     private fun ivyCudgelType(
         id: PokemonId,
         fallback: TeraType,
@@ -144,7 +156,7 @@ internal object MovePreparation {
         val attacker = context.attacker
         val defender = context.defender
         val wonderRoom = FieldEffect.WONDER_ROOM in context.field.effects
-        // Reference swaps raw defenses, applies their stages, then swaps the comparison operands.
+        // ワンダールームでは防御と特防の入れ替えに合わせてランクを選ぶ
         val defenseStage =
             if (wonderRoom) defender.stages.specialDefense else defender.stages.defense
         val specialDefenseStage =
@@ -155,7 +167,7 @@ internal object MovePreparation {
         val defense = BattleMath.rankedStat(defender.stats.defense, defenseStage)
         val specialDefense =
             BattleMath.rankedStat(defender.stats.specialDefense, specialDefenseStage)
-        // Cross multiplication preserves exact ties and also handles a ranked stat rounded to zero.
+        // 交差積で大小を比較し、同値や能力値0でも除算を避ける
         val physical = attack.toLong() * specialDefense > specialAttack.toLong() * defense
         val flags =
             if (physical) {
@@ -173,13 +185,16 @@ internal object MovePreparation {
         context: DamageContext,
         move: EffectiveMove,
     ): EffectiveMove {
+        // ノーマルスキン
         if (context.attackerAbility == AbilityId("Normalize")) {
             return move.copy(type = TeraType.NORMAL)
         }
+        // スキン系特性
         val skin = AbilityRules.skinType(context.attackerAbility)
         if (skin != null && move.type == TeraType.NORMAL) {
             return move.copy(type = skin)
         }
+        // うるおいボイス
         if (
             context.attackerAbility == AbilityId("LiquidVoice") &&
             MoveFlag.SOUND in move.original.flags
@@ -193,10 +208,11 @@ internal object MovePreparation {
         context: DamageContext,
         move: EffectiveMove,
     ): EffectiveMove {
+        // ばんのうがさ
         val umbrella = context.attackerItem == ItemId("UtilityUmbrella")
         val megaSol = context.attackerAbility == AbilityId("MegaSol")
         val umbrellaBlocks = umbrella && context.weather in sunOrRain
-        // Under Mega Sol, the umbrella restores actual sand/snow for the type but not the power.
+        // Mega Sol中のばんのうがさは、タイプにだけ元の砂・雪を反映する
         val typeWeather =
             if (
                 umbrella &&

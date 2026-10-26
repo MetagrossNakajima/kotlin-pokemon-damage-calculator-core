@@ -20,7 +20,7 @@ import dev.pokemondamage.model.PokemonType.ROCK
 import dev.pokemondamage.model.PokemonType.STEEL
 import dev.pokemondamage.model.PokemonType.WATER
 
-/** Generation 6 onward type chart, before battle-specific immunity overrides. */
+/** 第6世代以降のタイプ相性表。特性などによる無効判定は別途適用する。 */
 internal object TypeChart {
     private val matchups =
         mapOf(

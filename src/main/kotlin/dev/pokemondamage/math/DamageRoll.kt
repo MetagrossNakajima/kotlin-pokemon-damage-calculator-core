@@ -2,7 +2,7 @@ package dev.pokemondamage.math
 
 import dev.pokemondamage.model.ModifierStage
 
-/** Final single-hit arithmetic after power, stats, weather and critical-hit modifiers. */
+/** 威力・能力値・天候・急所補正後の、1発分の最終ダメージ計算。 */
 internal object DamageRoll {
     fun calculate(
         baseDamage: Int,
@@ -22,6 +22,7 @@ internal object DamageRoll {
         stab: Int,
         finalModifier: Int,
     ): TracedValue {
+        // 乱数補正
         val randomDamage =
             (BattleMath.unsigned32(baseDamage.toLong() * randomPercent) / 100).toInt()
         val random =
@@ -32,6 +33,7 @@ internal object DamageRoll {
                 100,
                 randomDamage,
             )
+        // タイプ一致補正
         val sameType =
             if (stab != BattleMath.UNIT) {
                 random.step(
@@ -44,7 +46,7 @@ internal object DamageRoll {
             } else {
                 random
             }
-        // The chart and overrides produce exact binary fractions, recorded as an exact ratio.
+        // タイプ相性を誤差のない整数比で記録
         val denominator =
             if (effectiveness > 0 && effectiveness < 1) (1 / effectiveness).toLong() else 1
         val typeDamage = BattleMath.unsigned32((sameType.value * effectiveness).toLong()).toInt()
@@ -56,6 +58,7 @@ internal object DamageRoll {
                 denominator,
                 typeDamage,
             )
+        // やけど補正
         val burn =
             if (burned) {
                 type.step("Burn", ModifierStage.DAMAGE, 2048, 4096, type.value / 2)
@@ -70,6 +73,7 @@ internal object DamageRoll {
                 4096,
                 BattleMath.modifyDamage(burn.value, finalModifier),
             )
+        // 無効は0、それ以外は最低1にして16ビットに収める
         val damage = if (effectiveness == 0.0) 0 else BattleMath.unsigned16(maxOf(1, final.value))
         return TracedValue(damage, final.trace)
     }

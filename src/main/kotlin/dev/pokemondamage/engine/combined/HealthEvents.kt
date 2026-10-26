@@ -12,7 +12,7 @@ import dev.pokemondamage.rules.BattleEffects
 import dev.pokemondamage.rules.TypeChart
 import java.math.BigInteger
 
-/** HP events resolve berry consumption immediately, never reviving a fainted branch. */
+/** HP変化の直後にきのみを処理する。ひんしの分岐は回復しない。 */
 internal class HealthEvents(
     private val defender: PokemonState,
     private val field: BattleField,
@@ -38,6 +38,7 @@ internal class HealthEvents(
                 hp = state.hp - lost,
                 attackDamage = accumulatedDamage,
             )
+        // オボンのみ（HPが半分以下になった直後に判定）
         if (
             lost == 0 ||
             damaged.hp == 0 ||
@@ -58,14 +59,17 @@ internal class HealthEvents(
     ): BattleProgress {
         val ability = BattleEffects.ability(defender, field, itemConsumed = state.itemConsumed)
         val baseHealing = maxOf(1, defender.stats.hp / 4)
+        // じゅくせい
         val healing = if (ability == AbilityId("Ripen")) baseHealing * 2 else baseHealing
         val afterBerry = minOf(defender.stats.hp, state.hp + healing)
+        // ほおぶくろ
         val hp =
             if (ability == AbilityId("CheekPouch")) {
                 minOf(defender.stats.hp, afterBerry + maxOf(1, defender.stats.hp / 3))
             } else {
                 afterBerry
             }
+        // はんすう：初回使用の次ターンに再発動
         val nextCudChewTurn =
             when {
                 repeat -> null
@@ -79,14 +83,16 @@ internal class HealthEvents(
         )
     }
 
-    /** Stealth Rock, Spikes, then explicit chip events, checking berries between events. */
+    /** ステルスロック・まきびし・指定ダメージの順に適用し、各処理後にきのみを判定する。 */
     fun setup(
         state: BattleProgress,
         setup: BattleSetup,
     ): BattleProgress {
         val ability = BattleEffects.ability(defender, field)
         val item = BattleEffects.item(defender, field)
+        // あつぞこブーツ･マジックガード
         val protected = item == ItemId("Heavy-DutyBoots") || ability == AbilityId("MagicGuard")
+        // ステルスロック
         val afterStealthRock =
             if (setup.entryHazards.stealthRock && !protected) {
                 val factor =
@@ -101,6 +107,7 @@ internal class HealthEvents(
             } else {
                 state
             }
+        // まきびし
         val spikesDenominator = setup.entryHazards.spikes.damageDenominator
         val afterSpikes =
             if (

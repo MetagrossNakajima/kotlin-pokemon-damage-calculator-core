@@ -3,7 +3,7 @@ package dev.pokemondamage.math
 import dev.pokemondamage.model.ModifierStage
 import dev.pokemondamage.model.ModifierTrace
 
-/** A snapshot: subsequent stage accumulation cannot change an earlier trace. */
+/** 計算途中の値と履歴。後続の補正を追加しても過去の履歴は変わらない。 */
 internal class TracedValue(
     val value: Int,
     trace: List<ModifierTrace>,

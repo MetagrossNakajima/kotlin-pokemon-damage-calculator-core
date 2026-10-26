@@ -2,7 +2,7 @@ package dev.pokemondamage.rules
 
 import dev.pokemondamage.model.MoveId
 
-/** Move classifications shared by validation and the damage pipeline. */
+/** 入力検証とダメージ計算で共有する技の分類。 */
 internal object MoveRules {
     private val guaranteedCritical =
         setOf(

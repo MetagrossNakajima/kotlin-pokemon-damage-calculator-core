@@ -12,7 +12,7 @@ import dev.pokemondamage.model.MoveId
 import dev.pokemondamage.model.TeraType
 import dev.pokemondamage.model.Weather
 
-/** Base damage followed by spread, child hit, weather and critical modifiers in battle order. */
+/** 基礎ダメージに範囲技・おやこあいの2発目・天候・急所の順で補正を適用する。 */
 internal object PreRandomDamage {
     fun calculate(
         context: DamageContext,
@@ -36,6 +36,7 @@ internal object PreRandomDamage {
                     ),
                 ),
             )
+        // ダブルバトルの範囲技補正
         val spread =
             if (context.field.format == BattleFormat.DOUBLE &&
                 context.move.original.spread
@@ -44,6 +45,7 @@ internal object PreRandomDamage {
             } else {
                 base
             }
+        // おやこあい（2発目）
         val childHit =
             if (context.request.hitIndex == 1L && ParentalBond.applies(context)) {
                 apply(spread, "ParentalBond", 1024)
@@ -57,6 +59,7 @@ internal object PreRandomDamage {
             } else {
                 childHit
             }
+        // 急所補正
         return if (critical) {
             val damage = BattleMath.unsigned32(weather.value.toLong() * 3 / 2).toInt()
             weather.step("Critical", ModifierStage.DAMAGE, 6144, 4096, damage)
@@ -78,7 +81,9 @@ internal object PreRandomDamage {
             BattleMath.modifyDamage(before.value, multiplier),
         )
 
+    // 天候によるほのお･みず技の補正
     private fun weatherModifier(context: DamageContext): Int {
+        // ハイドロスチームの晴れ補正
         if (
             (
                 context.weather == Weather.SUNLIGHT ||
@@ -89,10 +94,12 @@ internal object PreRandomDamage {
         ) {
             return 6144
         }
+        // ばんのうがさ
         if (context.defenderItem == ItemId("UtilityUmbrella")) {
             return 4096
         }
         return when (context.weather) {
+            // 晴れ：ほのお1.5倍、みず0.5倍
             Weather.SUNLIGHT -> {
                 when (context.move.type) {
                     TeraType.FIRE -> 6144
@@ -101,6 +108,7 @@ internal object PreRandomDamage {
                 }
             }
 
+            // 雨：みず1.5倍、ほのお0.5倍
             Weather.RAIN -> {
                 when (context.move.type) {
                     TeraType.WATER -> 6144

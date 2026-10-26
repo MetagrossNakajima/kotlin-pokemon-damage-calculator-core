@@ -1,6 +1,6 @@
 package dev.pokemondamage.rules
 
-/** Shared classification for input validation, damage selection and OHKO immunity. */
+/** 入力検証・ダメージ計算・一撃必殺の無効判定で使う共通分類。 */
 internal enum class FixedDamageKind {
     HALF_CURRENT_HP,
     THREE_QUARTERS_CURRENT_HP,

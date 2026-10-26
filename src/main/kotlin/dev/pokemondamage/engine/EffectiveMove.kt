@@ -6,7 +6,7 @@ import dev.pokemondamage.model.Move
 import dev.pokemondamage.model.MoveFlag
 import dev.pokemondamage.model.TeraType
 
-/** Prepared battle values may exceed input power bounds and may have the Stellar type. */
+/** 処理後の技は入力時の威力上限を超えたり、ステラタイプになったりする。 */
 internal data class EffectiveMove(
     val original: Move,
     val type: TeraType,

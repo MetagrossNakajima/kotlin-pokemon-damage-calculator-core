@@ -6,6 +6,7 @@ import dev.pokemondamage.model.BattleFormat
 import dev.pokemondamage.rules.MoveRules
 
 internal object ParentalBond {
+    // おやこあい
     fun applies(context: DamageContext): Boolean =
         context.attackerAbility == AbilityId("ParentalBond") &&
             !MoveRules.isNaturalMultiHit(context.move.original.id) &&

@@ -2,18 +2,18 @@ package dev.pokemondamage.math
 
 import dev.pokemondamage.model.StatStage
 
-/** Integer arithmetic used by the battle engine. Rounding order is part of the rules. */
+/** バトル用の整数計算。端数処理の順序も計算仕様に含む。 */
 internal object BattleMath {
     const val UNIT = 4096
 
-    /** Applying a modifier rounds exact halves down. */
+    // 補正の適用は五捨五超入（端数0.5は切り捨て）
     fun modify(
         value: Int,
         numerator: Int,
         denominator: Int = UNIT,
     ): Int = ((value.toLong() * numerator * 2 + denominator - 1) / (denominator * 2L)).toInt()
 
-    /** Chaining modifiers, unlike applying them, rounds exact halves up. */
+    // 補正同士の連結は四捨五入（端数0.5は切り上げ）
     fun chain(
         current: Int,
         next: Int,
@@ -33,14 +33,14 @@ internal object BattleMath {
             unsigned16(value * stage.numerator) / stage.denominator
         }
 
-    /** The source API fixes the combatants' level at 50. */
+    // レベル50固定の基礎ダメージ
     fun baseDamage(
         power: Int,
         attack: Int,
         defense: Int,
     ): Int = (unsigned32(unsigned32(22L * power) * attack) / defense / 50 + 2).toInt()
 
-    /** Damage modifiers wrap their product to 32 bits before rounding. */
+    // 積を32ビットに収めてから丸める
     fun modifyDamage(
         damage: Int,
         numerator: Int,

@@ -24,11 +24,13 @@ internal object SingleHit {
         val effectiveness = TypeEffectiveness.calculate(context)
         val modifier = DamageModifiers.calculate(context, critical, effectiveness)
         val stab = Stab.calculate(context)
+        // やけど補正（こんじょう･からげんきは対象外）
         val burned =
             context.physical &&
                 context.attacker.status == Status.BURN &&
                 context.attackerAbility != AbilityId("Guts") &&
                 context.move.original.id != MoveId("Facade")
+        // 85〜100の16通りの乱数を計算
         val rolls =
             (85..100).map {
                 DamageRoll.calculateTraced(
