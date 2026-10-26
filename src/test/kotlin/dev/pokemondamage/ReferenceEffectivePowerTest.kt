@@ -1,9 +1,29 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.DamageResult
+import dev.pokemondamage.model.FaintedAllies
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.PokemonFlags
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.TimesHit
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNotEquals
 
 class ReferenceEffectivePowerTest {
     @TestFactory
@@ -29,59 +49,76 @@ class ReferenceEffectivePowerTest {
                             Stats(200, 100, 100, 100, 100, 100),
                             ability = AbilityId("Illuminate"),
                         )
-                    val outputs = rows.map { c ->
-                        val count = c[1].toInt()
-                        val modified = c[6].toBooleanStrict()
-                        val a =
-                            pokemon.copy(
-                                ability = AbilityId(if (modified) "Technician" else "Illuminate"),
-                                item = if (modified) ItemId("LifeOrb") else null,
-                                faintedAllies = if (name == "LastRespects") count else 0,
-                                timesHit = if (name == "RageFist") count else 0,
-                            )
-                        val d =
-                            pokemon.copy(
-                                flags =
-                                    PokemonFlags(
-                                        mapOf(
-                                            PokemonFlag.DAMAGED_THIS_TURN to
-                                                (name == "Assurance" && count == 1),
+                    val outputs =
+                        rows.map { c ->
+                            val count = c[1].toInt()
+                            val modified = c[6].toBooleanStrict()
+                            val a =
+                                pokemon.copy(
+                                    ability =
+                                        AbilityId(
+                                            if (modified) "Technician" else "Illuminate",
                                         ),
-                                    ),
-                            )
-                        val move =
-                            Move(
-                                MoveId(name),
-                                PokemonType.valueOf(c[4]),
-                                c[2].toInt(),
-                                Category.valueOf(c[5]),
-                            )
-                        val result =
-                            assertIs<Calculation.Success<DamageResult>>(
-                                    calculateDamage(DamageRequest(a, d, move)),
+                                    item = if (modified) ItemId("LifeOrb") else null,
+                                    faintedAllies =
+                                        FaintedAllies(
+                                            if (name ==
+                                                "LastRespects"
+                                            ) {
+                                                count
+                                            } else {
+                                                0
+                                            },
+                                        ),
+                                    timesHit = TimesHit(if (name == "RageFist") count else 0),
                                 )
-                                .value
-                                .hit
-                        assertEquals(
-                            c[7].toInt(),
-                            result.power,
-                            "$name count=$count modified=$modified power",
-                        )
-                        val expected =
-                            c[8].removePrefix("[").removeSuffix("]").split(',').map(String::toInt)
-                        assertEquals(
-                            expected,
-                            result.rolls,
-                            "$name count=$count modified=$modified damage",
-                        )
-                        if (!modified)
+                            val d =
+                                pokemon.copy(
+                                    flags =
+                                        PokemonFlags(
+                                            mapOf(
+                                                PokemonFlag.DAMAGED_THIS_TURN to
+                                                    (name == "Assurance" && count == 1),
+                                            ),
+                                        ),
+                                )
+                            val move =
+                                Move(
+                                    MoveId(name),
+                                    PokemonType.valueOf(c[4]),
+                                    c[2].toInt(),
+                                    Category.valueOf(c[5]),
+                                )
+                            val result =
+                                assertIs<Calculation.Success<DamageResult>>(
+                                    calculateDamage(DamageRequest(a, d, move)),
+                                ).value
+                                    .hit
                             assertEquals(
-                                c[3].toInt(),
+                                c[7].toInt(),
                                 result.power,
-                                "independently specified effective base power",
+                                "$name count=$count modified=$modified power",
                             )
-                        result.rolls
-                    }
+                            val expected =
+                                c[8]
+                                    .removePrefix("[")
+                                    .removeSuffix("]")
+                                    .split(',')
+                                    .map(String::toInt)
+                            assertEquals(
+                                expected,
+                                result.rolls,
+                                "$name count=$count modified=$modified damage",
+                            )
+                            if (!modified) {
+                                assertEquals(
+                                    c[3].toInt(),
+                                    result.power,
+                                    "independently specified effective base power",
+                                )
+                            }
+                            result.rolls
+                        }
                     assertNotEquals(
                         outputs.first(),
                         outputs[2],

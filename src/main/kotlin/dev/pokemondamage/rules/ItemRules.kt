@@ -1,6 +1,7 @@
 package dev.pokemondamage.rules
 
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.TeraType
 
 internal object ItemRules {
     private val resistBerries =
@@ -70,7 +71,9 @@ internal object ItemRules {
     fun boostType(item: ItemId?): TeraType? = typeItems[item]
 
     fun plateType(item: ItemId?): TeraType? {
-        if (item == null) return null
+        if (item == null) {
+            return null
+        }
         return if (item.value.endsWith("Plate")) typeItems[item] else null
     }
 }

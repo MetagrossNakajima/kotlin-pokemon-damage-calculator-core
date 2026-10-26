@@ -1,6 +1,8 @@
 package dev.pokemondamage.model
 
-enum class BattleFormat {
-    SINGLE,
-    DOUBLE,
+enum class BattleFormat(
+    val screenModifier: Int,
+) {
+    SINGLE(2048),
+    DOUBLE(2732),
 }

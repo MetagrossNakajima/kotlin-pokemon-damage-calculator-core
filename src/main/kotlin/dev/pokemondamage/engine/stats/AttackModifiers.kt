@@ -2,7 +2,10 @@ package dev.pokemondamage.engine.stats
 
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.math.ModifierChain
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ModifierStage
+import dev.pokemondamage.model.Stat
+import dev.pokemondamage.model.TeraType
 
 /**
  * Only the attacker's ability/item modifies an attack, even when Foul Play borrows defender stats.
@@ -79,7 +82,8 @@ internal object AttackModifiers {
                 defenderAbility == "WaterBubble" && type == TeraType.FIRE,
             )
             add("PurifyingSalt", 2048, defenderAbility == "PurifyingSalt" && type == TeraType.GHOST)
-            add(item, 6144, item == if (physical) "ChoiceBand" else "ChoiceSpecs")
+            val choiceItem = if (physical) "ChoiceBand" else "ChoiceSpecs"
+            add(item, 6144, item == choiceItem)
             add(
                 "ThickClub",
                 8192,

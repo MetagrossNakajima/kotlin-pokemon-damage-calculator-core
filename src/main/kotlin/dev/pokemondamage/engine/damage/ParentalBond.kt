@@ -1,7 +1,8 @@
 package dev.pokemondamage.engine.damage
 
 import dev.pokemondamage.engine.DamageContext
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleFormat
 import dev.pokemondamage.rules.MoveRules
 
 internal object ParentalBond {

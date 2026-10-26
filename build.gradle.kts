@@ -14,11 +14,11 @@ repositories {
 spotless {
     kotlin {
         target("src/**/*.kt")
-        ktfmt("0.65").kotlinlangStyle().configure { it.setMaxWidth(100) }
+        ktlint("1.8.0")
     }
     kotlinGradle {
         target("*.gradle.kts")
-        ktfmt("0.65").kotlinlangStyle().configure { it.setMaxWidth(100) }
+        ktlint("1.8.0")
     }
 }
 

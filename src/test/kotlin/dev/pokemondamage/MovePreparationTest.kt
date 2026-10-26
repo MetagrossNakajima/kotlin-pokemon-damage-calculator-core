@@ -1,8 +1,34 @@
 package dev.pokemondamage
 
 import dev.pokemondamage.engine.DamageContext
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.EnumFlags
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveFlag
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.PokemonFlags
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.StatStages
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.TeraType
+import dev.pokemondamage.model.Terrain
+import dev.pokemondamage.model.Weather
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 class MovePreparationTest {
     private val pokemon =
@@ -93,7 +119,7 @@ class MovePreparationTest {
         val physical =
             context(
                 "ShellSideArm",
-                pokemon.copy(stages = StatStages(attack = 1)),
+                pokemon.copy(stages = StatStages.fromValues(attack = 1)),
                 type = PokemonType.POISON,
             )
         assertEquals(Category.PHYSICAL, physical.move.category)
@@ -112,7 +138,10 @@ class MovePreparationTest {
         val longReach =
             context(
                 "ShellSideArm",
-                pokemon.copy(stages = StatStages(attack = 1), ability = AbilityId("LongReach")),
+                pokemon.copy(
+                    stages = StatStages.fromValues(attack = 1),
+                    ability = AbilityId("LongReach"),
+                ),
             )
         assertEquals(Category.PHYSICAL, longReach.move.category)
         assertFalse(longReach.contact)
@@ -120,11 +149,11 @@ class MovePreparationTest {
 
     @Test
     fun `charge moves retain the caller supplied stages instead of adding another boost`() {
-        val boosted = pokemon.copy(stages = StatStages(specialAttack = 1))
+        val boosted = pokemon.copy(stages = StatStages.fromValues(specialAttack = 1))
         for (name in listOf("MeteorBeam", "ElectroShot")) {
             val prepared = context(name, boosted)
             assertSame(boosted, prepared.attacker)
-            assertEquals(1, prepared.attacker.stages.specialAttack)
+            assertEquals(1, prepared.attacker.stages.specialAttack.value)
         }
     }
 
@@ -140,28 +169,27 @@ class MovePreparationTest {
         val physical =
             pokemon.copy(
                 teraType = TeraType.WATER,
-                stages = StatStages(attack = 1),
+                stages = StatStages.fromValues(attack = 1),
                 ability = AbilityId("Normalize"),
             )
         assertEquals(Category.PHYSICAL, context("TeraBlast", physical).move.category)
         assertEquals(TeraType.WATER, context("TeraBlast", physical).move.type)
         assertEquals(
             Category.SPECIAL,
-            context("TeraBlast", physical.copy(stages = StatStages(specialAttack = 1)))
+            context("TeraBlast", physical.copy(stages = StatStages.fromValues(specialAttack = 1)))
                 .move
                 .category,
         )
         assertEquals(
             Category.SPECIAL,
             context(
-                    "TeraBlast",
-                    pokemon.copy(
-                        teraType = TeraType.FIRE,
-                        ability = AbilityId("HugePower"),
-                        item = ItemId("ChoiceBand"),
-                    ),
-                )
-                .move
+                "TeraBlast",
+                pokemon.copy(
+                    teraType = TeraType.FIRE,
+                    ability = AbilityId("HugePower"),
+                    item = ItemId("ChoiceBand"),
+                ),
+            ).move
                 .category,
         )
         assertEquals(
@@ -176,7 +204,7 @@ class MovePreparationTest {
         val stellar =
             pokemon.copy(
                 profile = pokemon.profile.copy(id = PokemonId("Terapagos-Stellar")),
-                stages = StatStages(attack = 1),
+                stages = StatStages.fromValues(attack = 1),
             )
         assertEquals(TeraType.STELLAR, context("TeraStarstorm", stellar).move.type)
         assertEquals(Category.SPECIAL, context("TeraStarstorm", stellar).move.category)
@@ -190,7 +218,10 @@ class MovePreparationTest {
     @Test
     fun `Photon Geyser adapts category even when Normalize changes its type`() {
         val attacker =
-            pokemon.copy(stages = StatStages(attack = 2), ability = AbilityId("Normalize"))
+            pokemon.copy(
+                stages = StatStages.fromValues(attack = 2),
+                ability = AbilityId("Normalize"),
+            )
         val move = context("PhotonGeyser", attacker, type = PokemonType.PSYCHIC).move
         assertEquals(Category.PHYSICAL, move.category)
         assertEquals(TeraType.NORMAL, move.type)
@@ -210,21 +241,19 @@ class MovePreparationTest {
         for ((weather, type) in types) {
             val prepared =
                 context(
-                        "WeatherBall",
-                        pokemon.copy(ability = AbilityId("Aerilate")),
-                        field = BattleField(weather = weather),
-                    )
-                    .move
+                    "WeatherBall",
+                    pokemon.copy(ability = AbilityId("Aerilate")),
+                    field = BattleField(weather = weather),
+                ).move
             assertEquals(type, prepared.type, "$weather")
             assertEquals(if (weather == null) 50 else 100, prepared.power, "$weather")
         }
         val suppressed =
             context(
-                    "WeatherBall",
-                    defender = pokemon.copy(ability = AbilityId("CloudNine")),
-                    field = BattleField(weather = Weather.SUNLIGHT),
-                )
-                .move
+                "WeatherBall",
+                defender = pokemon.copy(ability = AbilityId("CloudNine")),
+                field = BattleField(weather = Weather.SUNLIGHT),
+            ).move
         assertEquals(TeraType.NORMAL, suppressed.type)
         assertEquals(50, suppressed.power)
     }
@@ -250,21 +279,19 @@ class MovePreparationTest {
         assertEquals(
             TeraType.FIRE,
             context(
-                    "WeatherBall",
-                    attacker.copy(itemConsumed = true),
-                    field = BattleField(weather = Weather.SUNLIGHT),
-                )
-                .move
+                "WeatherBall",
+                attacker.copy(itemConsumed = true),
+                field = BattleField(weather = Weather.SUNLIGHT),
+            ).move
                 .type,
         )
         assertEquals(
             100,
             context(
-                    "WeatherBall",
-                    defender = attacker,
-                    field = BattleField(weather = Weather.SUNLIGHT),
-                )
-                .move
+                "WeatherBall",
+                defender = attacker,
+                field = BattleField(weather = Weather.SUNLIGHT),
+            ).move
                 .power,
         )
     }
@@ -279,11 +306,10 @@ class MovePreparationTest {
             assertEquals(100, plain.power)
             val umbrella =
                 context(
-                        "WeatherBall",
-                        attacker.copy(item = ItemId("UtilityUmbrella")),
-                        field = BattleField(weather = weather),
-                    )
-                    .move
+                    "WeatherBall",
+                    attacker.copy(item = ItemId("UtilityUmbrella")),
+                    field = BattleField(weather = weather),
+                ).move
             assertEquals(
                 when (weather) {
                     Weather.SANDSTORM -> TeraType.ROCK
@@ -319,20 +345,18 @@ class MovePreparationTest {
         for ((terrain, type) in types) {
             val move =
                 context(
-                        "TerrainPulse",
-                        pokemon.copy(ability = AbilityId("Normalize")),
-                        field = BattleField(terrain = terrain),
-                    )
-                    .move
+                    "TerrainPulse",
+                    pokemon.copy(ability = AbilityId("Normalize")),
+                    field = BattleField(terrain = terrain),
+                ).move
             assertEquals(type, move.type)
             assertEquals(100, move.power)
             val airborne =
                 context(
-                        "TerrainPulse",
-                        pokemon.copy(ability = AbilityId("Levitate")),
-                        field = BattleField(terrain = terrain),
-                    )
-                    .move
+                    "TerrainPulse",
+                    pokemon.copy(ability = AbilityId("Levitate")),
+                    field = BattleField(terrain = terrain),
+                ).move
             assertEquals(TeraType.NORMAL, airborne.type)
             assertEquals(50, airborne.power)
         }
@@ -340,13 +364,15 @@ class MovePreparationTest {
 
     @Test
     fun `Raging Bull follows Tauros form and Normalize override`() {
-        for ((id, type) in
-            mapOf(
-                "Tauros-Paldea-Combat" to TeraType.FIGHTING,
-                "Tauros-Paldea-Blaze" to TeraType.FIRE,
-                "Tauros-Paldea-Aqua" to TeraType.WATER,
-                "Tauros" to TeraType.NORMAL,
-            )) {
+        for (
+        (id, type) in
+        mapOf(
+            "Tauros-Paldea-Combat" to TeraType.FIGHTING,
+            "Tauros-Paldea-Blaze" to TeraType.FIRE,
+            "Tauros-Paldea-Aqua" to TeraType.WATER,
+            "Tauros" to TeraType.NORMAL,
+        )
+        ) {
             val attacker = pokemon.copy(profile = pokemon.profile.copy(id = PokemonId(id)))
             assertEquals(type, context("RagingBull", attacker).move.type)
             assertEquals(
@@ -358,14 +384,16 @@ class MovePreparationTest {
 
     @Test
     fun `each skin converts Normal but leaves other types unchanged`() {
-        for ((name, type) in
-            mapOf(
-                "Galvanize" to TeraType.ELECTRIC,
-                "Aerilate" to TeraType.FLYING,
-                "Pixilate" to TeraType.FAIRY,
-                "Refrigerate" to TeraType.ICE,
-                "Dragonize" to TeraType.DRAGON,
-            )) {
+        for (
+        (name, type) in
+        mapOf(
+            "Galvanize" to TeraType.ELECTRIC,
+            "Aerilate" to TeraType.FLYING,
+            "Pixilate" to TeraType.FAIRY,
+            "Refrigerate" to TeraType.ICE,
+            "Dragonize" to TeraType.DRAGON,
+        )
+        ) {
             val attacker = pokemon.copy(ability = AbilityId(name))
             assertEquals(type, context(attacker = attacker).move.type, name)
             assertEquals(
@@ -387,10 +415,9 @@ class MovePreparationTest {
         assertEquals(
             TeraType.NORMAL,
             context(
-                    attacker = pokemon.copy(ability = AbilityId("Normalize")),
-                    type = PokemonType.FIRE,
-                )
-                .move
+                attacker = pokemon.copy(ability = AbilityId("Normalize")),
+                type = PokemonType.FIRE,
+            ).move
                 .type,
         )
         val muted = singer.copy(flags = PokemonFlags(mapOf(PokemonFlag.ABILITY_SUPPRESSED to true)))

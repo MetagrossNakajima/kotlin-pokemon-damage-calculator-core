@@ -9,8 +9,11 @@ data class BattleState(
     val initialPokemon: PokemonState,
     val currentHp: Int,
     val itemConsumed: Boolean,
-    val toxicCounter: Int?,
+    val toxicCounter: ToxicCounter?,
     val cudChewTurn: Long?,
 )
 
-data class WeightedBattleState(val state: BattleState, val weight: BigInteger)
+data class WeightedBattleState(
+    val state: BattleState,
+    val weight: BigInteger,
+)

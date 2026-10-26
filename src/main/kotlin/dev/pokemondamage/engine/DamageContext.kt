@@ -1,11 +1,19 @@
 package dev.pokemondamage.engine
 
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.MoveFlag
+import dev.pokemondamage.model.Weather
 import dev.pokemondamage.rules.AbilityRules
 import dev.pokemondamage.rules.BattleEffects
 
 /** Immutable per-hit resolution. Suppression is resolved before move transformations. */
-internal class DamageContext(val request: DamageRequest) {
+internal class DamageContext(
+    val request: DamageRequest,
+) {
     val attacker = request.attacker
     val defender = request.defender
     val field = request.field
@@ -36,17 +44,25 @@ internal class DamageContext(val request: DamageRequest) {
                 !(attackerItem == ItemId("PunchingGlove") && MoveFlag.PUNCH in move.flags)
 
     private fun resolveDefenderAbility(): AbilityId? {
-        if (defenderItem == ItemId("AbilityShield")) return activeDefenderAbility
+        if (defenderItem == ItemId("AbilityShield")) {
+            return activeDefenderAbility
+        }
         val ignores =
             attackerAbility in moldBreakers || request.move.id.value in abilityIgnoringMoves
-        return if (ignores && AbilityRules.canIgnore(activeDefenderAbility)) null
-        else activeDefenderAbility
+        return if (ignores && AbilityRules.canIgnore(activeDefenderAbility)) {
+            null
+        } else {
+            activeDefenderAbility
+        }
     }
 
     private fun resolveWeather(): Weather? {
         val abilities = listOf(attackerAbility, activeDefenderAbility)
-        if (attackerAbility == AbilityId("MegaSol") && !BattleEffects.weatherSuppressed(abilities))
+        if (
+            attackerAbility == AbilityId("MegaSol") && !BattleEffects.weatherSuppressed(abilities)
+        ) {
             return Weather.SUNLIGHT
+        }
         return BattleEffects.weather(field, abilities)
     }
 

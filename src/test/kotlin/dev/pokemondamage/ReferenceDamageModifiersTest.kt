@@ -2,8 +2,27 @@ package dev.pokemondamage
 
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.engine.damage.DamageModifiers
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.BattleFormat
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.EnumFlags
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveFlag
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.SideConditions
+import dev.pokemondamage.model.Stats
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class ReferenceDamageModifiersTest {
     @Test
@@ -43,8 +62,11 @@ class ReferenceDamageModifiersTest {
                 BattleField(
                     format = BattleFormat.valueOf(c[7]),
                     effects =
-                        if (c[9].toBooleanStrict()) EnumFlags(FieldEffect.FRIEND_GUARD)
-                        else EnumFlags(),
+                        if (c[9].toBooleanStrict()) {
+                            EnumFlags(FieldEffect.FRIEND_GUARD)
+                        } else {
+                            EnumFlags()
+                        },
                 )
             val context =
                 DamageContext(
@@ -64,7 +86,9 @@ class ReferenceDamageModifiersTest {
                 )
             val actual =
                 DamageModifiers.calculate(context, c[10].toBooleanStrict(), c[11].toDouble()).value
-            if (actual != c[13].toInt()) differences += "$row actual=$actual"
+            if (actual != c[13].toInt()) {
+                differences += "$row actual=$actual"
+            }
         }
         assertEquals(emptyList(), differences)
     }

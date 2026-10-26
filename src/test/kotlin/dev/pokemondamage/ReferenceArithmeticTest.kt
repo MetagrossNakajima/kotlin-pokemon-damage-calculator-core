@@ -9,10 +9,11 @@ import kotlin.test.assertEquals
 
 class ReferenceArithmeticTest {
     private fun rows(file: String): List<List<String>> =
-        checkNotNull(javaClass.getResourceAsStream("/reference/$file")).bufferedReader().useLines {
-            lines ->
-            lines.filterNot { it.startsWith('#') }.map { it.split('\t') }.toList()
-        }
+        checkNotNull(javaClass.getResourceAsStream("/reference/$file"))
+            .bufferedReader()
+            .useLines { lines ->
+                lines.filterNot { it.startsWith('#') }.map { it.split('\t') }.toList()
+            }
 
     @Test
     fun `all 324 type matchups agree with Reference generation nine`() {

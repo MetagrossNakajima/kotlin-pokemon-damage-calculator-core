@@ -1,8 +1,11 @@
 package dev.pokemondamage
 
 import dev.pokemondamage.math.DamageRoll
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.ModifierStage
+import dev.pokemondamage.model.ModifierTrace
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class DamageRollTraceTest {
     @Test

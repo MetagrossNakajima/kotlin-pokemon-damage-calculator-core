@@ -2,7 +2,11 @@ package dev.pokemondamage
 
 import dev.pokemondamage.model.ExactProbability
 import java.math.BigInteger
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class ExactProbabilityTest {
     private val one = BigInteger.ONE

@@ -1,7 +1,10 @@
 package dev.pokemondamage.model
 
 /** One or two distinct types; the original ordering is retained. */
-data class PokemonTypes(val primary: PokemonType, val secondary: PokemonType? = null) {
+data class PokemonTypes(
+    val primary: PokemonType,
+    val secondary: PokemonType? = null,
+) {
     init {
         requireInput(primary != secondary, "types", ValidationCode.DUPLICATE)
     }

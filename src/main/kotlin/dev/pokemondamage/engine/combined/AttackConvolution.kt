@@ -1,6 +1,8 @@
 package dev.pokemondamage.engine.combined
 
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.Attack
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.FailureKind
 import java.math.BigInteger
 
 internal data class AttackOutcomes(
@@ -25,53 +27,60 @@ internal class AttackConvolution(
         val actualMaximum = counts.keys.max()
         val conditionalMaximum = sharedConditionalCounts?.keys?.max() ?: 0
         val maximum = maxOf(actualMaximum, conditionalMaximum)
-        val denominators = mutableListOf(BigInteger.ONE)
-        for (hit in attack.hits.take(maximum)) denominators += denominators.last() * hit.totalWeight
+        val denominators =
+            attack.hits.take(maximum).runningFold(BigInteger.ONE) { total, hit ->
+                total * hit.totalWeight
+            }
         val actual = linkedMapOf<BattleProgress, BigInteger>()
         val conditional = linkedMapOf<BattleProgress, BigInteger>()
-        var current = branches
-        var hitIndex = 0
-        while (true) {
+        (0..maximum).fold(branches) { current, hitIndex ->
             val countWeight = counts[hitIndex]
             if (
                 countWeight != null &&
-                    !collect(
-                        actual,
-                        current,
-                        countWeight * (denominators[actualMaximum] / denominators[hitIndex]),
-                        trackAttackDamage,
-                    )
-            )
+                !collect(
+                    actual,
+                    current,
+                    countWeight * (denominators[actualMaximum] / denominators[hitIndex]),
+                    trackAttackDamage,
+                )
+            ) {
                 return failure()
+            }
             val conditionalWeight = sharedConditionalCounts?.get(hitIndex)
             if (
                 conditionalWeight != null &&
-                    !collect(
-                        conditional,
-                        current,
-                        conditionalWeight *
-                            (denominators[conditionalMaximum] / denominators[hitIndex]),
-                        false,
-                    )
-            )
+                !collect(
+                    conditional,
+                    current,
+                    conditionalWeight *
+                        (denominators[conditionalMaximum] / denominators[hitIndex]),
+                    false,
+                )
+            ) {
                 return failure()
-            if (hitIndex == maximum) break
+            }
+            if (hitIndex == maximum) {
+                return@fold current
+            }
             val hit = attack.hits[hitIndex]
             val next = linkedMapOf<BattleProgress, BigInteger>()
             for ((state, weight) in current) {
                 if (state.hp == 0) {
                     next.merge(state, weight * hit.totalWeight, BigInteger::add)
-                    if (!budget.spend(1, next.size)) return failure()
+                    if (!budget.spend(1, next.size)) {
+                        return failure()
+                    }
                 } else {
                     for ((damage, rollWeight) in hit.weights) {
                         val advanced = health.damage(state, damage, attack.turn, trackAttackDamage)
                         next.merge(advanced, weight * rollWeight, BigInteger::add)
-                        if (!budget.spend(1, next.size)) return failure()
+                        if (!budget.spend(1, next.size)) {
+                            return failure()
+                        }
                     }
                 }
             }
-            current = next
-            hitIndex++
+            next
         }
         return Calculation.Success(
             AttackOutcomes(actual, if (sharedConditionalCounts == null) null else conditional),
@@ -90,7 +99,9 @@ internal class AttackConvolution(
                 weight * scale,
                 BigInteger::add,
             )
-            if (!budget.spend(1, target.size)) return false
+            if (!budget.spend(1, target.size)) {
+                return false
+            }
         }
         return true
     }

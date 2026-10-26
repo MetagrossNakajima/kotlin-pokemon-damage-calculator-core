@@ -1,7 +1,17 @@
 package dev.pokemondamage.engine
 
 import dev.pokemondamage.math.BattleMath
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.EnumFlags
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.MoveFlag
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.TeraType
+import dev.pokemondamage.model.Weather
 import dev.pokemondamage.rules.AbilityRules
 import dev.pokemondamage.rules.ItemRules
 
@@ -17,27 +27,42 @@ internal object MovePreparation {
                 original.category,
             )
         val prepared = specific(context, initial) ?: ability(context, initial)
-        return if (original.id == MoveId("PhotonGeyser"))
+        return if (original.id == MoveId("PhotonGeyser")) {
             prepared.copy(category = adaptiveCategory(context.attacker))
-        else prepared
+        } else {
+            prepared
+        }
     }
 
     private fun adaptiveCategory(pokemon: PokemonState): Category =
         if (
             BattleMath.rankedStat(pokemon.stats.attack, pokemon.stages.attack) >
-                BattleMath.rankedStat(pokemon.stats.specialAttack, pokemon.stages.specialAttack)
-        )
+            BattleMath.rankedStat(pokemon.stats.specialAttack, pokemon.stages.specialAttack)
+        ) {
             Category.PHYSICAL
-        else Category.SPECIAL
+        } else {
+            Category.SPECIAL
+        }
 
-    private fun specific(context: DamageContext, move: EffectiveMove): EffectiveMove? {
+    private fun specific(
+        context: DamageContext,
+        move: EffectiveMove,
+    ): EffectiveMove? {
         val attacker = context.attacker
         return when (move.original.id.value) {
-            "Judgment" -> move.copy(type = ItemRules.plateType(context.attackerItem) ?: move.type)
-            "IvyCudgel" ->
+            "Judgment" -> {
+                move.copy(type = ItemRules.plateType(context.attackerItem) ?: move.type)
+            }
+
+            "IvyCudgel" -> {
                 ability(context, move.copy(type = ivyCudgelType(attacker.profile.id, move.type)))
-            "ShellSideArm" -> shellSideArm(context, ability(context, move))
-            "TeraBlast" ->
+            }
+
+            "ShellSideArm" -> {
+                shellSideArm(context, ability(context, move))
+            }
+
+            "TeraBlast" -> {
                 attacker.teraType?.let {
                     move.copy(
                         type = it,
@@ -45,48 +70,65 @@ internal object MovePreparation {
                         category = adaptiveCategory(attacker),
                     )
                 }
-            "TeraStarstorm" ->
+            }
+
+            "TeraStarstorm" -> {
                 if (attacker.profile.id == PokemonId("Terapagos-Stellar")) {
                     move.copy(
                         type = TeraType.STELLAR,
                         category =
-                            if (attacker.teraType != null) adaptiveCategory(attacker)
-                            else move.category,
+                            if (attacker.teraType != null) {
+                                adaptiveCategory(attacker)
+                            } else {
+                                move.category
+                            },
                     )
-                } else null
-            "WeatherBall" -> weatherBall(context, move)
-            "TerrainPulse" ->
+                } else {
+                    null
+                }
+            }
+
+            "WeatherBall" -> {
+                weatherBall(context, move)
+            }
+
+            "TerrainPulse" -> {
                 context.field.terrain
                     ?.takeIf { context.attackerGrounded }
                     ?.let {
                         move.copy(
-                            type =
-                                when (it) {
-                                    Terrain.ELECTRIC -> TeraType.ELECTRIC
-                                    Terrain.GRASS -> TeraType.GRASS
-                                    Terrain.MISTY -> TeraType.FAIRY
-                                    Terrain.PSYCHIC -> TeraType.PSYCHIC
-                                },
+                            type = it.terrainPulseType,
                             power = move.power * 2,
                         )
                     }
-            "RagingBull" ->
+            }
+
+            "RagingBull" -> {
                 move.copy(
                     type =
-                        if (context.attackerAbility == AbilityId("Normalize")) TeraType.NORMAL
-                        else
+                        if (context.attackerAbility == AbilityId("Normalize")) {
+                            TeraType.NORMAL
+                        } else {
                             when (attacker.profile.id.value) {
                                 "Tauros-Paldea-Combat" -> TeraType.FIGHTING
                                 "Tauros-Paldea-Blaze" -> TeraType.FIRE
                                 "Tauros-Paldea-Aqua" -> TeraType.WATER
                                 else -> move.type
-                            },
+                            }
+                        },
                 )
-            else -> null
+            }
+
+            else -> {
+                null
+            }
         }
     }
 
-    private fun ivyCudgelType(id: PokemonId, fallback: TeraType): TeraType =
+    private fun ivyCudgelType(
+        id: PokemonId,
+        fallback: TeraType,
+    ): TeraType =
         when {
             id.value == "Ogerpon" || id.value.startsWith("Ogerpon-Teal") -> TeraType.GRASS
             id.value.startsWith("Ogerpon-Cornerstone") -> TeraType.ROCK
@@ -95,7 +137,10 @@ internal object MovePreparation {
             else -> fallback
         }
 
-    private fun shellSideArm(context: DamageContext, move: EffectiveMove): EffectiveMove {
+    private fun shellSideArm(
+        context: DamageContext,
+        move: EffectiveMove,
+    ): EffectiveMove {
         val attacker = context.attacker
         val defender = context.defender
         val wonderRoom = FieldEffect.WONDER_ROOM in context.field.effects
@@ -113,28 +158,41 @@ internal object MovePreparation {
         // Cross multiplication preserves exact ties and also handles a ranked stat rounded to zero.
         val physical = attack.toLong() * specialDefense > specialAttack.toLong() * defense
         val flags =
-            if (physical) move.flags.values + MoveFlag.CONTACT
-            else move.flags.values - MoveFlag.CONTACT
+            if (physical) {
+                move.flags.values + MoveFlag.CONTACT
+            } else {
+                move.flags.values - MoveFlag.CONTACT
+            }
         return move.copy(
             category = if (physical) Category.PHYSICAL else Category.SPECIAL,
             flags = EnumFlags(*flags.toTypedArray()),
         )
     }
 
-    private fun ability(context: DamageContext, move: EffectiveMove): EffectiveMove {
-        if (context.attackerAbility == AbilityId("Normalize"))
+    private fun ability(
+        context: DamageContext,
+        move: EffectiveMove,
+    ): EffectiveMove {
+        if (context.attackerAbility == AbilityId("Normalize")) {
             return move.copy(type = TeraType.NORMAL)
+        }
         val skin = AbilityRules.skinType(context.attackerAbility)
-        if (skin != null && move.type == TeraType.NORMAL) return move.copy(type = skin)
+        if (skin != null && move.type == TeraType.NORMAL) {
+            return move.copy(type = skin)
+        }
         if (
             context.attackerAbility == AbilityId("LiquidVoice") &&
-                MoveFlag.SOUND in move.original.flags
-        )
+            MoveFlag.SOUND in move.original.flags
+        ) {
             return move.copy(type = TeraType.WATER)
+        }
         return move
     }
 
-    private fun weatherBall(context: DamageContext, move: EffectiveMove): EffectiveMove {
+    private fun weatherBall(
+        context: DamageContext,
+        move: EffectiveMove,
+    ): EffectiveMove {
         val umbrella = context.attackerItem == ItemId("UtilityUmbrella")
         val megaSol = context.attackerAbility == AbilityId("MegaSol")
         val umbrellaBlocks = umbrella && context.weather in sunOrRain
@@ -142,24 +200,23 @@ internal object MovePreparation {
         val typeWeather =
             if (
                 umbrella &&
-                    megaSol &&
-                    context.weather == Weather.SUNLIGHT &&
-                    context.field.weather in sandOrSnow
+                megaSol &&
+                context.weather == Weather.SUNLIGHT &&
+                context.field.weather in sandOrSnow
             ) {
                 context.field.weather
-            } else context.weather
+            } else {
+                context.weather
+            }
         val type =
-            if (umbrella && typeWeather in sunOrRain) TeraType.NORMAL
-            else
-                when (typeWeather) {
-                    Weather.SUNLIGHT -> TeraType.FIRE
-                    Weather.RAIN -> TeraType.WATER
-                    Weather.SANDSTORM -> TeraType.ROCK
-                    Weather.SNOW -> TeraType.ICE
-                    null -> move.type
-                }
+            if (umbrella && typeWeather in sunOrRain) {
+                TeraType.NORMAL
+            } else {
+                typeWeather?.weatherBallType ?: move.type
+            }
         val doubles = context.weather != null && (!umbrellaBlocks || megaSol)
-        return move.copy(type = type, power = move.power * if (doubles) 2 else 1)
+        val power = if (doubles) move.power * 2 else move.power
+        return move.copy(type = type, power = power)
     }
 
     private val sunOrRain = setOf(Weather.SUNLIGHT, Weather.RAIN)

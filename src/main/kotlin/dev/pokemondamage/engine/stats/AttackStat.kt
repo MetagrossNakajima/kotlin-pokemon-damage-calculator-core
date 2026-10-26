@@ -1,30 +1,58 @@
 package dev.pokemondamage.engine.stats
 
 import dev.pokemondamage.engine.DamageContext
-import dev.pokemondamage.math.*
-import dev.pokemondamage.model.*
+import dev.pokemondamage.math.BattleMath
+import dev.pokemondamage.math.TracedValue
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ModifierStage
+import dev.pokemondamage.model.ModifierTrace
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.StatStage
 
 internal object AttackStat {
-    fun calculate(context: DamageContext, critical: Boolean): TracedValue {
+    fun calculate(
+        context: DamageContext,
+        critical: Boolean,
+    ): TracedValue {
         val source =
-            if (context.move.original.id == MoveId("FoulPlay")) context.defender
-            else context.attacker
+            if (context.move.original.id == MoveId("FoulPlay")) {
+                context.defender
+            } else {
+                context.attacker
+            }
         val (raw, stage) =
             when {
-                context.move.original.id == MoveId("BodyPress") ->
-                    source.stats.defense to
-                        if (FieldEffect.WONDER_ROOM in context.field.effects)
+                context.move.original.id == MoveId("BodyPress") -> {
+                    val defenseStage =
+                        if (FieldEffect.WONDER_ROOM in context.field.effects) {
                             source.stages.specialDefense
-                        else source.stages.defense
-                context.physical -> source.stats.attack to source.stages.attack
-                else -> source.stats.specialAttack to source.stages.specialAttack
+                        } else {
+                            source.stages.defense
+                        }
+                    source.stats.defense to defenseStage
+                }
+
+                context.physical -> {
+                    source.stats.attack to source.stages.attack
+                }
+
+                else -> {
+                    source.stats.specialAttack to source.stages.specialAttack
+                }
             }
-        val criticalStage = if (critical) maxOf(0, stage) else stage
+        val criticalStage = if (critical) stage.ignoringNegative() else stage
         val effectiveStage =
-            if (context.defenderAbility == AbilityId("Unaware")) 0 else criticalStage
-        var value = BattleMath.rankedStat(raw, effectiveStage)
+            if (context.defenderAbility ==
+                AbilityId("Unaware")
+            ) {
+                StatStage.NEUTRAL
+            } else {
+                criticalStage
+            }
+        val value = BattleMath.rankedStat(raw, effectiveStage)
         val trace =
-            mutableListOf(
+            listOf(
                 ModifierTrace(
                     "Rank",
                     ModifierStage.ATTACK,
@@ -34,20 +62,20 @@ internal object AttackStat {
                     value.toLong(),
                 ),
             )
-        if (context.attackerAbility == AbilityId("Hustle") && context.physical) {
-            val before = value
-            value = BattleMath.modify(value, 6144)
-            trace +=
-                ModifierTrace(
+        val ranked = TracedValue(value, trace)
+        val adjusted =
+            if (context.attackerAbility == AbilityId("Hustle") && context.physical) {
+                ranked.step(
                     "Hustle",
                     ModifierStage.ATTACK,
                     6144,
                     4096,
-                    before.toLong(),
-                    value.toLong(),
+                    BattleMath.modify(value, 6144),
                 )
-        }
-        val result = AttackModifiers.calculate(context).apply(value, ModifierStage.ATTACK)
-        return TracedValue(result.value, trace + result.trace)
+            } else {
+                ranked
+            }
+        val result = AttackModifiers.calculate(context).apply(adjusted.value, ModifierStage.ATTACK)
+        return TracedValue(result.value, adjusted.trace + result.trace)
     }
 }

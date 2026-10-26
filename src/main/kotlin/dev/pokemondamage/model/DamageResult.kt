@@ -1,7 +1,10 @@
 package dev.pokemondamage.model
 
 /** The single-hit API returns one hit, its exact distribution and percentages of maximum HP. */
-data class DamageResult(val hit: HitResult, val referenceHp: Int) {
+data class DamageResult(
+    val hit: HitResult,
+    val referenceHp: Int,
+) {
     init {
         requireInput(referenceHp in 1..999, "referenceHp", ValidationCode.OUT_OF_RANGE)
     }

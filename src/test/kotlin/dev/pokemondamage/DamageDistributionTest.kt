@@ -2,7 +2,12 @@ package dev.pokemondamage
 
 import dev.pokemondamage.model.DamageDistribution
 import java.math.BigInteger
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 class DamageDistributionTest {
     private fun n(value: Long) = BigInteger.valueOf(value)

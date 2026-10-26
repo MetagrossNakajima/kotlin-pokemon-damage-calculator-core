@@ -3,7 +3,9 @@ package dev.pokemondamage
 import dev.pokemondamage.math.ModifierChain
 import dev.pokemondamage.model.ModifierStage
 import dev.pokemondamage.model.ModifierTrace
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class ModifierChainTest {
     @Test
@@ -51,6 +53,13 @@ class ModifierChainTest {
         assertEquals(1, chain.apply(0, ModifierStage.DEFENSE).value)
         assertEquals(0, chain.apply(65536, ModifierStage.DEFENSE).value)
         assertEquals(65535, chain.apply(65535, ModifierStage.DEFENSE).value)
-        assertEquals(0L, chain.apply(0, ModifierStage.DEFENSE).trace.last().after)
+        assertEquals(
+            0L,
+            chain
+                .apply(0, ModifierStage.DEFENSE)
+                .trace
+                .last()
+                .after,
+        )
     }
 }

@@ -2,7 +2,10 @@ package dev.pokemondamage.engine.stats
 
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.math.ModifierChain
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ModifierStage
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.Stat
 
 internal object DefenseModifiers {
     fun calculate(context: DamageContext): ModifierChain {

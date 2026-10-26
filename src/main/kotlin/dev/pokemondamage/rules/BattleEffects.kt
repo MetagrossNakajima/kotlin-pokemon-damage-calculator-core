@@ -1,6 +1,14 @@
 package dev.pokemondamage.rules
 
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.Weather
 
 /** Resolves persistent battle conditions, independently of a particular damage formula. */
 internal object BattleEffects {
@@ -25,15 +33,24 @@ internal object BattleEffects {
                 !itemConsumed &&
                 pokemon.flags[PokemonFlag.ITEM_SUPPRESSED] != true &&
                 FieldEffect.MAGIC_ROOM !in field.effects
-        if (shielded) return pokemon.ability
-        if (pokemon.flags[PokemonFlag.ABILITY_SUPPRESSED] == true) return null
+        if (shielded) {
+            return pokemon.ability
+        }
+        if (pokemon.flags[PokemonFlag.ABILITY_SUPPRESSED] == true) {
+            return null
+        }
         if (
             pokemon.ability != neutralizingGas &&
-                (FieldEffect.NEUTRALIZING_GAS in field.effects ||
-                    opponent?.ability == neutralizingGas &&
-                        opponent.flags[PokemonFlag.ABILITY_SUPPRESSED] != true)
-        )
+            (
+                FieldEffect.NEUTRALIZING_GAS in field.effects ||
+                    (
+                        opponent?.ability == neutralizingGas &&
+                            opponent.flags[PokemonFlag.ABILITY_SUPPRESSED] != true
+                    )
+            )
+        ) {
             return null
+        }
         return pokemon.ability
     }
 
@@ -45,12 +62,13 @@ internal object BattleEffects {
         ignoreConsumption: Boolean = false,
     ): ItemId? {
         if (
-            !ignoreConsumption && itemConsumed ||
-                pokemon.flags[PokemonFlag.ITEM_SUPPRESSED] == true ||
-                FieldEffect.MAGIC_ROOM in field.effects ||
-                ability(pokemon, field, opponent, itemConsumed) == klutz
-        )
+            (!ignoreConsumption && itemConsumed) ||
+            pokemon.flags[PokemonFlag.ITEM_SUPPRESSED] == true ||
+            FieldEffect.MAGIC_ROOM in field.effects ||
+            ability(pokemon, field, opponent, itemConsumed) == klutz
+        ) {
             return null
+        }
         return pokemon.item
     }
 
@@ -63,7 +81,9 @@ internal object BattleEffects {
         ability: AbilityId?,
         item: ItemId?,
     ): Boolean {
-        if (field.gravity || item == ironBall) return true
+        if (field.gravity || item == ironBall) {
+            return true
+        }
         pokemon.flags[PokemonFlag.GROUNDED]?.let {
             return it
         }
@@ -72,19 +92,29 @@ internal object BattleEffects {
             item != airBalloon
     }
 
-    fun weatherSuppressed(abilities: Iterable<AbilityId?>): Boolean = abilities.any {
-        it in weatherSuppressors
-    }
+    fun weatherSuppressed(abilities: Iterable<AbilityId?>): Boolean =
+        abilities.any {
+            it in weatherSuppressors
+        }
 
-    fun weather(field: BattleField, abilities: Iterable<AbilityId?>): Weather? =
-        if (weatherSuppressed(abilities)) null else field.weather
+    fun weather(
+        field: BattleField,
+        abilities: Iterable<AbilityId?>,
+    ): Weather? = if (weatherSuppressed(abilities)) null else field.weather
 
     /** Every halving floors independently, with a minimum weight of 0.1 kg. */
-    fun weightHectograms(pokemon: PokemonState, ability: AbilityId?, item: ItemId?): Int {
-        var weight = pokemon.profile.weight.hectograms
-        if (ability == AbilityId("HeavyMetal")) weight *= 2
-        if (ability == AbilityId("LightMetal")) weight = maxOf(1, weight / 2)
-        if (item == ItemId("FloatStone")) weight = maxOf(1, weight / 2)
-        return weight
+    fun weightHectograms(
+        pokemon: PokemonState,
+        ability: AbilityId?,
+        item: ItemId?,
+    ): Int {
+        val originalWeight = pokemon.profile.weight.hectograms
+        val abilityWeight =
+            when (ability) {
+                AbilityId("HeavyMetal") -> originalWeight * 2
+                AbilityId("LightMetal") -> maxOf(1, originalWeight / 2)
+                else -> originalWeight
+            }
+        return if (item == ItemId("FloatStone")) maxOf(1, abilityWeight / 2) else abilityWeight
     }
 }

@@ -1,7 +1,12 @@
 package dev.pokemondamage.engine.power
 
 import dev.pokemondamage.engine.DamageContext
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.TeraType
 import dev.pokemondamage.rules.BattleEffects
 
 /** Move-specific power before the ordered fixed-point modifier chain. */
@@ -14,9 +19,14 @@ internal object BasePower {
         val attackerItem = context.attackerItem
         return when (context.move.original.id.value) {
             "TripleAxel",
-            "TripleKick" -> power * (context.request.hitIndex + 1)
+            "TripleKick",
+            -> {
+                power * (context.request.hitIndex + 1)
+            }
+
             "LowKick",
-            "GrassKnot" -> {
+            "GrassKnot",
+            -> {
                 val weight =
                     BattleEffects.weightHectograms(
                         defender,
@@ -25,8 +35,10 @@ internal object BasePower {
                     )
                 20L + 20 * weightThresholds.count { weight >= it }
             }
+
             "HeavySlam",
-            "HeatCrash" -> {
+            "HeatCrash",
+            -> {
                 val attackerWeight =
                     BattleEffects.weightHectograms(
                         attacker,
@@ -41,28 +53,59 @@ internal object BasePower {
                     )
                 40L + 20 * weightRatios.count { attackerWeight >= defenderWeight * it }
             }
-            "Acrobatics" ->
+
+            "Acrobatics" -> {
                 if (
                     attackerItem == null ||
-                        attackerItem == ItemId("NormalGem") && context.move.type == TeraType.NORMAL
-                )
+                    (
+                        attackerItem ==
+                            ItemId(
+                                "NormalGem",
+                            ) && context.move.type == TeraType.NORMAL
+                    )
+                ) {
                     power * 2
-                else power
-            "Hex" ->
-                if (defender.status != null || context.defenderAbility == AbilityId("Comatose"))
+                } else {
+                    power
+                }
+            }
+
+            "Hex" -> {
+                if (defender.status != null || context.defenderAbility == AbilityId("Comatose")) {
                     power * 2
-                else power
+                } else {
+                    power
+                }
+            }
+
             "FishiousRend",
-            "BoltBeak" -> if (attacker.flags[PokemonFlag.MOVES_FIRST] == true) power * 2 else power
-            "Assurance" ->
+            "BoltBeak",
+            -> {
+                if (attacker.flags[PokemonFlag.MOVES_FIRST] == true) power * 2 else power
+            }
+
+            "Assurance" -> {
                 if (defender.flags[PokemonFlag.DAMAGED_THIS_TURN] == true) power * 2 else power
-            "LastRespects" -> 50L * (1 + attacker.faintedAllies)
-            "RageFist" -> 50L * (1 + minOf(6, attacker.timesHit))
+            }
+
+            "LastRespects" -> {
+                attacker.faintedAllies.lastRespectsPower
+            }
+
+            "RageFist" -> {
+                attacker.timesHit.rageFistPower
+            }
+
             "Eruption",
             "WaterSpout",
-            "DragonEnergy" -> maxOf(1, 150L * attacker.hp / attacker.stats.hp)
+            "DragonEnergy",
+            -> {
+                maxOf(1, 150L * attacker.hp / attacker.stats.hp)
+            }
+
             "Flail",
-            "Reversal" -> {
+            "Reversal",
+            -> {
                 val ratio = 48 * attacker.hp / attacker.stats.hp
                 when {
                     ratio <= 1 -> 200
@@ -73,23 +116,31 @@ internal object BasePower {
                     else -> 20
                 }
             }
+
             "CrushGrip",
             "WringOut",
-            "HardPress" -> {
+            "HardPress",
+            -> {
                 val maximum = if (context.move.original.id == MoveId("HardPress")) 100L else 120L
                 val hpFraction = 100L * (defender.hp * 4096L / defender.stats.hp)
                 maxOf(1L, ((maximum * hpFraction + 2047) / 4096) / 100)
             }
+
             "StoredPower",
-            "PowerTrip" ->
+            "PowerTrip",
+            -> {
                 with(attacker.stages) {
-                    20L *
-                        (1 +
-                            listOf(attack, defense, specialAttack, specialDefense, speed).sumOf {
-                                maxOf(0, it)
-                            })
+                    val positiveStages =
+                        listOf(attack, defense, specialAttack, specialDefense, speed).sumOf {
+                            it.positive
+                        }
+                    20L * (1 + positiveStages)
                 }
-            else -> power
+            }
+
+            else -> {
+                power
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package dev.pokemondamage
 
 import dev.pokemondamage.math.BattleMath
+import dev.pokemondamage.model.StatStage
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -34,9 +35,9 @@ class BattleMathTest {
     @Test
     fun `all stat stages floor the rational multiplier`() {
         val expected = listOf(25, 28, 33, 40, 50, 67, 101, 151, 202, 252, 303, 353, 404)
-        assertEquals(expected, (-6..6).map { BattleMath.rankedStat(101, it) })
-        assertEquals(0, BattleMath.rankedStat(8192, 6))
-        assertEquals(0, BattleMath.rankedStat(32768, -1))
+        assertEquals(expected, (-6..6).map { BattleMath.rankedStat(101, StatStage(it)) })
+        assertEquals(0, BattleMath.rankedStat(8192, StatStage(6)))
+        assertEquals(0, BattleMath.rankedStat(32768, StatStage(-1)))
     }
 
     @Test

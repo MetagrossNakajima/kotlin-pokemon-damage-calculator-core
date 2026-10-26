@@ -1,7 +1,16 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.EnumFlags
+import dev.pokemondamage.model.MoveFlag
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.PokemonFlags
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class ImmutableFlagsTest {
     @Test

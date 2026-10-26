@@ -1,11 +1,17 @@
 package dev.pokemondamage.engine
 
-import dev.pokemondamage.engine.damage.*
+import dev.pokemondamage.engine.damage.CriticalHit
+import dev.pokemondamage.engine.damage.DamageModifiers
+import dev.pokemondamage.engine.damage.PreRandomDamage
+import dev.pokemondamage.engine.damage.Stab
 import dev.pokemondamage.engine.power.FinalPower
 import dev.pokemondamage.engine.stats.AttackStat
 import dev.pokemondamage.engine.stats.DefenseStat
 import dev.pokemondamage.math.DamageRoll
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.HitResult
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.Status
 
 internal object SingleHit {
     fun calculate(context: DamageContext): HitResult {

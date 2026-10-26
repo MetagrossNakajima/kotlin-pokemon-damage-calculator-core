@@ -4,7 +4,9 @@ import java.math.BigInteger
 import java.util.Collections
 
 /** Nonempty, immutable distribution with exact integer weights and arbitrary-size damage. */
-class DamageDistribution(weights: Map<BigInteger, BigInteger>) {
+class DamageDistribution(
+    weights: Map<BigInteger, BigInteger>,
+) {
     val weights: Map<BigInteger, BigInteger> = Collections.unmodifiableMap(weights.toSortedMap())
 
     init {

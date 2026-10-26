@@ -3,7 +3,9 @@ package dev.pokemondamage.model
 import java.util.Collections
 
 /** Unspecified and explicitly false are different battle states. */
-class PokemonFlags(overrides: Map<PokemonFlag, Boolean> = emptyMap()) {
+class PokemonFlags(
+    overrides: Map<PokemonFlag, Boolean> = emptyMap(),
+) {
     val overrides: Map<PokemonFlag, Boolean> = Collections.unmodifiableMap(overrides.toMap())
 
     operator fun get(flag: PokemonFlag): Boolean? = overrides[flag]

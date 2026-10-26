@@ -1,8 +1,30 @@
 package dev.pokemondamage
 
 import dev.pokemondamage.engine.DamageContext
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.EnumFlags
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveFlag
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.TeraType
+import dev.pokemondamage.model.Weather
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class DamageContextTest {
     private val pokemon =
@@ -47,10 +69,9 @@ class DamageContextTest {
         for (name in listOf("SunsteelStrike", "MoongeistBeam", "PhotonGeyser")) {
             assertNull(
                 context(
-                        defender = pokemon.copy(ability = AbilityId("Multiscale")),
-                        move = move.copy(id = MoveId(name)),
-                    )
-                    .defenderAbility,
+                    defender = pokemon.copy(ability = AbilityId("Multiscale")),
+                    move = move.copy(id = MoveId(name)),
+                ).defenderAbility,
                 name,
             )
         }
@@ -66,11 +87,10 @@ class DamageContextTest {
         assertNull(context(attacker, defender.copy(ability = null)).defenderAbility)
         assertNull(
             context(
-                    attacker,
-                    defender,
-                    field = BattleField(effects = EnumFlags(FieldEffect.MAGIC_ROOM)),
-                )
-                .defenderAbility,
+                attacker,
+                defender,
+                field = BattleField(effects = EnumFlags(FieldEffect.MAGIC_ROOM)),
+            ).defenderAbility,
         )
     }
 
@@ -113,10 +133,9 @@ class DamageContextTest {
         assertTrue(context(field = BattleField(effects = EnumFlags(FieldEffect.UNNERVE))).unnerve)
         assertFalse(
             context(
-                    attacker = pokemon.copy(ability = AbilityId("Unnerve")),
-                    defender = pokemon.copy(ability = AbilityId("NeutralizingGas")),
-                )
-                .unnerve,
+                attacker = pokemon.copy(ability = AbilityId("Unnerve")),
+                defender = pokemon.copy(ability = AbilityId("NeutralizingGas")),
+            ).unnerve,
         )
     }
 

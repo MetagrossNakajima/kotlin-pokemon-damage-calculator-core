@@ -37,6 +37,26 @@ when (val result = calculateDamage(DamageRequest(attacker, defender, move))) {
 }
 ```
 
+## 状態とルールのモデル
+
+段階や回数は専用の型で指定します。整数からの変換時に範囲を検証します。
+
+```kotlin
+val hazards = EntryHazards(spikes = Spikes.TWO_LAYERS)
+val stages = StatStages(attack = StatStage(2), defense = StatStage(-1))
+val pokemon = attacker.copy(
+    stages = stages,
+    status = Status.TOXIC,
+    toxicCounter = ToxicCounter(3),
+    faintedAllies = FaintedAllies(2),
+    timesHit = TimesHit(6),
+)
+```
+
+整数から変換する場合は`Spikes.fromLayers(value)`、`StatStages.fromValues(...)`を使えます。
+`Attack.fromAccuracy`の命中判定方式は`accuracyMode`で指定します
+（`AccuracyMode.ONCE_PER_ATTACK`／`AccuracyMode.UNTIL_FIRST_MISS`）。
+
 ## 開発
 
 JDK 26を使用します。miseを導入後、次を実行してください。
@@ -53,3 +73,7 @@ mise run format # Kotlinコードを100文字幅で整形
 mise run check  # テスト・カバレッジ100%検証
 mise run clean  # ビルド成果物の削除
 ```
+
+整形にはSpotless経由でktlintの標準ルールを使用し、行幅は100文字に設定しています。
+複数行の`if` / `else`には`{}`を付けます。
+1行に収まる場合は`{}`を省略できます。

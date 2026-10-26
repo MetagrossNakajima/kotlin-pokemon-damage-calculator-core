@@ -1,9 +1,28 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.engine.combined.*
-import dev.pokemondamage.model.*
+import dev.pokemondamage.engine.combined.BattleProgress
+import dev.pokemondamage.engine.combined.HealthEvents
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.BattleSetup
+import dev.pokemondamage.model.EntryHazards
+import dev.pokemondamage.model.EnumFlags
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Spikes
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.TeraType
 import java.math.BigInteger
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class HealthEventsTest {
     private val defender =
@@ -13,8 +32,10 @@ class HealthEventsTest {
         )
     private val state = BattleProgress(200, false, null, null)
 
-    private fun events(p: PokemonState = defender, field: BattleField = BattleField()) =
-        HealthEvents(p, field)
+    private fun events(
+        p: PokemonState = defender,
+        field: BattleField = BattleField(),
+    ) = HealthEvents(p, field)
 
     @Test
     fun `damage caps HP but records full attack amount and stops after fainting`() {
@@ -95,17 +116,26 @@ class HealthEventsTest {
 
     @Test
     fun `hazards use type grounding layers and protection while manual chip remains explicit`() {
-        val hazards = BattleSetup(EntryHazards(true, 3), listOf(10.toBigInteger()))
+        val hazards =
+            BattleSetup(EntryHazards(true, Spikes.THREE_LAYERS), listOf(10.toBigInteger()))
         assertEquals(115, events().setup(state, hazards).hp)
-        for (layers in 0..3) assertEquals(
-            listOf(200, 175, 167, 150)[layers],
-            events().setup(state, BattleSetup(EntryHazards(spikesLayers = layers))).hp,
+        for (layers in 0..3) {
+            assertEquals(
+                listOf(200, 175, 167, 150)[layers],
+                events()
+                    .setup(
+                        state,
+                        BattleSetup(EntryHazards(spikes = Spikes.fromLayers(layers))),
+                    ).hp,
+            )
+        }
+        for (
+        p in
+        listOf(
+            defender.copy(item = ItemId("Heavy-DutyBoots")),
+            defender.copy(ability = AbilityId("MagicGuard")),
         )
-        for (p in
-            listOf(
-                defender.copy(item = ItemId("Heavy-DutyBoots")),
-                defender.copy(ability = AbilityId("MagicGuard")),
-            )) {
+        ) {
             assertEquals(190, events(p).setup(state, hazards).hp)
         }
         val flying =
@@ -115,23 +145,28 @@ class HealthEventsTest {
                         types = PokemonTypes(PokemonType.FIRE, PokemonType.FLYING),
                     ),
             )
-        assertEquals(100, events(flying).setup(state, BattleSetup(EntryHazards(true, 3))).hp)
+        assertEquals(
+            100,
+            events(flying).setup(state, BattleSetup(EntryHazards(true, Spikes.THREE_LAYERS))).hp,
+        )
         assertEquals(
             50,
             events(flying, BattleField(gravity = true))
-                .setup(state, BattleSetup(EntryHazards(true, 3)))
+                .setup(state, BattleSetup(EntryHazards(true, Spikes.THREE_LAYERS)))
                 .hp,
         )
         assertEquals(
             125,
             events(flying.copy(teraType = TeraType.NORMAL))
-                .setup(state, BattleSetup(EntryHazards(true, 3)))
+                .setup(state, BattleSetup(EntryHazards(true, Spikes.THREE_LAYERS)))
                 .hp,
         )
         val tiny = defender.copy(stats = defender.stats.copy(hp = 1))
         assertEquals(
             0,
-            events(tiny).setup(state.copy(hp = 1), BattleSetup(EntryHazards(true, 3))).hp,
+            events(
+                tiny,
+            ).setup(state.copy(hp = 1), BattleSetup(EntryHazards(true, Spikes.THREE_LAYERS))).hp,
         )
     }
 
@@ -142,12 +177,15 @@ class HealthEventsTest {
         val r =
             events.setup(
                 state.copy(hp = 120),
-                BattleSetup(EntryHazards(true, 3), listOf(10.toBigInteger(), BigInteger.ZERO)),
+                BattleSetup(
+                    EntryHazards(true, Spikes.THREE_LAYERS),
+                    listOf(10.toBigInteger(), BigInteger.ZERO),
+                ),
             )
         assertEquals(85, r.hp) // 120 - 25 + 50 - 50 - 10.
         assertEquals(1L, r.cudChewTurn)
         assertEquals(BigInteger.ZERO, r.attackDamage)
-        assertNull(r.toxicCounter)
+        assertNull(r.toxicCounter?.value)
         assertTrue(r.itemConsumed)
     }
 }

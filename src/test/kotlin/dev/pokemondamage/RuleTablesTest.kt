@@ -1,9 +1,17 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.TeraType
+import dev.pokemondamage.model.zip
 import dev.pokemondamage.rules.AbilityRules
 import dev.pokemondamage.rules.ItemRules
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class RuleTablesTest {
     @Test
@@ -111,11 +119,15 @@ class RuleTablesTest {
                 "TangledFeet Telepathy TeraShell ThermalExchange ThickFat Unaware " +
                 "VitalSpirit VoltAbsorb WaterAbsorb WaterBubble WaterVeil WellBakedBody " +
                 "WhiteSmoke WindRider WonderGuard WonderSkin"
-        for (name in names.split(' ')) assertTrue(AbilityRules.canIgnore(AbilityId(name)), name)
-        for (name in listOf("ShadowShield", "FullMetalBody", "PrismArmor", "Unknown")) assertFalse(
-            AbilityRules.canIgnore(AbilityId(name)),
-            name,
-        )
+        for (name in names.split(' ')) {
+            assertTrue(AbilityRules.canIgnore(AbilityId(name)), name)
+        }
+        for (name in listOf("ShadowShield", "FullMetalBody", "PrismArmor", "Unknown")) {
+            assertFalse(
+                AbilityRules.canIgnore(AbilityId(name)),
+                name,
+            )
+        }
         assertFalse(AbilityRules.canIgnore(null))
         assertNull(AbilityRules.skinType(null))
         assertNull(AbilityRules.skinType(AbilityId("Normalize")))

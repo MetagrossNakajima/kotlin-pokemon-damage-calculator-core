@@ -1,16 +1,39 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
-import java.math.BigInteger
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.BattleSetup
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.CombinedDamageRequest
+import dev.pokemondamage.model.CombinedDamageResult
+import dev.pokemondamage.model.DamageDistribution
+import dev.pokemondamage.model.EntryHazards
+import dev.pokemondamage.model.ExactProbability
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.KoInfo
+import dev.pokemondamage.model.KoStatus
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Spikes
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.Status
+import dev.pokemondamage.model.Terrain
+import dev.pokemondamage.model.ToxicCounter
+import dev.pokemondamage.model.Weather
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
+import java.math.BigInteger
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 class DartCombinedTest {
     @TestFactory
-    fun `combined API matches Dart HP damage KO counts and final state weights`():
-        List<DynamicTest> {
+    fun `combined API matches Dart HP damage KO counts and final states`(): List<DynamicTest> {
         val rows =
             javaClass
                 .getResourceAsStream("/dart/combined.tsv")!!
@@ -25,9 +48,9 @@ class DartCombinedTest {
             val controls = rows.filter { it[column] == "-" }.associateBy(::key)
             val groups = rows.groupBy { it[column] }
             val ids =
-                if (kind == "ItemId")
+                if (kind == "ItemId") {
                     setOf("-", "SitrusBerry", "Leftovers", "Heavy-DutyBoots", "SafetyGoggles")
-                else
+                } else {
                     setOf(
                         "-",
                         "CudChew",
@@ -39,26 +62,28 @@ class DartCombinedTest {
                         "SandRush",
                         "SandVeil",
                     )
+                }
             assertEquals(ids, groups.keys)
             groups.map { (id, cases) ->
                 dynamicTest("$kind/$id") {
                     assertEquals(if (kind == "ItemId") 162 else 90, cases.size)
-                    var changedHp = false
-                    var consumed = false
-                    for (c in cases) {
-                        val result = verifyCase(c)
-                        changedHp =
-                            changedHp ||
-                                result.finalHp.weights != distribution(controls.getValue(key(c))[5])
-                        consumed = consumed || result.finalStates.any { it.state.itemConsumed }
-                    }
+                    val results = cases.map { c -> c to verifyCase(c) }
+                    val changedHp =
+                        results.any { (c, result) ->
+                            result.finalHp.weights != distribution(controls.getValue(key(c))[5])
+                        }
+                    val consumed =
+                        results.any { (_, result) ->
+                            result.finalStates.any { it.state.itemConsumed }
+                        }
                     assertEquals(
                         id != "-",
                         changedHp,
                         "$kind/$id must change HP versus its control",
                     )
-                    if (kind == "ItemId")
+                    if (kind == "ItemId") {
                         assertEquals(id == "SitrusBerry", consumed, "only Sitrus Berry is consumed")
+                    }
                 }
             }
         }
@@ -83,7 +108,7 @@ class DartCombinedTest {
                 ability = c[1].takeUnless { it == "-" }?.let(::AbilityId),
                 item = c[2].takeUnless { it == "-" }?.let(::ItemId),
                 status = status,
-                toxicCounter = if (status == Status.TOXIC) 1 else null,
+                toxicCounter = if (status == Status.TOXIC) ToxicCounter(1) else null,
             )
         val hazards = c[4].toBooleanStrict()
         val request =
@@ -95,7 +120,7 @@ class DartCombinedTest {
                 field = BattleField(weather = Weather.SANDSTORM, terrain = Terrain.GRASS),
                 setup =
                     BattleSetup(
-                        EntryHazards(hazards, if (hazards) 2 else 0),
+                        EntryHazards(hazards, if (hazards) Spikes.TWO_LAYERS else Spikes.NONE),
                         listOf(3.toBigInteger()),
                     ),
             )
@@ -120,11 +145,10 @@ class DartCombinedTest {
             result.finalStates
                 .map { entry ->
                     with(entry.state) {
-                        "$currentHp:$itemConsumed:${toxicCounter ?: "-"}:" +
+                        "$currentHp:$itemConsumed:${toxicCounter?.value ?: "-"}:" +
                             "${cudChewTurn ?: "-"}:${entry.weight}"
                     }
-                }
-                .sorted()
+                }.sorted()
                 .joinToString(",")
         assertEquals(c[10], states, "$label states")
         assertEquals(

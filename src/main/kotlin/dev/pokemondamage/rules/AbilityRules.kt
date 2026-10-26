@@ -1,6 +1,7 @@
 package dev.pokemondamage.rules
 
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.TeraType
 
 internal object AbilityRules {
     private val ignorable =

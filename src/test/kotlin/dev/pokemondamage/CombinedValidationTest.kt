@@ -1,8 +1,24 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.AccuracyMode
+import dev.pokemondamage.model.Attack
+import dev.pokemondamage.model.CombinedDamageRequest
+import dev.pokemondamage.model.DamageDistribution
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.Validation
+import dev.pokemondamage.model.ValidationCode
+import dev.pokemondamage.model.ValidationError
+import dev.pokemondamage.model.validate
 import java.math.BigInteger
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 class CombinedValidationTest {
     private val one = BigInteger.ONE
@@ -63,9 +79,16 @@ class CombinedValidationTest {
 
     @Test
     fun `accuracy factory rejects all invalid inputs before arithmetic`() {
-        val result = validate {
-            Attack.fromAccuracy(0, emptyList(), 101, mapOf(1 to BigInteger.ZERO), true)
-        }
+        val result =
+            validate {
+                Attack.fromAccuracy(
+                    0,
+                    emptyList(),
+                    101,
+                    mapOf(1 to BigInteger.ZERO),
+                    AccuracyMode.UNTIL_FIRST_MISS,
+                )
+            }
         assertEquals(
             listOf(
                 range("turn"),
@@ -89,12 +112,13 @@ class CombinedValidationTest {
                 ),
                 Stats(100, 100, 100, 100, 100, 100),
             )
-        val result = validate {
-            CombinedDamageRequest(
-                defender,
-                listOf(2L, 4L, 1L).map { Attack.fromAccuracy(it, listOf(hit)) },
-            )
-        }
+        val result =
+            validate {
+                CombinedDamageRequest(
+                    defender,
+                    listOf(2L, 4L, 1L).map { Attack.fromAccuracy(it, listOf(hit)) },
+                )
+            }
         assertEquals(
             (0..2).map { ValidationError("attacks[$it].turn", ValidationCode.INCONSISTENT) },
             assertIs<Validation.Invalid>(result).errors,

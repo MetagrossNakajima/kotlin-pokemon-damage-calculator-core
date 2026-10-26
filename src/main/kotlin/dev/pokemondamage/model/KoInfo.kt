@@ -27,10 +27,15 @@ data class KoInfo(
     val category: KoCategory
         get() =
             when {
-                status == KoStatus.NOT_APPLICABLE -> KoCategory.NOT_APPLICABLE
-                guaranteedHits == null ->
+                status == KoStatus.NOT_APPLICABLE -> {
+                    KoCategory.NOT_APPLICABLE
+                }
+
+                guaranteedHits == null -> {
                     if (evaluatedAttacks >= 4) KoCategory.FIVE_OR_MORE else KoCategory.UNDETERMINED
-                else ->
+                }
+
+                else -> {
                     when (guaranteedHits) {
                         0 -> KoCategory.ALREADY_KNOCKED_OUT
                         1 -> KoCategory.ONE_HIT
@@ -39,5 +44,6 @@ data class KoInfo(
                         4 -> KoCategory.FOUR_HITS
                         else -> KoCategory.FIVE_OR_MORE
                     }
+                }
             }
 }

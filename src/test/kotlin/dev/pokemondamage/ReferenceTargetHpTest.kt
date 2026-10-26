@@ -1,9 +1,24 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.DamageResult
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNotEquals
 
 class ReferenceTargetHpTest {
     @TestFactory
@@ -17,8 +32,7 @@ class ReferenceTargetHpTest {
             .groupBy { it[0] }
             .also {
                 assertEquals(setOf("CrushGrip", "WringOut", "HardPress"), it.keys)
-            }
-            .map { (name, rows) ->
+            }.map { (name, rows) ->
                 dynamicTest("MoveId/$name") {
                     assertEquals(
                         listOf(1, 2, 3, 7, 99, 100, 101, 199, 200),
@@ -34,30 +48,32 @@ class ReferenceTargetHpTest {
                             Stats(200, 100, 100, 100, 100, 100),
                             ability = AbilityId("Illuminate"),
                         )
-                    val rolls = rows.map { c ->
-                        val request =
-                            DamageRequest(
-                                pokemon,
-                                pokemon.copy(currentHp = c[3].toInt()),
-                                Move(
-                                    MoveId(name),
-                                    PokemonType.valueOf(c[1]),
-                                    1,
-                                    Category.valueOf(c[2]),
-                                ),
+                    val rolls =
+                        rows.map { c ->
+                            val request =
+                                DamageRequest(
+                                    pokemon,
+                                    pokemon.copy(currentHp = c[3].toInt()),
+                                    Move(
+                                        MoveId(name),
+                                        PokemonType.valueOf(c[1]),
+                                        1,
+                                        Category.valueOf(c[2]),
+                                    ),
+                                )
+                            val hit =
+                                assertIs<Calculation.Success<DamageResult>>(
+                                    calculateDamage(request),
+                                ).value
+                                    .hit
+                            assertEquals(c[4].toInt(), hit.power, "$name HP=${c[3]} power")
+                            assertEquals(
+                                c[5].removeSurrounding("[", "]").split(',').map(String::toInt),
+                                hit.rolls,
+                                "$name HP=${c[3]} damage",
                             )
-                        val hit =
-                            assertIs<Calculation.Success<DamageResult>>(calculateDamage(request))
-                                .value
-                                .hit
-                        assertEquals(c[4].toInt(), hit.power, "$name HP=${c[3]} power")
-                        assertEquals(
-                            c[5].removeSurrounding("[", "]").split(',').map(String::toInt),
-                            hit.rolls,
-                            "$name HP=${c[3]} damage",
-                        )
-                        hit.rolls
-                    }
+                            hit.rolls
+                        }
                     assertNotEquals(rolls.first(), rolls.last())
                 }
             }

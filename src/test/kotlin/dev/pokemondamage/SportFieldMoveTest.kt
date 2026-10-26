@@ -1,55 +1,77 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.DamageResult
+import dev.pokemondamage.model.EnumFlags
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 class SportFieldMoveTest {
     @TestFactory
     fun `sport field effects preserve source final damage and type restrictions`() =
         listOf(
-                Triple("MudSport", FieldEffect.MUD_SPORT, PokemonType.ELECTRIC),
-                Triple("WaterSport", FieldEffect.WATER_SPORT, PokemonType.FIRE),
-            )
-            .map { (name, effect, type) ->
-                dynamicTest("MoveId/$name") {
-                    val pokemon =
-                        PokemonState(
-                            PokemonProfile(
-                                PokemonId("Mew"),
-                                PokemonTypes(PokemonType.NORMAL),
-                                PokemonWeight(100),
-                            ),
-                            Stats(200, 100, 100, 100, 100, 100),
-                        )
-                    val ordinary =
-                        listOf(39, 39, 40, 40, 40, 41, 41, 42, 42, 43, 43, 44, 44, 45, 45, 46)
-                    val reduced =
-                        listOf(13, 13, 13, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 16)
-                    for (category in Category.entries) for (enabled in
-                        listOf(false, true)) for (moveType in listOf(type, PokemonType.WATER)) {
-                        val field =
-                            BattleField(effects = if (enabled) EnumFlags(effect) else EnumFlags())
-                        val move = Move(MoveId("Tackle"), moveType, 100, category)
-                        val result =
-                            assertIs<Calculation.Success<DamageResult>>(
-                                    calculateDamage(DamageRequest(pokemon, pokemon, move, field)),
+            Triple("MudSport", FieldEffect.MUD_SPORT, PokemonType.ELECTRIC),
+            Triple("WaterSport", FieldEffect.WATER_SPORT, PokemonType.FIRE),
+        ).map { (name, effect, type) ->
+            dynamicTest("MoveId/$name") {
+                val pokemon =
+                    PokemonState(
+                        PokemonProfile(
+                            PokemonId("Mew"),
+                            PokemonTypes(PokemonType.NORMAL),
+                            PokemonWeight(100),
+                        ),
+                        Stats(200, 100, 100, 100, 100, 100),
+                    )
+                val ordinary =
+                    listOf(39, 39, 40, 40, 40, 41, 41, 42, 42, 43, 43, 44, 44, 45, 45, 46)
+                val reduced =
+                    listOf(13, 13, 13, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 16)
+                for (category in Category.entries) {
+                    for (
+                    enabled in
+                    listOf(false, true)
+                    ) {
+                        for (moveType in listOf(type, PokemonType.WATER)) {
+                            val field =
+                                BattleField(
+                                    effects = if (enabled) EnumFlags(effect) else EnumFlags(),
                                 )
-                                .value
-                                .hit
-                        val affected = enabled && moveType == type
-                        assertEquals(
-                            if (affected) 33 else 100,
-                            result.power,
-                            "$name/$category/$moveType/$enabled power",
-                        )
-                        assertEquals(
-                            if (affected) reduced else ordinary,
-                            result.rolls,
-                            "$name/$category/$moveType/$enabled damage",
-                        )
+                            val move = Move(MoveId("Tackle"), moveType, 100, category)
+                            val result =
+                                assertIs<Calculation.Success<DamageResult>>(
+                                    calculateDamage(DamageRequest(pokemon, pokemon, move, field)),
+                                ).value
+                                    .hit
+                            val affected = enabled && moveType == type
+                            assertEquals(
+                                if (affected) 33 else 100,
+                                result.power,
+                                "$name/$category/$moveType/$enabled power",
+                            )
+                            assertEquals(
+                                if (affected) reduced else ordinary,
+                                result.rolls,
+                                "$name/$category/$moveType/$enabled damage",
+                            )
+                        }
                     }
                 }
             }
+        }
 }

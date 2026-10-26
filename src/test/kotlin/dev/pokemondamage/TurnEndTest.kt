@@ -1,10 +1,32 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.engine.combined.*
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.engine.combined.BattleProgress
+import dev.pokemondamage.engine.combined.TurnEnd
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.EnumFlags
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.PokemonFlags
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.Status
+import dev.pokemondamage.model.TeraType
+import dev.pokemondamage.model.Terrain
+import dev.pokemondamage.model.ToxicCounter
+import dev.pokemondamage.model.Weather
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class TurnEndTest {
     private val pokemon =
@@ -26,21 +48,25 @@ class TurnEndTest {
     @Test
     fun `sand damage uses current types and effective weather`() {
         assertEquals(88, apply(field = sand).hp)
-        for (weather in listOf(null) + Weather.entries) assertEquals(
-            if (weather == Weather.SANDSTORM) 88 else 100,
-            apply(field = BattleField(weather = weather)).hp,
-        )
+        for (weather in listOf(null) + Weather.entries) {
+            assertEquals(
+                if (weather == Weather.SANDSTORM) 88 else 100,
+                apply(field = BattleField(weather = weather)).hp,
+            )
+        }
         for (type in PokemonType.entries) {
             val expected =
-                if (type in setOf(PokemonType.ROCK, PokemonType.GROUND, PokemonType.STEEL)) 100
-                else 88
+                if (type in setOf(PokemonType.ROCK, PokemonType.GROUND, PokemonType.STEEL)) {
+                    100
+                } else {
+                    88
+                }
             assertEquals(
                 expected,
                 apply(
-                        pokemon.copy(profile = pokemon.profile.copy(types = PokemonTypes(type))),
-                        field = sand,
-                    )
-                    .hp,
+                    pokemon.copy(profile = pokemon.profile.copy(types = PokemonTypes(type))),
+                    field = sand,
+                ).hp,
             )
             assertEquals(
                 expected,
@@ -52,19 +78,17 @@ class TurnEndTest {
         assertEquals(
             88,
             apply(
-                    pokemon.copy(item = ItemId("SafetyGoggles")),
-                    state.copy(itemConsumed = true),
-                    sand,
-                )
-                .hp,
+                pokemon.copy(item = ItemId("SafetyGoggles")),
+                state.copy(itemConsumed = true),
+                sand,
+            ).hp,
         )
         assertEquals(
             88,
             apply(
-                    pokemon.copy(item = ItemId("SafetyGoggles"), ability = AbilityId("Klutz")),
-                    field = sand,
-                )
-                .hp,
+                pokemon.copy(item = ItemId("SafetyGoggles"), ability = AbilityId("Klutz")),
+                field = sand,
+            ).hp,
         )
     }
 
@@ -77,12 +101,11 @@ class TurnEndTest {
                 assertEquals(
                     88,
                     apply(
-                            p.copy(
-                                flags = PokemonFlags(mapOf(PokemonFlag.ABILITY_SUPPRESSED to true)),
-                            ),
-                            field = sand,
-                        )
-                        .hp,
+                        p.copy(
+                            flags = PokemonFlags(mapOf(PokemonFlag.ABILITY_SUPPRESSED to true)),
+                        ),
+                        field = sand,
+                    ).hp,
                 )
             }
         }
@@ -117,14 +140,17 @@ class TurnEndTest {
             val p =
                 pokemon.copy(
                     status = status,
-                    toxicCounter = if (status == Status.TOXIC) 2 else null,
+                    toxicCounter = if (status == Status.TOXIC) ToxicCounter(2) else null,
                 )
             val s = state.copy(toxicCounter = p.toxicCounter)
             val expected =
                 when (status) {
                     Status.BURN -> 88
+
                     Status.POISON,
-                    Status.TOXIC -> 75
+                    Status.TOXIC,
+                    -> 75
+
                     else -> 100
                 }
             assertEquals(expected, apply(p, s).hp)
@@ -141,24 +167,35 @@ class TurnEndTest {
         assertEquals(
             200,
             apply(
-                    pokemon.copy(status = Status.POISON, ability = AbilityId("PoisonHeal")),
-                    state.copy(hp = 199),
-                )
-                .hp,
+                pokemon.copy(status = Status.POISON, ability = AbilityId("PoisonHeal")),
+                state.copy(hp = 199),
+            ).hp,
         )
-        val toxic = pokemon.copy(status = Status.TOXIC, toxicCounter = 1)
-        assertEquals(2, apply(toxic).toxicCounter)
-        assertEquals(15, apply(toxic, state.copy(toxicCounter = 15)).toxicCounter)
+        val toxic = pokemon.copy(status = Status.TOXIC, toxicCounter = ToxicCounter(1))
+        assertEquals(2, apply(toxic).toxicCounter?.value)
+        assertEquals(
+            15,
+            apply(toxic, state.copy(toxicCounter = ToxicCounter(15))).toxicCounter?.value,
+        )
         assertEquals(
             3,
-            apply(toxic.copy(ability = AbilityId("PoisonHeal")), state.copy(toxicCounter = 2))
-                .toxicCounter,
+            apply(
+                toxic.copy(ability = AbilityId("PoisonHeal")),
+                state.copy(toxicCounter = ToxicCounter(2)),
+            ).toxicCounter
+                ?.value,
         )
-        assertEquals(2, apply(toxic, state.copy(hp = 1, toxicCounter = 1)).toxicCounter)
+        assertEquals(
+            2,
+            apply(toxic, state.copy(hp = 1, toxicCounter = ToxicCounter(1))).toxicCounter?.value,
+        )
         assertEquals(
             1,
-            apply(toxic.copy(ability = AbilityId("MagicGuard")), state.copy(toxicCounter = 1))
-                .toxicCounter,
+            apply(
+                toxic.copy(ability = AbilityId("MagicGuard")),
+                state.copy(toxicCounter = ToxicCounter(1)),
+            ).toxicCounter
+                ?.value,
         )
     }
 
@@ -171,18 +208,16 @@ class TurnEndTest {
         assertEquals(
             1,
             apply(
-                    tiny.copy(status = Status.BURN, ability = AbilityId("Heatproof")),
-                    state.copy(hp = 2),
-                )
-                .hp,
+                tiny.copy(status = Status.BURN, ability = AbilityId("Heatproof")),
+                state.copy(hp = 2),
+            ).hp,
         )
         assertEquals(
             2,
             apply(
-                    tiny.copy(status = Status.POISON, ability = AbilityId("PoisonHeal")),
-                    state.copy(hp = 1),
-                )
-                .hp,
+                tiny.copy(status = Status.POISON, ability = AbilityId("PoisonHeal")),
+                state.copy(hp = 1),
+            ).hp,
         )
     }
 

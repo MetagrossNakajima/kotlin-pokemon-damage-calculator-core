@@ -66,21 +66,21 @@ internal object MoveRules {
         )
 
     private val fixedDamage =
-        setOf(
-            MoveId("SuperFang"),
-            MoveId("NaturesMadness"),
-            MoveId("Ruination"),
-            MoveId("GuardianofAlola"),
-            MoveId("FinalGambit"),
-            MoveId("Endeavor"),
-            MoveId("SonicBoom"),
-            MoveId("DragonRage"),
-            MoveId("SeismicToss"),
-            MoveId("NightShade"),
-            MoveId("Fissure"),
-            MoveId("SheerCold"),
-            MoveId("HornDrill"),
-            MoveId("Guillotine"),
+        mapOf(
+            MoveId("SuperFang") to FixedDamageKind.HALF_CURRENT_HP,
+            MoveId("NaturesMadness") to FixedDamageKind.HALF_CURRENT_HP,
+            MoveId("Ruination") to FixedDamageKind.HALF_CURRENT_HP,
+            MoveId("GuardianofAlola") to FixedDamageKind.THREE_QUARTERS_CURRENT_HP,
+            MoveId("FinalGambit") to FixedDamageKind.ATTACKER_HP,
+            MoveId("Endeavor") to FixedDamageKind.HP_DIFFERENCE,
+            MoveId("SonicBoom") to FixedDamageKind.TWENTY,
+            MoveId("DragonRage") to FixedDamageKind.FORTY,
+            MoveId("SeismicToss") to FixedDamageKind.LEVEL,
+            MoveId("NightShade") to FixedDamageKind.LEVEL,
+            MoveId("Fissure") to FixedDamageKind.ONE_HIT_KO,
+            MoveId("SheerCold") to FixedDamageKind.ONE_HIT_KO,
+            MoveId("HornDrill") to FixedDamageKind.ONE_HIT_KO,
+            MoveId("Guillotine") to FixedDamageKind.ONE_HIT_KO,
         )
 
     fun isGuaranteedCritical(id: MoveId): Boolean = id in guaranteedCritical
@@ -91,5 +91,7 @@ internal object MoveRules {
 
     fun isUnsupported(id: MoveId): Boolean = id in unsupported
 
-    fun isFixedDamage(id: MoveId): Boolean = id in fixedDamage
+    fun fixedDamageKind(id: MoveId): FixedDamageKind? = fixedDamage[id]
+
+    fun isFixedDamage(id: MoveId): Boolean = fixedDamageKind(id) != null
 }

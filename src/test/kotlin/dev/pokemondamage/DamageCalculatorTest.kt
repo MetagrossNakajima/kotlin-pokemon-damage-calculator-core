@@ -1,9 +1,31 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageKind
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.DamageResult
+import dev.pokemondamage.model.FailureKind
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.Status
+import dev.pokemondamage.model.ToxicCounter
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 class DamageCalculatorTest {
     private val base =
@@ -21,14 +43,13 @@ class DamageCalculatorTest {
         critical: Boolean = false,
         hit: Int = 0,
         power: Int = 60,
-    ) =
-        DamageRequest(
-            a,
-            d,
-            Move(MoveId(name), type, power, category),
-            critical = critical,
-            hitIndex = hit.toLong(),
-        )
+    ) = DamageRequest(
+        a,
+        d,
+        Move(MoveId(name), type, power, category),
+        critical = critical,
+        hitIndex = hit.toLong(),
+    )
 
     private fun result(request: DamageRequest) =
         assertIs<Calculation.Success<DamageResult>>(calculateDamage(request)).value
@@ -46,8 +67,18 @@ class DamageCalculatorTest {
         assertEquals(21.0, r.maxPercent)
         assertEquals(DamageKind.NORMAL, r.hit.kind)
         assertEquals(16, r.hit.trace.count { it.id == "Random" })
-        assertEquals("Tackle", r.hit.trace.first().id)
-        assertEquals("FinalModifiers", r.hit.trace.last().id)
+        assertEquals(
+            "Tackle",
+            r.hit.trace
+                .first()
+                .id,
+        )
+        assertEquals(
+            "FinalModifiers",
+            r.hit.trace
+                .last()
+                .id,
+        )
     }
 
     @Test
@@ -63,13 +94,27 @@ class DamageCalculatorTest {
     fun `critical sources respect armor and effective ability suppression`() {
         assertFalse(result(request()).hit.critical)
         assertTrue(result(request(critical = true)).hit.critical)
-        for (name in
-            listOf("FrostBreath", "StormThrow", "WickedBlow", "SurgingStrikes")) assertTrue(
-            result(request(name = name)).hit.critical,
-        )
+        for (
+        name in
+        listOf("FrostBreath", "StormThrow", "WickedBlow", "SurgingStrikes")
+        ) {
+            assertTrue(
+                result(request(name = name)).hit.critical,
+            )
+        }
         for (status in listOf(null) + Status.entries) {
             val d =
-                base.copy(status = status, toxicCounter = if (status == Status.TOXIC) 1 else null)
+                base.copy(
+                    status = status,
+                    toxicCounter =
+                        if (status ==
+                            Status.TOXIC
+                        ) {
+                            ToxicCounter(1)
+                        } else {
+                            null
+                        },
+                )
             assertEquals(
                 status in setOf(Status.POISON, Status.TOXIC),
                 result(request(base.copy(ability = AbilityId("Merciless")), d)).hit.critical,
@@ -88,8 +133,14 @@ class DamageCalculatorTest {
 
     @TestFactory
     fun `unsupported moves return explicit failures`() =
-        listOf("Counter", "Bide", "Comeuppance", "MirrorCoat", "MetalBurst", "Psywave").map { name
-            ->
+        listOf(
+            "Counter",
+            "Bide",
+            "Comeuppance",
+            "MirrorCoat",
+            "MetalBurst",
+            "Psywave",
+        ).map { name ->
             dynamicTest(name) {
                 assertEquals(
                     Calculation.Failure(FailureKind.UNSUPPORTED, "move.$name"),
@@ -101,42 +152,41 @@ class DamageCalculatorTest {
     @TestFactory
     fun `fixed moves use current HP and ignore power stats critical and ordinary modifiers`() =
         listOf(
-                "SuperFang" to 50,
-                "Ruination" to 50,
-                "NaturesMadness" to 50,
-                "GuardianofAlola" to 75,
-                "FinalGambit" to 40,
-                "Endeavor" to 61,
-                "SonicBoom" to 20,
-                "DragonRage" to 40,
-                "SeismicToss" to 50,
-                "NightShade" to 50,
-                "Fissure" to 101,
-                "SheerCold" to 101,
-                "HornDrill" to 101,
-                "Guillotine" to 101,
-            )
-            .map { (name, damage) ->
-                dynamicTest(name) {
-                    for (category in Category.entries) {
-                        val r =
-                            result(
-                                request(
-                                    base.copy(currentHp = 40, item = ItemId("LifeOrb")),
-                                    base.copy(currentHp = 101),
-                                    name = name,
-                                    category = category,
-                                    critical = true,
-                                    power = 0,
-                                ),
-                            )
-                        assertEquals(listOf(damage), r.hit.rolls)
-                        assertEquals(DamageKind.FIXED, r.hit.kind)
-                        assertFalse(r.hit.critical)
-                        assertTrue(r.hit.trace.isEmpty())
-                    }
+            "SuperFang" to 50,
+            "Ruination" to 50,
+            "NaturesMadness" to 50,
+            "GuardianofAlola" to 75,
+            "FinalGambit" to 40,
+            "Endeavor" to 61,
+            "SonicBoom" to 20,
+            "DragonRage" to 40,
+            "SeismicToss" to 50,
+            "NightShade" to 50,
+            "Fissure" to 101,
+            "SheerCold" to 101,
+            "HornDrill" to 101,
+            "Guillotine" to 101,
+        ).map { (name, damage) ->
+            dynamicTest(name) {
+                for (category in Category.entries) {
+                    val r =
+                        result(
+                            request(
+                                base.copy(currentHp = 40, item = ItemId("LifeOrb")),
+                                base.copy(currentHp = 101),
+                                name = name,
+                                category = category,
+                                critical = true,
+                                power = 0,
+                            ),
+                        )
+                    assertEquals(listOf(damage), r.hit.rolls)
+                    assertEquals(DamageKind.FIXED, r.hit.kind)
+                    assertFalse(r.hit.critical)
+                    assertTrue(r.hit.trace.isEmpty())
                 }
             }
+        }
 
     @Test
     fun `NaturesMadness halves current HP rounding down with minimum one`() {
@@ -179,14 +229,13 @@ class DamageCalculatorTest {
         assertEquals(
             50,
             result(
-                    request(
-                        base.copy(ability = AbilityId("Scrappy")),
-                        ghost,
-                        name = "SeismicToss",
-                        power = 0,
-                    ),
-                )
-                .max,
+                request(
+                    base.copy(ability = AbilityId("Scrappy")),
+                    ghost,
+                    name = "SeismicToss",
+                    power = 0,
+                ),
+            ).max,
         )
         val ice = base.copy(profile = base.profile.copy(types = PokemonTypes(PokemonType.ICE)))
         assertEquals(0, result(request(d = ice, name = "SheerCold", power = 0)).max)
@@ -196,26 +245,24 @@ class DamageCalculatorTest {
             assertEquals(
                 200,
                 result(
-                        request(
-                            base.copy(ability = AbilityId("MoldBreaker")),
-                            d,
-                            name = name,
-                            power = 0,
-                        ),
-                    )
-                    .max,
+                    request(
+                        base.copy(ability = AbilityId("MoldBreaker")),
+                        d,
+                        name = name,
+                        power = 0,
+                    ),
+                ).max,
             )
         }
         assertEquals(
             50,
             result(
-                    request(
-                        d = base.copy(ability = AbilityId("Sturdy")),
-                        name = "SeismicToss",
-                        power = 0,
-                    ),
-                )
-                .max,
+                request(
+                    d = base.copy(ability = AbilityId("Sturdy")),
+                    name = "SeismicToss",
+                    power = 0,
+                ),
+            ).max,
         )
     }
 }

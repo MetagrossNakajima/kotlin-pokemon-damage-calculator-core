@@ -1,8 +1,30 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.AccuracyMode
+import dev.pokemondamage.model.Attack
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.BattleSetup
+import dev.pokemondamage.model.CalculationLimits
+import dev.pokemondamage.model.CombinedDamageRequest
+import dev.pokemondamage.model.DamageDistribution
+import dev.pokemondamage.model.EntryHazards
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Spikes
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.Weather
+import dev.pokemondamage.model.validate
 import java.math.BigInteger
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 class CombinedInputTest {
     private val one = BigInteger.ONE
@@ -13,9 +35,10 @@ class CombinedInputTest {
             Stats(200, 100, 100, 100, 100, 100),
         )
 
-    private fun counts(vararg pairs: Pair<Int, Int>) = pairs.associate {
-        it.first to it.second.toBigInteger()
-    }
+    private fun counts(vararg pairs: Pair<Int, Int>) =
+        pairs.associate {
+            it.first to it.second.toBigInteger()
+        }
 
     @Test
     fun `accuracy and hit count weights combine exactly and preserve conditional counts`() {
@@ -34,18 +57,50 @@ class CombinedInputTest {
 
     @Test
     fun `independent accuracy stops on first miss and retains mixed-length probabilities`() {
-        val a = Attack.fromAccuracy(1, List(3) { hit }, 50, counts(3 to 1), true)
+        val a =
+            Attack.fromAccuracy(
+                1,
+                List(3) { hit },
+                50,
+                counts(3 to 1),
+                AccuracyMode.UNTIL_FIRST_MISS,
+            )
         assertEquals(counts(0 to 4, 1 to 2, 2 to 1, 3 to 1), a.hitCounts)
         assertNull(a.conditionalHitCounts)
-        val mixed = Attack.fromAccuracy(1, List(3) { hit }, 50, counts(1 to 1, 3 to 1), true)
+        val mixed =
+            Attack.fromAccuracy(
+                1,
+                List(3) {
+                    hit
+                },
+                50,
+                counts(1 to 1, 3 to 1),
+                AccuracyMode.UNTIL_FIRST_MISS,
+            )
         assertEquals(counts(0 to 8, 1 to 6, 2 to 1, 3 to 1), mixed.hitCounts)
         assertEquals(
             counts(0 to 1),
-            Attack.fromAccuracy(1, List(3) { hit }, 0, counts(3 to 1), true).hitCounts,
+            Attack
+                .fromAccuracy(
+                    1,
+                    List(3) { hit },
+                    0,
+                    counts(3 to 1),
+                    AccuracyMode.UNTIL_FIRST_MISS,
+                ).hitCounts,
         )
         assertEquals(
             counts(3 to 1),
-            Attack.fromAccuracy(1, List(3) { hit }, 100, counts(3 to 1), true).hitCounts,
+            Attack
+                .fromAccuracy(
+                    1,
+                    List(3) {
+                        hit
+                    },
+                    100,
+                    counts(3 to 1),
+                    AccuracyMode.UNTIL_FIRST_MISS,
+                ).hitCounts,
         )
     }
 
@@ -53,7 +108,16 @@ class CombinedInputTest {
     fun `per-hit accuracy preserves unequal hit count weights on miss branches`() {
         // Select one hit with probability 1/3 or three hits with probability 2/3.
         // At 75% accuracy, P(0,1,2,3 hits) = (1/4,3/8,3/32,9/32).
-        val attack = Attack.fromAccuracy(1, List(3) { hit }, 75, counts(1 to 1, 3 to 2), true)
+        val attack =
+            Attack.fromAccuracy(
+                1,
+                List(3) {
+                    hit
+                },
+                75,
+                counts(1 to 1, 3 to 2),
+                AccuracyMode.UNTIL_FIRST_MISS,
+            )
         assertEquals(counts(0 to 8, 1 to 12, 2 to 3, 3 to 9), attack.hitCounts)
         assertNull(attack.conditionalHitCounts)
     }
@@ -79,8 +143,10 @@ class CombinedInputTest {
     fun `attack rejects invalid turns empty hits and invalid count distributions`() {
         assertFailsWith<IllegalArgumentException> { Attack(0, listOf(hit), counts(1 to 1)) }
         assertFailsWith<IllegalArgumentException> { Attack(1, emptyList(), counts(0 to 1)) }
-        for (weights in
-            listOf(emptyMap(), counts(-1 to 1), counts(2 to 1), counts(1 to 0), counts(1 to -1))) {
+        for (
+        weights in
+        listOf(emptyMap(), counts(-1 to 1), counts(2 to 1), counts(1 to 0), counts(1 to -1))
+        ) {
             assertFailsWith<IllegalArgumentException> { Attack(1, listOf(hit), weights) }
         }
         for (weights in listOf(emptyMap(), counts(0 to 1), counts(2 to 1), counts(1 to 0))) {
@@ -91,8 +157,10 @@ class CombinedInputTest {
                 Attack.fromAccuracy(1, listOf(hit), hitCountWeights = weights)
             }
         }
-        for (accuracy in listOf(-1, 101)) assertFailsWith<IllegalArgumentException> {
-            Attack.fromAccuracy(1, listOf(hit), accuracy)
+        for (accuracy in listOf(-1, 101)) {
+            assertFailsWith<IllegalArgumentException> {
+                Attack.fromAccuracy(1, listOf(hit), accuracy)
+            }
         }
         assertEquals(counts(0 to 1), Attack(1, listOf(hit), counts(0 to 1)).hitCounts)
         assertEquals(Long.MAX_VALUE, Attack(Long.MAX_VALUE, listOf(hit), counts(1 to 1)).turn)
@@ -100,16 +168,20 @@ class CombinedInputTest {
 
     @Test
     fun `setup and limits validate boundaries and snapshot initial damages`() {
-        for (layers in 0..3) assertEquals(layers, EntryHazards(spikesLayers = layers).spikesLayers)
+        for (layers in 0..3) {
+            assertEquals(layers, EntryHazards(spikes = Spikes.fromLayers(layers)).spikes.layers)
+        }
         assertTrue(EntryHazards(stealthRock = true).stealthRock)
-        for (layers in listOf(-1, 4)) assertFailsWith<IllegalArgumentException> {
-            EntryHazards().copy(spikesLayers = layers)
+        for (layers in listOf(-1, 4)) {
+            assertFailsWith<IllegalArgumentException> {
+                EntryHazards().copy(spikes = Spikes.fromLayers(layers))
+            }
         }
         val damages = mutableListOf(BigInteger.ZERO, one.shiftLeft(100))
-        val setup = BattleSetup(EntryHazards(true, 3), damages)
+        val setup = BattleSetup(EntryHazards(true, Spikes.THREE_LAYERS), damages)
         damages.clear()
         assertEquals(listOf(BigInteger.ZERO, one.shiftLeft(100)), setup.initialDamages)
-        assertEquals(EntryHazards(true, 3), setup.entryHazards)
+        assertEquals(EntryHazards(true, Spikes.THREE_LAYERS), setup.entryHazards)
         assertFailsWith<UnsupportedOperationException> {
             (setup.initialDamages as MutableList).clear()
         }
@@ -145,14 +217,16 @@ class CombinedInputTest {
             assertEquals(CalculationLimits(), r.limits)
             assertFailsWith<UnsupportedOperationException> { (r.attacks as MutableList).clear() }
         }
-        for (turns in
-            listOf(
-                emptyList(),
-                listOf(2),
-                listOf(1, 3),
-                listOf(1, 2, 1),
-                listOf(1, Int.MAX_VALUE),
-            )) {
+        for (
+        turns in
+        listOf(
+            emptyList(),
+            listOf(2),
+            listOf(1, 3),
+            listOf(1, 2, 1),
+            listOf(1, Int.MAX_VALUE),
+        )
+        ) {
             assertFailsWith<IllegalArgumentException> {
                 CombinedDamageRequest(defender, turns.map(::attack))
             }
@@ -163,7 +237,7 @@ class CombinedInputTest {
     fun `four-turn helper preserves distributions and explicit accuracy overrides`() {
         val later = DamageDistribution.fromRolls(listOf(30))
         val field = BattleField(weather = Weather.RAIN)
-        val setup = BattleSetup(EntryHazards(true, 2))
+        val setup = BattleSetup(EntryHazards(true, Spikes.TWO_LAYERS))
         val limits = CalculationLimits(10, 10)
         val r =
             CombinedDamageRequest.repeatSingleHit(

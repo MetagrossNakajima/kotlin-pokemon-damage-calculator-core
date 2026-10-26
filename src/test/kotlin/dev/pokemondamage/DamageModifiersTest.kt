@@ -2,10 +2,32 @@ package dev.pokemondamage
 
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.engine.damage.DamageModifiers
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.BattleFormat
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.EnumFlags
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveFlag
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.PokemonFlags
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.SideConditions
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.zip
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class DamageModifiersTest {
     private val pokemon =
@@ -25,20 +47,19 @@ class DamageModifiersTest {
         critical: Boolean = false,
         effectiveness: Double = 1.0,
         hit: Int = 0,
-    ) =
-        DamageModifiers.calculate(
-            DamageContext(
-                DamageRequest(
-                    a,
-                    d,
-                    Move(MoveId(name), type, 60, category, flags = flags),
-                    field,
-                    hitIndex = hit.toLong(),
-                ),
+    ) = DamageModifiers.calculate(
+        DamageContext(
+            DamageRequest(
+                a,
+                d,
+                Move(MoveId(name), type, 60, category, flags = flags),
+                field,
+                hitIndex = hit.toLong(),
             ),
-            critical,
-            effectiveness,
-        )
+        ),
+        critical,
+        effectiveness,
+    )
 
     @Test
     fun `no damage modifiers yield identity and no trace`() {
@@ -49,38 +70,51 @@ class DamageModifiersTest {
 
     @Test
     fun `screens follow move category rather than defensive stat and respect battle format`() {
-        for (format in BattleFormat.entries) for (category in Category.entries) for (reflect in
-            listOf(true, false)) for (light in listOf(true, false)) {
-            val d = pokemon.copy(sideConditions = SideConditions(reflect, light))
-            val expected =
-                if (if (category == Category.PHYSICAL) reflect else light)
-                    if (format == BattleFormat.SINGLE) 2048 else 2732
-                else 4096
-            assertEquals(
-                expected,
-                result(d = d, category = category, field = BattleField(format = format)).value,
-            )
-            assertEquals(
-                4096,
-                result(
-                        d = d,
-                        category = category,
-                        field = BattleField(format = format),
-                        critical = true,
-                    )
-                    .value,
-            )
+        for (format in BattleFormat.entries) {
+            for (category in Category.entries) {
+                for (
+                reflect in
+                listOf(true, false)
+                ) {
+                    for (light in listOf(true, false)) {
+                        val d = pokemon.copy(sideConditions = SideConditions(reflect, light))
+                        val screened = if (category == Category.PHYSICAL) reflect else light
+                        val expected =
+                            if (screened) {
+                                if (format == BattleFormat.SINGLE) 2048 else 2732
+                            } else {
+                                4096
+                            }
+                        assertEquals(
+                            expected,
+                            result(
+                                d = d,
+                                category = category,
+                                field = BattleField(format = format),
+                            ).value,
+                        )
+                        assertEquals(
+                            4096,
+                            result(
+                                d = d,
+                                category = category,
+                                field = BattleField(format = format),
+                                critical = true,
+                            ).value,
+                        )
+                    }
+                }
+            }
         }
         val d = pokemon.copy(sideConditions = SideConditions(reflect = true))
         assertEquals(4096, result(d = d, name = "Psyshock", category = Category.SPECIAL).value)
         assertEquals(
             2048,
             result(
-                    d = d.copy(sideConditions = SideConditions(lightScreen = true)),
-                    name = "Psyshock",
-                    category = Category.SPECIAL,
-                )
-                .value,
+                d = d.copy(sideConditions = SideConditions(lightScreen = true)),
+                name = "Psyshock",
+                category = Category.SPECIAL,
+            ).value,
         )
     }
 
@@ -88,15 +122,16 @@ class DamageModifiersTest {
     fun `each screen breaking move bypasses both screens`() =
         listOf("BrickBreak", "RagingBull", "PsychicFangs").map { name ->
             dynamicTest(name) {
-                for (category in Category.entries) assertEquals(
-                    4096,
-                    result(
+                for (category in Category.entries) {
+                    assertEquals(
+                        4096,
+                        result(
                             d = pokemon.copy(sideConditions = SideConditions(true, true)),
                             name = name,
                             category = category,
-                        )
-                        .value,
-                )
+                        ).value,
+                    )
+                }
             }
         }
 
@@ -169,29 +204,29 @@ class DamageModifiersTest {
         assertEquals(
             8192,
             result(
-                    pokemon.copy(ability = AbilityId("LongReach")),
-                    d,
-                    type = PokemonType.FIRE,
-                    flags = EnumFlags(MoveFlag.CONTACT),
-                )
-                .value,
+                pokemon.copy(ability = AbilityId("LongReach")),
+                d,
+                type = PokemonType.FIRE,
+                flags = EnumFlags(MoveFlag.CONTACT),
+            ).value,
         )
         assertEquals(
             4096,
             result(
-                    pokemon.copy(ability = AbilityId("MoldBreaker")),
-                    d,
-                    type = PokemonType.FIRE,
-                    flags = EnumFlags(MoveFlag.CONTACT),
-                )
-                .value,
+                pokemon.copy(ability = AbilityId("MoldBreaker")),
+                d,
+                type = PokemonType.FIRE,
+                flags = EnumFlags(MoveFlag.CONTACT),
+            ).value,
         )
     }
 
     @TestFactory
     fun `defensive flag abilities require their move flag`() =
-        listOf("WaveShield" to MoveFlag.CONTACT, "PunkRock" to MoveFlag.SOUND).map { (ability, flag)
-            ->
+        listOf(
+            "WaveShield" to MoveFlag.CONTACT,
+            "PunkRock" to MoveFlag.SOUND,
+        ).map { (ability, flag) ->
             dynamicTest(ability) {
                 val d = pokemon.copy(ability = AbilityId(ability))
                 assertEquals(2048, result(d = d, flags = EnumFlags(flag)).value)
@@ -230,107 +265,104 @@ class DamageModifiersTest {
     @TestFactory
     fun `every resist berry matches its type and requires super effective damage except Chilan`() =
         listOf(
-                "OccaBerry",
-                "PasshoBerry",
-                "WacanBerry",
-                "RindoBerry",
-                "YacheBerry",
-                "ChopleBerry",
-                "KebiaBerry",
-                "ShucaBerry",
-                "CobaBerry",
-                "PayapaBerry",
-                "TangaBerry",
-                "ChartiBerry",
-                "KasibBerry",
-                "HabanBerry",
-                "ColburBerry",
-                "BabiriBerry",
-                "RoseliBerry",
-                "ChilanBerry",
-            )
-            .zip(
-                listOf(
-                    PokemonType.FIRE,
-                    PokemonType.WATER,
-                    PokemonType.ELECTRIC,
-                    PokemonType.GRASS,
-                    PokemonType.ICE,
-                    PokemonType.FIGHTING,
-                    PokemonType.POISON,
-                    PokemonType.GROUND,
-                    PokemonType.FLYING,
-                    PokemonType.PSYCHIC,
-                    PokemonType.BUG,
-                    PokemonType.ROCK,
-                    PokemonType.GHOST,
-                    PokemonType.DRAGON,
-                    PokemonType.DARK,
-                    PokemonType.STEEL,
-                    PokemonType.FAIRY,
-                    PokemonType.NORMAL,
-                ),
-            )
-            .map { (berry, type) ->
-                dynamicTest(berry) {
-                    val d = pokemon.copy(item = ItemId(berry))
-                    for (effectiveness in listOf(0.5, 1.0, 2.0)) {
-                        assertEquals(
-                            if (type == PokemonType.NORMAL || effectiveness > 1) 2048 else 4096,
-                            result(d = d, type = type, effectiveness = effectiveness).value,
-                        )
-                    }
+            "OccaBerry",
+            "PasshoBerry",
+            "WacanBerry",
+            "RindoBerry",
+            "YacheBerry",
+            "ChopleBerry",
+            "KebiaBerry",
+            "ShucaBerry",
+            "CobaBerry",
+            "PayapaBerry",
+            "TangaBerry",
+            "ChartiBerry",
+            "KasibBerry",
+            "HabanBerry",
+            "ColburBerry",
+            "BabiriBerry",
+            "RoseliBerry",
+            "ChilanBerry",
+        ).zip(
+            listOf(
+                PokemonType.FIRE,
+                PokemonType.WATER,
+                PokemonType.ELECTRIC,
+                PokemonType.GRASS,
+                PokemonType.ICE,
+                PokemonType.FIGHTING,
+                PokemonType.POISON,
+                PokemonType.GROUND,
+                PokemonType.FLYING,
+                PokemonType.PSYCHIC,
+                PokemonType.BUG,
+                PokemonType.ROCK,
+                PokemonType.GHOST,
+                PokemonType.DRAGON,
+                PokemonType.DARK,
+                PokemonType.STEEL,
+                PokemonType.FAIRY,
+                PokemonType.NORMAL,
+            ),
+        ).map { (berry, type) ->
+            dynamicTest(berry) {
+                val d = pokemon.copy(item = ItemId(berry))
+                for (effectiveness in listOf(0.5, 1.0, 2.0)) {
                     assertEquals(
-                        1024,
-                        result(
-                                d = d.copy(ability = AbilityId("Ripen")),
-                                type = type,
-                                effectiveness = 2.0,
-                            )
-                            .value,
-                    )
-                    assertEquals(
-                        4096,
-                        result(d = d, type = type, effectiveness = 2.0, hit = 1).value,
-                    )
-                    assertEquals(
-                        4096,
-                        result(d = d.copy(itemConsumed = true), type = type, effectiveness = 2.0)
-                            .value,
-                    )
-                    assertEquals(
-                        4096,
-                        result(
-                                d = d,
-                                type =
-                                    if (type == PokemonType.NORMAL) PokemonType.WATER
-                                    else PokemonType.NORMAL,
-                                effectiveness = 2.0,
-                            )
-                            .value,
-                    )
-                    assertEquals(
-                        4096,
-                        result(
-                                pokemon.copy(ability = AbilityId("Unnerve")),
-                                d,
-                                type = type,
-                                effectiveness = 2.0,
-                            )
-                            .value,
-                    )
-                    assertEquals(
-                        4096,
-                        result(
-                                d = d,
-                                type = type,
-                                effectiveness = 2.0,
-                                field = BattleField(effects = EnumFlags(FieldEffect.UNNERVE)),
-                            )
-                            .value,
+                        if (type == PokemonType.NORMAL || effectiveness > 1) 2048 else 4096,
+                        result(d = d, type = type, effectiveness = effectiveness).value,
                     )
                 }
+                assertEquals(
+                    1024,
+                    result(
+                        d = d.copy(ability = AbilityId("Ripen")),
+                        type = type,
+                        effectiveness = 2.0,
+                    ).value,
+                )
+                assertEquals(
+                    4096,
+                    result(d = d, type = type, effectiveness = 2.0, hit = 1).value,
+                )
+                assertEquals(
+                    4096,
+                    result(d = d.copy(itemConsumed = true), type = type, effectiveness = 2.0)
+                        .value,
+                )
+                assertEquals(
+                    4096,
+                    result(
+                        d = d,
+                        type =
+                            if (type == PokemonType.NORMAL) {
+                                PokemonType.WATER
+                            } else {
+                                PokemonType.NORMAL
+                            },
+                        effectiveness = 2.0,
+                    ).value,
+                )
+                assertEquals(
+                    4096,
+                    result(
+                        pokemon.copy(ability = AbilityId("Unnerve")),
+                        d,
+                        type = type,
+                        effectiveness = 2.0,
+                    ).value,
+                )
+                assertEquals(
+                    4096,
+                    result(
+                        d = d,
+                        type = type,
+                        effectiveness = 2.0,
+                        field = BattleField(effects = EnumFlags(FieldEffect.UNNERVE)),
+                    ).value,
+                )
             }
+        }
 
     @Test
     fun `screen Friend Guard Life Orb and berry preserve order and half-up chaining`() {

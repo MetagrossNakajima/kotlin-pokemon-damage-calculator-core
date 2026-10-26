@@ -1,10 +1,27 @@
 package dev.pokemondamage
 
 import dev.pokemondamage.engine.DamageContext
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.DamageResult
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.Weather
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 class ReferenceSuppressionTest {
     @TestFactory
@@ -64,7 +81,11 @@ class ReferenceSuppressionTest {
                                 .hit
                                 .rolls
                         val native =
-                            c[4].removePrefix("[").removeSuffix("]").split(',').map(String::toInt)
+                            c[4]
+                                .removePrefix("[")
+                                .removeSuffix("]")
+                                .split(',')
+                                .map(String::toInt)
                         assertEquals(
                             if (native.size == 1) List(16) { native.single() } else native,
                             result,

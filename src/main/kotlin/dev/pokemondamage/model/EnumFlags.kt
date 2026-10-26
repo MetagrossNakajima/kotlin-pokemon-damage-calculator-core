@@ -3,7 +3,9 @@ package dev.pokemondamage.model
 import java.util.Collections
 
 /** Immutable set shared by move traits and field effects. */
-class EnumFlags<E : Enum<E>>(vararg flags: E) {
+class EnumFlags<E : Enum<E>>(
+    vararg flags: E,
+) {
     val values: Set<E> = Collections.unmodifiableSet(flags.toSet())
 
     operator fun contains(flag: E): Boolean = flag in values

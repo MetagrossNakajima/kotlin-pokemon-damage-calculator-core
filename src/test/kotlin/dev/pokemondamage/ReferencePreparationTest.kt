@@ -1,10 +1,32 @@
 package dev.pokemondamage
 
 import dev.pokemondamage.engine.DamageContext
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.DamageResult
+import dev.pokemondamage.model.EnumFlags
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveFlag
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.StatStages
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.TeraType
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 class ReferencePreparationTest {
     @TestFactory
@@ -40,7 +62,10 @@ class ReferencePreparationTest {
                             profile,
                             Stats(200, row[3].toInt(), 100, row[4].toInt(), 100, 100),
                             stages =
-                                StatStages(attack = row[7].toInt(), specialAttack = row[8].toInt()),
+                                StatStages.fromValues(
+                                    attack = row[7].toInt(),
+                                    specialAttack = row[8].toInt(),
+                                ),
                             ability = AbilityId(row[1]),
                             item = row[2].takeUnless { it == "-" }?.let(::ItemId),
                         )
@@ -52,15 +77,20 @@ class ReferencePreparationTest {
                             ),
                             Stats(200, 100, row[5].toInt(), 100, row[6].toInt(), 100),
                             stages =
-                                StatStages(
+                                StatStages.fromValues(
                                     defense = row[9].toInt(),
                                     specialDefense = row[10].toInt(),
                                 ),
                         )
-                    val effects = buildList {
-                        if (row[11].toBooleanStrict()) add(FieldEffect.WONDER_ROOM)
-                        if (row[12].toBooleanStrict()) add(FieldEffect.MAGIC_ROOM)
-                    }
+                    val effects =
+                        buildList {
+                            if (row[11].toBooleanStrict()) {
+                                add(FieldEffect.WONDER_ROOM)
+                            }
+                            if (row[12].toBooleanStrict()) {
+                                add(FieldEffect.MAGIC_ROOM)
+                            }
+                        }
                     val flags =
                         if (row[17].toBooleanStrict()) EnumFlags(MoveFlag.CONTACT) else EnumFlags()
                     val move =
@@ -90,16 +120,22 @@ class ReferencePreparationTest {
                     )
                     val calculated =
                         assertIs<Calculation.Success<DamageResult>>(
-                                calculateDamage(context.request),
-                            )
-                            .value
+                            calculateDamage(context.request),
+                        ).value
                     val expectedRolls =
-                        row[21].removePrefix("[").removeSuffix("]").split(',').map(String::toInt)
+                        row[21]
+                            .removePrefix("[")
+                            .removeSuffix("]")
+                            .split(',')
+                            .map(String::toInt)
                     // Reference represents an immune result as scalar 0; this API retains all 16
                     // rolls.
                     assertEquals(
-                        if (expectedRolls.size == 1) List(16) { expectedRolls.single() }
-                        else expectedRolls,
+                        if (expectedRolls.size == 1) {
+                            List(16) { expectedRolls.single() }
+                        } else {
+                            expectedRolls
+                        },
                         calculated.hit.rolls,
                         description,
                     )

@@ -1,8 +1,26 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.Attack
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.BattleSetup
+import dev.pokemondamage.model.CalculationLimits
+import dev.pokemondamage.model.CombinedDamageRequest
+import dev.pokemondamage.model.DamageDistribution
+import dev.pokemondamage.model.EntryHazards
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Spikes
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.Weather
 import java.math.BigInteger
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 
 class CombinedValueEqualityTest {
     private val one = BigInteger.ONE
@@ -13,7 +31,11 @@ class CombinedValueEqualityTest {
             Stats(100, 100, 100, 100, 100, 100),
         )
 
-    private fun assertValueContract(value: Any, equalValue: Any, differences: List<Any>) {
+    private fun assertValueContract(
+        value: Any,
+        equalValue: Any,
+        differences: List<Any>,
+    ) {
         assertEquals(value, value)
         assertEquals(value, equalValue)
         assertEquals(equalValue, value)
@@ -61,15 +83,15 @@ class CombinedValueEqualityTest {
     @Test
     fun `BattleSetup equality includes ordered damage and hazards with stable hashing`() {
         val input = mutableListOf(one, BigInteger.TWO)
-        val value = BattleSetup(EntryHazards(true, 2), input)
+        val value = BattleSetup(EntryHazards(true, Spikes.TWO_LAYERS), input)
         val hash = value.hashCode()
         input.clear()
         assertEquals(hash, value.hashCode())
         assertValueContract(
             value,
-            BattleSetup(EntryHazards(true, 2), listOf(one, BigInteger.TWO)),
+            BattleSetup(EntryHazards(true, Spikes.TWO_LAYERS), listOf(one, BigInteger.TWO)),
             listOf(
-                BattleSetup(EntryHazards(false, 2), value.initialDamages),
+                BattleSetup(EntryHazards(false, Spikes.TWO_LAYERS), value.initialDamages),
                 BattleSetup(value.entryHazards, listOf(BigInteger.TWO, one)),
             ),
         )

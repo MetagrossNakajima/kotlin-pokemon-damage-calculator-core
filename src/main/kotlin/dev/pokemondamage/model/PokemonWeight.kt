@@ -4,7 +4,9 @@ import kotlin.math.roundToInt
 
 /** Weight stored exactly in 0.1 kg units. */
 @JvmInline
-value class PokemonWeight(val hectograms: Int) {
+value class PokemonWeight(
+    val hectograms: Int,
+) {
     init {
         requireInput(hectograms in 1..9999, "value", ValidationCode.OUT_OF_RANGE)
     }

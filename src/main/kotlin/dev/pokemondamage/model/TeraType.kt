@@ -1,6 +1,8 @@
 package dev.pokemondamage.model
 
-enum class TeraType(val pokemonType: PokemonType?) {
+enum class TeraType(
+    val pokemonType: PokemonType?,
+) {
     NORMAL(PokemonType.NORMAL),
     FIRE(PokemonType.FIRE),
     WATER(PokemonType.WATER),

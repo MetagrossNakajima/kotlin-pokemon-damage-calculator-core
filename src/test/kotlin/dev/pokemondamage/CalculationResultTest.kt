@@ -1,8 +1,21 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.DamageDistribution
+import dev.pokemondamage.model.DamageKind
+import dev.pokemondamage.model.DamageResult
+import dev.pokemondamage.model.FailureKind
+import dev.pokemondamage.model.HitResult
+import dev.pokemondamage.model.ModifierStage
+import dev.pokemondamage.model.ModifierTrace
 import java.math.BigInteger
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 class CalculationResultTest {
     @Test
@@ -37,8 +50,10 @@ class CalculationResultTest {
         assertEquals(19L, step.after)
         assertFailsWith<UnsupportedOperationException> { (hit.rolls as MutableList).clear() }
         assertFailsWith<UnsupportedOperationException> { (hit.trace as MutableList).clear() }
-        for (invalid in listOf(0, 1000)) assertFailsWith<IllegalArgumentException> {
-            result.copy(referenceHp = invalid)
+        for (invalid in listOf(0, 1000)) {
+            assertFailsWith<IllegalArgumentException> {
+                result.copy(referenceHp = invalid)
+            }
         }
     }
 

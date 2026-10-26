@@ -17,8 +17,11 @@ class CombinedDamageRequest(
         checks.require(this.attacks.isNotEmpty(), "attacks", ValidationCode.REQUIRED)
         this.attacks.forEachIndexed { index, attack ->
             val ordered =
-                if (index == 0) attack.turn == 1L
-                else attack.turn - this.attacks[index - 1].turn in 0L..1L
+                if (index == 0) {
+                    attack.turn == 1L
+                } else {
+                    attack.turn - this.attacks[index - 1].turn in 0L..1L
+                }
             checks.require(ordered, "attacks[$index].turn", ValidationCode.INCONSISTENT)
         }
         checks.finish()
@@ -50,8 +53,11 @@ class CombinedDamageRequest(
                 defender,
                 (1L..4L).map { turn ->
                     val hits = listOf(if (turn == 1L) firstHit else subsequentHit)
-                    if (hitCounts == null) Attack.fromAccuracy(turn, hits, accuracyPercent)
-                    else Attack(turn, hits, hitCounts, mapOf(1 to BigInteger.ONE))
+                    if (hitCounts == null) {
+                        Attack.fromAccuracy(turn, hits, accuracyPercent)
+                    } else {
+                        Attack(turn, hits, hitCounts, mapOf(1 to BigInteger.ONE))
+                    }
                 },
                 field,
                 setup,

@@ -3,8 +3,33 @@ package dev.pokemondamage
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.engine.power.FinalPower
 import dev.pokemondamage.engine.power.PowerModifiers
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.DamageResult
+import dev.pokemondamage.model.EnumFlags
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveFlag
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.PokemonFlags
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.Status
+import dev.pokemondamage.model.TeraType
+import dev.pokemondamage.model.Weather
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 class ReferencePowerTest {
     @Test
@@ -28,6 +53,7 @@ class ReferencePowerTest {
         val differences = mutableListOf<String>()
         for (row in rows) {
             val c = row.split('\t')
+
             fun stats(text: String) =
                 text.split(',').map(String::toInt).let {
                     Stats(it[0], it[1], it[2], it[3], it[4], it[5])
@@ -62,17 +88,28 @@ class ReferencePowerTest {
                     ),
                 )
             val actual = PowerModifiers.calculate(context, c[4].toLong()).finish().value
-            if (actual != c[7].toInt()) differences += "$row actual=$actual"
+            if (actual != c[7].toInt()) {
+                differences += "$row actual=$actual"
+            }
             val finalPower = FinalPower.calculate(context).value
-            if (finalPower != c[8].toInt()) differences += "$row finalPower=$finalPower"
+            if (finalPower != c[8].toInt()) {
+                differences += "$row finalPower=$finalPower"
+            }
             val damage =
                 assertIs<Calculation.Success<DamageResult>>(calculateDamage(context.request))
                     .value
                     .hit
                     .rolls
-            val encoded = c[11].removePrefix("[").removeSuffix("]").split(',').map(String::toInt)
+            val encoded =
+                c[11]
+                    .removePrefix("[")
+                    .removeSuffix("]")
+                    .split(',')
+                    .map(String::toInt)
             val expected = if (encoded.size == 1) List(16) { encoded.single() } else encoded
-            if (damage != expected) differences += "$row actualDamage=$damage"
+            if (damage != expected) {
+                differences += "$row actualDamage=$damage"
+            }
         }
         assertEquals(emptyList(), differences)
     }
@@ -123,7 +160,9 @@ class ReferencePowerTest {
                     ),
                 )
             val actual = FinalPower.calculate(context).value
-            if (actual != c[7].toInt()) differences += "$row actual=$actual"
+            if (actual != c[7].toInt()) {
+                differences += "$row actual=$actual"
+            }
         }
         assertEquals(emptyList(), differences)
     }

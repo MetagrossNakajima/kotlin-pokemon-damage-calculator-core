@@ -1,7 +1,43 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleSetup
+import dev.pokemondamage.model.CalculationLimits
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.DamageResult
+import dev.pokemondamage.model.EntryHazards
+import dev.pokemondamage.model.ExactProbability
+import dev.pokemondamage.model.HitResult
+import dev.pokemondamage.model.InputValidationException
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Spikes
+import dev.pokemondamage.model.Stat
+import dev.pokemondamage.model.StatStages
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.Status
+import dev.pokemondamage.model.TeraType
+import dev.pokemondamage.model.Terrain
+import dev.pokemondamage.model.ToxicCounter
+import dev.pokemondamage.model.Validation
+import dev.pokemondamage.model.ValidationCode
+import dev.pokemondamage.model.ValidationError
+import dev.pokemondamage.model.validate
+import dev.pokemondamage.model.validateEnum
+import dev.pokemondamage.model.zip
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
+import kotlin.test.assertSame
 
 class ValidationTest {
     private fun range(path: String) = ValidationError(path, ValidationCode.OUT_OF_RANGE)
@@ -22,7 +58,7 @@ class ValidationTest {
 
     @Test
     fun `stage diagnostics and successful values retain constructor semantics`() {
-        val invalid = validate { StatStages(-7, 7, -7, 7, -7) }
+        val invalid = validate { StatStages.fromValues(-7, 7, -7, 7, -7) }
         assertEquals(
             listOf("attack", "defense", "specialAttack", "specialDefense", "speed").map(::range),
             assertIs<Validation.Invalid>(invalid).errors,
@@ -32,23 +68,26 @@ class ValidationTest {
             Stats(1, 999, 100, 100, 100, 100),
             assertIs<Validation.Valid<Stats>>(valid).value,
         )
-        assertEquals(Validation.Valid(StatStages()), validate { StatStages() })
+        assertEquals(
+            Validation.Valid(StatStages.fromValues()),
+            validate { StatStages.fromValues() },
+        )
     }
 
     @Test
     fun `independent invalid inputs combine without executing the model builder`() {
         val stats = validate("stats") { Stats(0, 100, 100, 100, 100, 100) }
-        val stages = validate("stages") { StatStages(speed = 7) }
+        val stages = validate("stages") { StatStages.fromValues(speed = 7) }
         val both = stats.zip(stages) { _, _ -> error("invalid inputs must not reach builder") }
         assertEquals(
             listOf(range("stats.hp"), range("stages.speed")),
             assertIs<Validation.Invalid>(both).errors,
         )
         val goodStats = validate { Stats(100, 100, 100, 100, 100, 100) }
-        val goodStages = validate { StatStages() }
+        val goodStages = validate { StatStages.fromValues() }
         assertSame(stats, stats.zip(goodStages) { _, _ -> error("invalid left") })
         assertSame(stages, goodStats.zip(stages) { _, _ -> error("invalid right") })
-        val success = goodStats.zip(goodStages) { s, r -> s.hp + r.attack }
+        val success = goodStats.zip(goodStages) { s, r -> s.hp + r.attack.value }
         assertEquals(Validation.Valid(100), success)
         val rejectedBuild = goodStats.zip(goodStages) { s, _ -> s.copy(hp = 0) }
         assertEquals(listOf(range("hp")), assertIs<Validation.Invalid>(rejectedBuild).errors)
@@ -69,20 +108,15 @@ class ValidationTest {
             validate("defender") {
                 p.copy(
                     currentHp = 201,
-                    toxicCounter = 16,
+                    toxicCounter = ToxicCounter(1),
                     boostedStat = Stat.HP,
-                    faintedAllies = -1,
-                    timesHit = 101,
                 )
             }
         assertEquals(
             listOf(
                 ValidationError("defender.currentHp", ValidationCode.INCONSISTENT),
-                range("defender.toxicCounter"),
                 ValidationError("defender.toxicCounter", ValidationCode.INCONSISTENT),
                 ValidationError("defender.boostedStat", ValidationCode.INCONSISTENT),
-                range("defender.faintedAllies"),
-                range("defender.timesHit"),
             ),
             assertIs<Validation.Invalid>(result).errors,
         )
@@ -136,13 +170,13 @@ class ValidationTest {
             assertIs<Validation.Invalid>(setup).errors,
         )
         val limits = validate("limits") { CalculationLimits(0, -1) }
-        val hazards = validate("setup.entryHazards") { EntryHazards(spikesLayers = 4) }
+        val hazards = validate("setup.entryHazards") { EntryHazards(spikes = Spikes.fromLayers(4)) }
         val result = limits.zip(hazards) { _, _ -> error("invalid inputs") }
         assertEquals(
             listOf(
                 range("limits.maxOperations"),
                 range("limits.maxStates"),
-                range("setup.entryHazards.spikesLayers"),
+                range("setup.entryHazards.layers"),
             ),
             assertIs<Validation.Invalid>(result).errors,
         )
@@ -179,10 +213,12 @@ class ValidationTest {
                 validate { MoveId("") },
                 validate { PokemonId("") },
             )
-        for (id in ids) assertEquals(
-            listOf(ValidationError("value", ValidationCode.REQUIRED)),
-            assertIs<Validation.Invalid>(id).errors,
-        )
+        for (id in ids) {
+            assertEquals(
+                listOf(ValidationError("value", ValidationCode.REQUIRED)),
+                assertIs<Validation.Invalid>(id).errors,
+            )
+        }
         val types = validate { PokemonTypes(PokemonType.FIRE, PokemonType.FIRE) }
         assertEquals(
             listOf(ValidationError("types", ValidationCode.DUPLICATE)),
@@ -192,9 +228,8 @@ class ValidationTest {
             assertEquals(
                 listOf(range("weight.value")),
                 assertIs<Validation.Invalid>(
-                        validate("weight") { PokemonWeight.fromKilograms(value) },
-                    )
-                    .errors,
+                    validate("weight") { PokemonWeight.fromKilograms(value) },
+                ).errors,
             )
         }
         assertEquals(
@@ -209,10 +244,12 @@ class ValidationTest {
 
     @Test
     fun `enum parsing retains typed values and reports unknown spelling`() {
-        for (type in PokemonType.entries) assertEquals(
-            Validation.Valid(type),
-            validateEnum(type.name, PokemonType.entries),
-        )
+        for (type in PokemonType.entries) {
+            assertEquals(
+                Validation.Valid(type),
+                validateEnum(type.name, PokemonType.entries),
+            )
+        }
         assertEquals(Validation.Valid(TeraType.STELLAR), validateEnum("STELLAR", TeraType.entries))
         assertEquals(Validation.Valid(Terrain.GRASS), validateEnum("GRASS", Terrain.entries))
         for (text in listOf("", "Normal", "STELLAR")) {

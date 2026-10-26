@@ -12,10 +12,12 @@ class Attack(
 ) {
     val hits: List<DamageDistribution> = java.util.List.copyOf(hits)
     val hitCounts: Map<Int, BigInteger> = Collections.unmodifiableMap(hitCounts.toSortedMap())
+
     /** Counts conditional on accuracy succeeding; absent for independent per-hit accuracy. */
-    val conditionalHitCounts: Map<Int, BigInteger>? = conditionalHitCounts?.let {
-        Collections.unmodifiableMap(it.toSortedMap())
-    }
+    val conditionalHitCounts: Map<Int, BigInteger>? =
+        conditionalHitCounts?.let {
+            Collections.unmodifiableMap(it.toSortedMap())
+        }
 
     init {
         val checks = InputChecks()
@@ -44,7 +46,7 @@ class Attack(
             hits: List<DamageDistribution>,
             accuracyPercent: Int = 100,
             hitCountWeights: Map<Int, BigInteger> = mapOf(1 to BigInteger.ONE),
-            accuracyPerHit: Boolean = false,
+            accuracyMode: AccuracyMode = AccuracyMode.ONCE_PER_ATTACK,
         ): Attack {
             val checks = InputChecks()
             checks.require(turn >= 1, "turn", ValidationCode.OUT_OF_RANGE)
@@ -60,10 +62,16 @@ class Attack(
             val miss = (100 - accuracyPercent).toBigInteger()
             val hundred = BigInteger.valueOf(100)
             val counts = sortedMapOf<Int, BigInteger>()
-            fun add(count: Int, weight: BigInteger) {
-                if (weight.signum() > 0) counts.merge(count, weight, BigInteger::add)
+
+            fun add(
+                count: Int,
+                weight: BigInteger,
+            ) {
+                if (weight.signum() > 0) {
+                    counts.merge(count, weight, BigInteger::add)
+                }
             }
-            if (accuracyPerHit) {
+            if (accuracyMode == AccuracyMode.UNTIL_FIRST_MISS) {
                 val maximum = hitCountWeights.keys.max()
                 for ((maximumHits, weight) in hitCountWeights) {
                     for (count in 0 until maximumHits) {
@@ -88,7 +96,7 @@ class Attack(
                 turn,
                 hits,
                 counts.mapValues { (_, weight) -> weight / divisor },
-                if (accuracyPerHit) null else hitCountWeights,
+                if (accuracyMode == AccuracyMode.UNTIL_FIRST_MISS) null else hitCountWeights,
             )
         }
 

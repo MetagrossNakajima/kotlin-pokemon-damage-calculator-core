@@ -3,8 +3,30 @@ package dev.pokemondamage
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.engine.damage.ParentalBond
 import dev.pokemondamage.engine.damage.PreRandomDamage
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.BattleFormat
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.ModifierStage
+import dev.pokemondamage.model.ModifierTrace
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.PokemonFlags
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.Weather
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class PreRandomDamageTest {
     private val pokemon =
@@ -21,19 +43,20 @@ class PreRandomDamageTest {
         spread: Boolean = false,
         field: BattleField = BattleField(),
         hit: Int = 0,
-    ) =
-        DamageContext(
-            DamageRequest(
-                a,
-                d,
-                Move(MoveId(name), type, 60, Category.PHYSICAL, spread = spread),
-                field,
-                hitIndex = hit.toLong(),
-            ),
-        )
+    ) = DamageContext(
+        DamageRequest(
+            a,
+            d,
+            Move(MoveId(name), type, 60, Category.PHYSICAL, spread = spread),
+            field,
+            hitIndex = hit.toLong(),
+        ),
+    )
 
-    private fun damage(c: DamageContext = context(), critical: Boolean = false) =
-        PreRandomDamage.calculate(c, 60, 100, 100, critical)
+    private fun damage(
+        c: DamageContext = context(),
+        critical: Boolean = false,
+    ) = PreRandomDamage.calculate(c, 60, 100, 100, critical)
 
     @Test
     fun `base damage and critical floor retain exact trace`() {
@@ -54,11 +77,13 @@ class PreRandomDamageTest {
 
     @Test
     fun `spread reduction requires doubles and a spread move`() {
-        for (format in BattleFormat.entries) for (spread in listOf(true, false)) {
-            assertEquals(
-                if (format == BattleFormat.DOUBLE && spread) 21 else 28,
-                damage(context(spread = spread, field = BattleField(format = format))).value,
-            )
+        for (format in BattleFormat.entries) {
+            for (spread in listOf(true, false)) {
+                assertEquals(
+                    if (format == BattleFormat.DOUBLE && spread) 21 else 28,
+                    damage(context(spread = spread, field = BattleField(format = format))).value,
+                )
+            }
         }
     }
 
@@ -68,65 +93,78 @@ class PreRandomDamageTest {
         assertFalse(ParentalBond.applies(context()))
         assertTrue(ParentalBond.applies(context(a)))
         assertFalse(ParentalBond.applies(context(a, name = "DoubleKick")))
-        for (format in BattleFormat.entries) for (spread in listOf(true, false)) {
-            val field = BattleField(format = format)
-            val applies = format != BattleFormat.DOUBLE || !spread
-            assertEquals(applies, ParentalBond.applies(context(a, spread = spread, field = field)))
-            for (hit in 0..2) assertEquals(
-                if (!applies) 21 else if (hit == 1) 7 else 28,
-                damage(context(a, spread = spread, field = field, hit = hit)).value,
-            )
+        for (format in BattleFormat.entries) {
+            for (spread in listOf(true, false)) {
+                val field = BattleField(format = format)
+                val applies = format != BattleFormat.DOUBLE || !spread
+                assertEquals(
+                    applies,
+                    ParentalBond.applies(context(a, spread = spread, field = field)),
+                )
+                for (hit in 0..2) {
+                    assertEquals(
+                        if (!applies) {
+                            21
+                        } else if (hit == 1) {
+                            7
+                        } else {
+                            28
+                        },
+                        damage(context(a, spread = spread, field = field, hit = hit)).value,
+                    )
+                }
+            }
         }
         assertEquals(
             28,
             damage(
-                    context(
-                        a.copy(flags = PokemonFlags(mapOf(PokemonFlag.ABILITY_SUPPRESSED to true))),
-                        hit = 1,
-                    ),
-                )
-                .value,
+                context(
+                    a.copy(flags = PokemonFlags(mapOf(PokemonFlag.ABILITY_SUPPRESSED to true))),
+                    hit = 1,
+                ),
+            ).value,
         )
     }
 
     @Test
     fun `weather applies by effective type and the defenders active umbrella`() {
-        for (weather in listOf(null) + Weather.entries) for (type in PokemonType.entries) {
-            val field = BattleField(weather = weather)
-            val expected =
-                when {
-                    weather == Weather.SUNLIGHT && type == PokemonType.FIRE ||
-                        weather == Weather.RAIN && type == PokemonType.WATER -> 42
-                    weather == Weather.SUNLIGHT && type == PokemonType.WATER ||
-                        weather == Weather.RAIN && type == PokemonType.FIRE -> 14
-                    else -> 28
-                }
-            assertEquals(expected, damage(context(type = type, field = field)).value)
-            assertEquals(
-                expected,
-                damage(
+        for (weather in listOf(null) + Weather.entries) {
+            for (type in PokemonType.entries) {
+                val field = BattleField(weather = weather)
+                val expected =
+                    when {
+                        (weather == Weather.SUNLIGHT && type == PokemonType.FIRE) ||
+                            (weather == Weather.RAIN && type == PokemonType.WATER) -> 42
+
+                        (weather == Weather.SUNLIGHT && type == PokemonType.WATER) ||
+                            (weather == Weather.RAIN && type == PokemonType.FIRE) -> 14
+
+                        else -> 28
+                    }
+                assertEquals(expected, damage(context(type = type, field = field)).value)
+                assertEquals(
+                    expected,
+                    damage(
                         context(
                             pokemon.copy(item = ItemId("UtilityUmbrella")),
                             type = type,
                             field = field,
                         ),
-                    )
-                    .value,
-            )
-            assertEquals(
-                28,
-                damage(
+                    ).value,
+                )
+                assertEquals(
+                    28,
+                    damage(
                         context(
                             d = pokemon.copy(item = ItemId("UtilityUmbrella")),
                             type = type,
                             field = field,
                         ),
-                    )
-                    .value,
-            )
-            assertEquals(
-                expected,
-                damage(
+                    ).value,
+                )
+                assertEquals(
+                    expected,
+                    damage(
                         context(
                             d =
                                 pokemon.copy(
@@ -136,20 +174,19 @@ class PreRandomDamageTest {
                             type = type,
                             field = field,
                         ),
-                    )
-                    .value,
-            )
+                    ).value,
+                )
+            }
         }
         assertEquals(
             28,
             damage(
-                    context(
-                        d = pokemon.copy(ability = AbilityId("CloudNine")),
-                        type = PokemonType.FIRE,
-                        field = BattleField(weather = Weather.SUNLIGHT),
-                    ),
-                )
-                .value,
+                context(
+                    d = pokemon.copy(ability = AbilityId("CloudNine")),
+                    type = PokemonType.FIRE,
+                    field = BattleField(weather = Weather.SUNLIGHT),
+                ),
+            ).value,
         )
     }
 
@@ -164,14 +201,13 @@ class PreRandomDamageTest {
         assertEquals(
             42,
             damage(
-                    context(
-                        d = umbrella,
-                        name = "HydroSteam",
-                        type = PokemonType.WATER,
-                        field = sun,
-                    ),
-                )
-                .value,
+                context(
+                    d = umbrella,
+                    name = "HydroSteam",
+                    type = PokemonType.WATER,
+                    field = sun,
+                ),
+            ).value,
         )
         assertEquals(
             14,
@@ -181,39 +217,36 @@ class PreRandomDamageTest {
         assertEquals(
             28,
             damage(
-                    context(
-                        umbrella,
-                        umbrella,
-                        name = "HydroSteam",
-                        type = PokemonType.WATER,
-                        field = sun,
-                    ),
-                )
-                .value,
+                context(
+                    umbrella,
+                    umbrella,
+                    name = "HydroSteam",
+                    type = PokemonType.WATER,
+                    field = sun,
+                ),
+            ).value,
         )
         assertEquals(
             42,
             damage(
-                    context(
-                        name = "HydroSteam",
-                        type = PokemonType.WATER,
-                        field = BattleField(weather = Weather.RAIN),
-                    ),
-                )
-                .value,
+                context(
+                    name = "HydroSteam",
+                    type = PokemonType.WATER,
+                    field = BattleField(weather = Weather.RAIN),
+                ),
+            ).value,
         )
         assertEquals(28, damage(context(name = "HydroSteam", type = PokemonType.WATER)).value)
         assertEquals(
             42,
             damage(
-                    context(
-                        pokemon.copy(ability = AbilityId("MegaSol")),
-                        pokemon.copy(ability = AbilityId("CloudNine")),
-                        name = "HydroSteam",
-                        type = PokemonType.WATER,
-                    ),
-                )
-                .value,
+                context(
+                    pokemon.copy(ability = AbilityId("MegaSol")),
+                    pokemon.copy(ability = AbilityId("CloudNine")),
+                    name = "HydroSteam",
+                    type = PokemonType.WATER,
+                ),
+            ).value,
         )
     }
 

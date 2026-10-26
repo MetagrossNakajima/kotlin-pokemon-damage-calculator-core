@@ -1,8 +1,38 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.AccuracyMode
+import dev.pokemondamage.model.Attack
+import dev.pokemondamage.model.BattleSetup
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.CalculationLimits
+import dev.pokemondamage.model.CombinedDamageRequest
+import dev.pokemondamage.model.CombinedDamageResult
+import dev.pokemondamage.model.DamageDistribution
+import dev.pokemondamage.model.FailureKind
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.KoCategory
+import dev.pokemondamage.model.KoInfo
+import dev.pokemondamage.model.KoStatus
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.Status
+import dev.pokemondamage.model.ToxicCounter
 import java.math.BigInteger
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 class CombinedCalculatorTest {
     private val one = BigInteger.ONE
@@ -14,15 +44,19 @@ class CombinedCalculatorTest {
 
     private fun hit(vararg rolls: Int) = DamageDistribution.fromRolls(rolls.toList())
 
-    private fun attack(turn: Int, vararg rolls: Int, accuracy: Int = 100) =
-        Attack.fromAccuracy(turn.toLong(), listOf(hit(*rolls)), accuracy)
+    private fun attack(
+        turn: Int,
+        vararg rolls: Int,
+        accuracy: Int = 100,
+    ) = Attack.fromAccuracy(turn.toLong(), listOf(hit(*rolls)), accuracy)
 
     private fun result(request: CombinedDamageRequest) =
         assertIs<Calculation.Success<CombinedDamageResult>>(calculateCombinedDamage(request)).value
 
-    private fun weights(vararg pairs: Pair<Int, Int>) = pairs.associate {
-        it.first.toBigInteger() to it.second.toBigInteger()
-    }
+    private fun weights(vararg pairs: Pair<Int, Int>) =
+        pairs.associate {
+            it.first.toBigInteger() to it.second.toBigInteger()
+        }
 
     @Test
     fun `combined calculator preserves accuracy damage HP and conditional KO counts`() {
@@ -97,7 +131,14 @@ class CombinedCalculatorTest {
         assertEquals(0.5, r.knockout.probability)
         assertEquals(KoInfo(KoStatus.NOT_APPLICABLE, 1), r.ko)
         assertEquals(KoCategory.NOT_APPLICABLE, r.ko.category)
-        val perHit = Attack.fromAccuracy(1, listOf(hit(50), hit(50)), 50, mapOf(2 to one), true)
+        val perHit =
+            Attack.fromAccuracy(
+                1,
+                listOf(hit(50), hit(50)),
+                50,
+                mapOf(2 to one),
+                AccuracyMode.UNTIL_FIRST_MISS,
+            )
         val multi = result(CombinedDamageRequest(defender, listOf(perHit)))
         assertEquals(0.25, multi.knockout.probability)
         assertEquals(KoStatus.NOT_APPLICABLE, multi.ko.status)
@@ -150,14 +191,14 @@ class CombinedCalculatorTest {
                 item = ItemId("SitrusBerry"),
                 ability = AbilityId("CudChew"),
                 status = Status.TOXIC,
-                toxicCounter = 1,
+                toxicCounter = ToxicCounter(1),
                 cudChewTurn = 9,
             )
         val r = result(CombinedDamageRequest(p, listOf(attack(1, 50))))
         val s = r.finalStates.single().state
         assertEquals(69, s.currentHp) // 100 - 50 + 25 - 6.
         assertTrue(s.itemConsumed)
-        assertEquals(2, s.toxicCounter)
+        assertEquals(2, s.toxicCounter?.value)
         assertEquals(2L, s.cudChewTurn)
         assertSame(p, s.initialPokemon)
         assertEquals(one, r.finalStates.single().weight)
@@ -182,22 +223,25 @@ class CombinedCalculatorTest {
     fun `complexity budget covers input convolution conditional work and final accounting`() {
         val request =
             CombinedDamageRequest.repeatSingleHit(hit(10, 20), defender, accuracyPercent = 50)
-        var firstSuccess: Int? = null
-        for (operations in 1..500) {
-            val r =
-                calculateCombinedDamage(
-                    CombinedDamageRequest(
-                        defender,
-                        request.attacks,
-                        limits = CalculationLimits(operations.toLong(), 1000),
-                    ),
+        val firstSuccess =
+            (1..500).firstOrNull { operations ->
+                val r =
+                    calculateCombinedDamage(
+                        CombinedDamageRequest(
+                            defender,
+                            request.attacks,
+                            limits = CalculationLimits(operations.toLong(), 1000),
+                        ),
+                    )
+                if (r is Calculation.Success) {
+                    return@firstOrNull true
+                }
+                assertEquals(
+                    Calculation.Failure(FailureKind.COMPLEXITY_EXCEEDED, "distribution"),
+                    r,
                 )
-            if (r is Calculation.Success) {
-                firstSuccess = operations
-                break
+                false
             }
-            assertEquals(Calculation.Failure(FailureKind.COMPLEXITY_EXCEEDED, "distribution"), r)
-        }
         assertNotNull(firstSuccess)
         assertTrue(firstSuccess > 30)
         assertEquals(
@@ -223,10 +267,12 @@ class CombinedCalculatorTest {
                 KoCategory.FOUR_HITS,
                 KoCategory.FIVE_OR_MORE,
             )
-        for ((count, category) in categories.withIndex()) assertEquals(
-            category,
-            KoInfo(KoStatus.RESOLVED, 5, count, count).category,
-        )
+        for ((count, category) in categories.withIndex()) {
+            assertEquals(
+                category,
+                KoInfo(KoStatus.RESOLVED, 5, count, count).category,
+            )
+        }
         assertEquals(KoCategory.FIVE_OR_MORE, KoInfo(KoStatus.LIMIT_REACHED, 4).category)
         assertEquals(KoCategory.UNDETERMINED, KoInfo(KoStatus.LIMIT_REACHED, 3).category)
         assertEquals(KoCategory.NOT_APPLICABLE, KoInfo(KoStatus.NOT_APPLICABLE, 4).category)

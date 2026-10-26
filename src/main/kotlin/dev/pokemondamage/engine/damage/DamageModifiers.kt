@@ -3,27 +3,35 @@ package dev.pokemondamage.engine.damage
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.math.ModifierChain
 import dev.pokemondamage.math.TracedValue
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.FieldEffect
+import dev.pokemondamage.model.ModifierStage
+import dev.pokemondamage.model.MoveFlag
+import dev.pokemondamage.model.TeraType
 import dev.pokemondamage.rules.ItemRules
 
 /** Final modifiers are chained in battle order and applied separately to each random roll. */
 internal object DamageModifiers {
-    fun calculate(context: DamageContext, critical: Boolean, effectiveness: Double): TracedValue {
+    fun calculate(
+        context: DamageContext,
+        critical: Boolean,
+        effectiveness: Double,
+    ): TracedValue {
         val ability = context.attackerAbility?.value.orEmpty()
         val defenderAbility = context.defenderAbility?.value.orEmpty()
         val item = context.attackerItem?.value.orEmpty()
         val firstHit = context.request.hitIndex == 0L
         val type = context.move.type
         val screens = context.defender.sideConditions
+        val screened = if (context.physical) screens.reflect else screens.lightScreen
         return ModifierChain("damage", ModifierStage.DAMAGE_MODIFIER)
             .apply {
                 add(
                     "Screen",
-                    if (context.field.format == BattleFormat.SINGLE) 2048 else 2732,
+                    context.field.format.screenModifier,
                     !critical &&
                         ability != "Infiltrator" &&
                         context.move.original.id.value !in screenBreakers &&
-                        if (context.physical) screens.reflect else screens.lightScreen,
+                        screened,
                 )
                 add("Neuroforce", 5120, ability == "Neuroforce" && effectiveness > 1)
                 add("Sniper", 6144, ability == "Sniper" && critical)
@@ -54,8 +62,7 @@ internal object DamageModifiers {
                         (effectiveness > 1 || type == TeraType.NORMAL) &&
                         !context.unnerve,
                 )
-            }
-            .finish()
+            }.finish()
     }
 
     private val screenBreakers = setOf("BrickBreak", "RagingBull", "PsychicFangs")

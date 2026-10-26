@@ -1,7 +1,24 @@
 package dev.pokemondamage.rules
 
 import dev.pokemondamage.model.PokemonType
-import dev.pokemondamage.model.PokemonType.*
+import dev.pokemondamage.model.PokemonType.BUG
+import dev.pokemondamage.model.PokemonType.DARK
+import dev.pokemondamage.model.PokemonType.DRAGON
+import dev.pokemondamage.model.PokemonType.ELECTRIC
+import dev.pokemondamage.model.PokemonType.FAIRY
+import dev.pokemondamage.model.PokemonType.FIGHTING
+import dev.pokemondamage.model.PokemonType.FIRE
+import dev.pokemondamage.model.PokemonType.FLYING
+import dev.pokemondamage.model.PokemonType.GHOST
+import dev.pokemondamage.model.PokemonType.GRASS
+import dev.pokemondamage.model.PokemonType.GROUND
+import dev.pokemondamage.model.PokemonType.ICE
+import dev.pokemondamage.model.PokemonType.NORMAL
+import dev.pokemondamage.model.PokemonType.POISON
+import dev.pokemondamage.model.PokemonType.PSYCHIC
+import dev.pokemondamage.model.PokemonType.ROCK
+import dev.pokemondamage.model.PokemonType.STEEL
+import dev.pokemondamage.model.PokemonType.WATER
 
 /** Generation 6 onward type chart, before battle-specific immunity overrides. */
 internal object TypeChart {
@@ -154,6 +171,8 @@ internal object TypeChart {
                 ),
         )
 
-    fun effectiveness(attack: PokemonType, defense: PokemonType): Double =
-        matchups.getValue(attack)[defense] ?: 1.0
+    fun effectiveness(
+        attack: PokemonType,
+        defense: PokemonType,
+    ): Double = matchups.getValue(attack)[defense] ?: 1.0
 }

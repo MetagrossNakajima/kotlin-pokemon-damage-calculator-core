@@ -3,7 +3,10 @@ package dev.pokemondamage
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.engine.SingleHit
 import dev.pokemondamage.engine.damage.FixedDamage
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.DamageResult
+import dev.pokemondamage.model.FailureKind
 import dev.pokemondamage.rules.MoveRules
 
 /**
@@ -14,8 +17,12 @@ fun calculateDamage(request: DamageRequest): Calculation<DamageResult> {
         return Calculation.Failure(FailureKind.UNSUPPORTED, "move.${request.move.id.value}")
     }
     val context = DamageContext(request)
+    val fixedKind = MoveRules.fixedDamageKind(request.move.id)
     val hit =
-        if (MoveRules.isFixedDamage(request.move.id)) FixedDamage.calculate(context)
-        else SingleHit.calculate(context)
+        if (fixedKind != null) {
+            FixedDamage.calculate(context, fixedKind)
+        } else {
+            SingleHit.calculate(context)
+        }
     return Calculation.Success(DamageResult(hit, request.defender.stats.hp))
 }

@@ -2,8 +2,23 @@ package dev.pokemondamage
 
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.engine.damage.Stab
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.PokemonFlags
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.TeraType
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class StabTest {
     private val base =
@@ -12,12 +27,14 @@ class StabTest {
             Stats(200, 100, 100, 100, 100, 100),
         )
 
-    private fun stab(a: PokemonState, type: PokemonType = PokemonType.NORMAL) =
-        Stab.calculate(
-            DamageContext(
-                DamageRequest(a, base, Move(MoveId("Custom"), type, 60, Category.PHYSICAL)),
-            ),
-        )
+    private fun stab(
+        a: PokemonState,
+        type: PokemonType = PokemonType.NORMAL,
+    ) = Stab.calculate(
+        DamageContext(
+            DamageRequest(a, base, Move(MoveId("Custom"), type, 60, Category.PHYSICAL)),
+        ),
+    )
 
     @Test
     fun `STAB matches reference across types tera abilities and stellar availability`() {
@@ -49,11 +66,15 @@ class StabTest {
             // Tera Starstorm prepares Stellar on Terapagos-Stellar; ordinary moves preserve caller
             // type.
             val move =
-                if (c[2] == "STELLAR")
+                if (c[2] == "STELLAR") {
                     Move(MoveId("TeraStarstorm"), PokemonType.NORMAL, 120, Category.SPECIAL)
-                else Move(MoveId("Custom"), PokemonType.valueOf(c[2]), 60, Category.PHYSICAL)
+                } else {
+                    Move(MoveId("Custom"), PokemonType.valueOf(c[2]), 60, Category.PHYSICAL)
+                }
             val actual = Stab.calculate(DamageContext(DamageRequest(a, base, move)))
-            if (actual != c[6].toInt()) differences += "$row actual=$actual"
+            if (actual != c[6].toInt()) {
+                differences += "$row actual=$actual"
+            }
         }
         assertEquals(emptyList(), differences)
     }

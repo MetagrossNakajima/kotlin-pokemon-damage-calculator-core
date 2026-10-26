@@ -3,7 +3,14 @@ package dev.pokemondamage.engine.damage
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.math.BattleMath
 import dev.pokemondamage.math.TracedValue
-import dev.pokemondamage.model.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleFormat
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.ModifierStage
+import dev.pokemondamage.model.ModifierTrace
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.TeraType
+import dev.pokemondamage.model.Weather
 
 /** Base damage followed by spread, child hit, weather and critical modifiers in battle order. */
 internal object PreRandomDamage {
@@ -14,76 +21,97 @@ internal object PreRandomDamage {
         defense: Int,
         critical: Boolean,
     ): TracedValue {
-        var damage = BattleMath.baseDamage(power, attack, defense)
-        val trace =
-            mutableListOf(
-                ModifierTrace(
-                    "BaseDamage",
-                    ModifierStage.DAMAGE,
-                    1,
-                    1,
-                    damage.toLong(),
-                    damage.toLong(),
+        val baseDamage = BattleMath.baseDamage(power, attack, defense)
+        val base =
+            TracedValue(
+                baseDamage,
+                listOf(
+                    ModifierTrace(
+                        "BaseDamage",
+                        ModifierStage.DAMAGE,
+                        1,
+                        1,
+                        baseDamage.toLong(),
+                        baseDamage.toLong(),
+                    ),
                 ),
             )
-        fun apply(id: String, multiplier: Int) {
-            val before = damage
-            damage = BattleMath.modifyDamage(damage, multiplier)
-            trace +=
-                ModifierTrace(
-                    id,
-                    ModifierStage.DAMAGE,
-                    multiplier.toLong(),
-                    4096,
-                    before.toLong(),
-                    damage.toLong(),
-                )
-        }
-        if (context.field.format == BattleFormat.DOUBLE && context.move.original.spread)
-            apply("Spread", 3072)
-        if (context.request.hitIndex == 1L && ParentalBond.applies(context))
-            apply("ParentalBond", 1024)
+        val spread =
+            if (context.field.format == BattleFormat.DOUBLE &&
+                context.move.original.spread
+            ) {
+                apply(base, "Spread", 3072)
+            } else {
+                base
+            }
+        val childHit =
+            if (context.request.hitIndex == 1L && ParentalBond.applies(context)) {
+                apply(spread, "ParentalBond", 1024)
+            } else {
+                spread
+            }
         val weatherModifier = weatherModifier(context)
-        if (weatherModifier != 4096) apply("Weather", weatherModifier)
-        if (critical) {
-            val before = damage
-            damage = BattleMath.unsigned32(damage.toLong() * 3 / 2).toInt()
-            trace +=
-                ModifierTrace(
-                    "Critical",
-                    ModifierStage.DAMAGE,
-                    6144,
-                    4096,
-                    before.toLong(),
-                    damage.toLong(),
-                )
+        val weather =
+            if (weatherModifier != 4096) {
+                apply(childHit, "Weather", weatherModifier)
+            } else {
+                childHit
+            }
+        return if (critical) {
+            val damage = BattleMath.unsigned32(weather.value.toLong() * 3 / 2).toInt()
+            weather.step("Critical", ModifierStage.DAMAGE, 6144, 4096, damage)
+        } else {
+            weather
         }
-        return TracedValue(damage, trace)
     }
+
+    private fun apply(
+        before: TracedValue,
+        id: String,
+        multiplier: Int,
+    ): TracedValue =
+        before.step(
+            id,
+            ModifierStage.DAMAGE,
+            multiplier.toLong(),
+            4096,
+            BattleMath.modifyDamage(before.value, multiplier),
+        )
 
     private fun weatherModifier(context: DamageContext): Int {
         if (
-            (context.weather == Weather.SUNLIGHT ||
-                context.attackerAbility == AbilityId("MegaSol")) &&
-                context.move.original.id == MoveId("HydroSteam") &&
-                context.attackerItem != ItemId("UtilityUmbrella")
-        )
+            (
+                context.weather == Weather.SUNLIGHT ||
+                    context.attackerAbility == AbilityId("MegaSol")
+            ) &&
+            context.move.original.id == MoveId("HydroSteam") &&
+            context.attackerItem != ItemId("UtilityUmbrella")
+        ) {
             return 6144
-        if (context.defenderItem == ItemId("UtilityUmbrella")) return 4096
+        }
+        if (context.defenderItem == ItemId("UtilityUmbrella")) {
+            return 4096
+        }
         return when (context.weather) {
-            Weather.SUNLIGHT ->
+            Weather.SUNLIGHT -> {
                 when (context.move.type) {
                     TeraType.FIRE -> 6144
                     TeraType.WATER -> 2048
                     else -> 4096
                 }
-            Weather.RAIN ->
+            }
+
+            Weather.RAIN -> {
                 when (context.move.type) {
                     TeraType.WATER -> 6144
                     TeraType.FIRE -> 2048
                     else -> 4096
                 }
-            else -> 4096
+            }
+
+            else -> {
+                4096
+            }
         }
     }
 }

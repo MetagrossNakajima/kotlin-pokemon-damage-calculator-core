@@ -1,7 +1,6 @@
 package dev.pokemondamage.math
 
 import dev.pokemondamage.model.ModifierStage
-import dev.pokemondamage.model.ModifierTrace
 
 /** Final single-hit arithmetic after power, stats, weather and critical-hit modifiers. */
 internal object DamageRoll {
@@ -23,47 +22,55 @@ internal object DamageRoll {
         stab: Int,
         finalModifier: Int,
     ): TracedValue {
-        var damage = baseDamage
-        val trace = mutableListOf<ModifierTrace>()
-        fun record(id: String, numerator: Long, denominator: Long, after: Int) {
-            trace +=
-                ModifierTrace(
-                    id,
+        val randomDamage =
+            (BattleMath.unsigned32(baseDamage.toLong() * randomPercent) / 100).toInt()
+        val random =
+            TracedValue(baseDamage, emptyList()).step(
+                "Random",
+                ModifierStage.DAMAGE,
+                randomPercent.toLong(),
+                100,
+                randomDamage,
+            )
+        val sameType =
+            if (stab != BattleMath.UNIT) {
+                random.step(
+                    "STAB",
                     ModifierStage.DAMAGE,
-                    numerator,
-                    denominator,
-                    damage.toLong(),
-                    after.toLong(),
+                    stab.toLong(),
+                    4096,
+                    BattleMath.modifyDamage(random.value, stab),
                 )
-            damage = after
-        }
-        record(
-            "Random",
-            randomPercent.toLong(),
-            100,
-            (BattleMath.unsigned32(damage.toLong() * randomPercent) / 100).toInt(),
-        )
-        if (stab != BattleMath.UNIT)
-            record("STAB", stab.toLong(), 4096, BattleMath.modifyDamage(damage, stab))
+            } else {
+                random
+            }
         // The chart and overrides produce exact binary fractions, recorded as an exact ratio.
         val denominator =
             if (effectiveness > 0 && effectiveness < 1) (1 / effectiveness).toLong() else 1
-        record(
-            "Type",
-            (effectiveness * denominator).toLong(),
-            denominator,
-            BattleMath.unsigned32((damage * effectiveness).toLong()).toInt(),
-        )
-        if (burned) record("Burn", 2048, 4096, damage / 2)
-        record(
-            "FinalModifiers",
-            finalModifier.toLong(),
-            4096,
-            BattleMath.modifyDamage(damage, finalModifier),
-        )
-        return TracedValue(
-            if (effectiveness == 0.0) 0 else BattleMath.unsigned16(maxOf(1, damage)),
-            trace,
-        )
+        val typeDamage = BattleMath.unsigned32((sameType.value * effectiveness).toLong()).toInt()
+        val type =
+            sameType.step(
+                "Type",
+                ModifierStage.DAMAGE,
+                (effectiveness * denominator).toLong(),
+                denominator,
+                typeDamage,
+            )
+        val burn =
+            if (burned) {
+                type.step("Burn", ModifierStage.DAMAGE, 2048, 4096, type.value / 2)
+            } else {
+                type
+            }
+        val final =
+            burn.step(
+                "FinalModifiers",
+                ModifierStage.DAMAGE,
+                finalModifier.toLong(),
+                4096,
+                BattleMath.modifyDamage(burn.value, finalModifier),
+            )
+        val damage = if (effectiveness == 0.0) 0 else BattleMath.unsigned16(maxOf(1, final.value))
+        return TracedValue(damage, final.trace)
     }
 }

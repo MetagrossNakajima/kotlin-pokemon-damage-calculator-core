@@ -11,15 +11,17 @@ data class Stats(
 ) {
     init {
         val checks = InputChecks()
-        for ((name, value) in
-            listOf(
-                "hp" to hp,
-                "attack" to attack,
-                "defense" to defense,
-                "specialAttack" to specialAttack,
-                "specialDefense" to specialDefense,
-                "speed" to speed,
-            )) {
+        for (
+        (name, value) in
+        listOf(
+            "hp" to hp,
+            "attack" to attack,
+            "defense" to defense,
+            "specialAttack" to specialAttack,
+            "specialDefense" to specialDefense,
+            "speed" to speed,
+        )
+        ) {
             checks.require(value in 1..999, name, ValidationCode.OUT_OF_RANGE)
         }
         checks.finish()

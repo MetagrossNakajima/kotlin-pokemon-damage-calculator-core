@@ -1,9 +1,31 @@
 package dev.pokemondamage
 
-import dev.pokemondamage.engine.combined.*
-import dev.pokemondamage.model.*
+import dev.pokemondamage.engine.combined.AttackConvolution
+import dev.pokemondamage.engine.combined.AttackOutcomes
+import dev.pokemondamage.engine.combined.BattleProgress
+import dev.pokemondamage.engine.combined.CalculationBudget
+import dev.pokemondamage.engine.combined.HealthEvents
+import dev.pokemondamage.model.Attack
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.Calculation
+import dev.pokemondamage.model.CalculationLimits
+import dev.pokemondamage.model.DamageDistribution
+import dev.pokemondamage.model.FailureKind
+import dev.pokemondamage.model.ItemId
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
 import java.math.BigInteger
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class AttackConvolutionTest {
     private val one = BigInteger.ONE
@@ -14,9 +36,10 @@ class AttackConvolutionTest {
         )
     private val state = BattleProgress(100, false, null, null)
 
-    private fun counts(vararg entries: Pair<Int, Int>) = entries.associate {
-        it.first to it.second.toBigInteger()
-    }
+    private fun counts(vararg entries: Pair<Int, Int>) =
+        entries.associate {
+            it.first to it.second.toBigInteger()
+        }
 
     private fun distribution(vararg entries: Pair<Int, Int>) =
         DamageDistribution(
@@ -44,7 +67,12 @@ class AttackConvolutionTest {
         val damageWeights = r.actual.entries.associate { it.key.attackDamage.toInt() to it.value }
         assertEquals(counts(0 to 6, 10 to 6, 20 to 6, 40 to 1, 50 to 3, 60 to 2), damageWeights)
         assertEquals(24.toBigInteger(), r.actual.values.reduce(BigInteger::add))
-        assertEquals(setOf(100, 90, 80, 60, 50, 40), r.actual.keys.map { it.hp }.toSet())
+        assertEquals(
+            setOf(100, 90, 80, 60, 50, 40),
+            r.actual.keys
+                .map { it.hp }
+                .toSet(),
+        )
     }
 
     @Test

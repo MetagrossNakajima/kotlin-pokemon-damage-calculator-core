@@ -2,10 +2,29 @@ package dev.pokemondamage
 
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.engine.power.FinalPower
-import dev.pokemondamage.model.*
-import kotlin.test.*
+import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
+import dev.pokemondamage.model.Category
+import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.ModifierStage
+import dev.pokemondamage.model.ModifierTrace
+import dev.pokemondamage.model.Move
+import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.PokemonFlags
+import dev.pokemondamage.model.PokemonId
+import dev.pokemondamage.model.PokemonProfile
+import dev.pokemondamage.model.PokemonState
+import dev.pokemondamage.model.PokemonType
+import dev.pokemondamage.model.PokemonTypes
+import dev.pokemondamage.model.PokemonWeight
+import dev.pokemondamage.model.Stats
+import dev.pokemondamage.model.TeraType
+import dev.pokemondamage.model.Weather
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class FinalPowerTest {
     private val pokemon =
@@ -22,18 +41,17 @@ class FinalPowerTest {
         priority: Int = 0,
         hit: Int = 0,
         field: BattleField = BattleField(),
-    ) =
-        FinalPower.calculate(
-            DamageContext(
-                DamageRequest(
-                    a,
-                    pokemon,
-                    Move(MoveId(name), type, input, Category.PHYSICAL, priority = priority),
-                    field,
-                    hitIndex = hit.toLong(),
-                ),
+    ) = FinalPower.calculate(
+        DamageContext(
+            DamageRequest(
+                a,
+                pokemon,
+                Move(MoveId(name), type, input, Category.PHYSICAL, priority = priority),
+                field,
+                hitIndex = hit.toLong(),
             ),
-        )
+        ),
+    )
 
     @Test
     fun `power records base transformation modifier application and tera minimum in order`() {
@@ -60,33 +78,35 @@ class FinalPowerTest {
     @Test
     fun `tera minimum checks modified power and uses half down rounding`() {
         val a = pokemon.copy(teraType = TeraType.NORMAL, ability = AbilityId("Technician"))
-        for ((input, expected) in
-            listOf(39 to 60, 40 to 60, 41 to 61, 60 to 90, 61 to 61)) assertEquals(
-            expected,
-            power(a, input = input).value,
-        )
+        for (
+        (input, expected) in
+        listOf(39 to 60, 40 to 60, 41 to 61, 60 to 90, 61 to 61)
+        ) {
+            assertEquals(
+                expected,
+                power(a, input = input).value,
+            )
+        }
         assertEquals(58, power(a.copy(teraType = null), input = 39).value)
         assertEquals(39, power(pokemon.copy(teraType = TeraType.WATER), input = 39).value)
         assertEquals(
             60,
             power(
-                    pokemon.copy(teraType = TeraType.FIRE),
-                    name = "WeatherBall",
-                    field = BattleField(weather = Weather.SUNLIGHT),
-                    input = 20,
-                )
-                .value,
+                pokemon.copy(teraType = TeraType.FIRE),
+                name = "WeatherBall",
+                field = BattleField(weather = Weather.SUNLIGHT),
+                input = 20,
+            ).value,
         )
         assertEquals(
             60,
             power(
-                    pokemon.copy(teraType = TeraType.GRASS),
-                    name = "SolarBeam",
-                    type = PokemonType.GRASS,
-                    input = 100,
-                    field = BattleField(weather = Weather.RAIN),
-                )
-                .value,
+                pokemon.copy(teraType = TeraType.GRASS),
+                name = "SolarBeam",
+                type = PokemonType.GRASS,
+                input = 100,
+                field = BattleField(weather = Weather.RAIN),
+            ).value,
         )
     }
 
@@ -103,11 +123,10 @@ class FinalPowerTest {
             assertEquals(
                 60,
                 power(
-                        flagged.copy(
-                            profile = flagged.profile.copy(id = PokemonId("Terapagos-Stellar")),
-                        ),
-                    )
-                    .value,
+                    flagged.copy(
+                        profile = flagged.profile.copy(id = PokemonId("Terapagos-Stellar")),
+                    ),
+                ).value,
             )
         }
     }
@@ -115,58 +134,59 @@ class FinalPowerTest {
     @Test
     fun `positive priority prevents minimum but zero and negative priorities allow it`() {
         val a = pokemon.copy(teraType = TeraType.NORMAL)
-        for (priority in -7..5) assertEquals(
-            if (priority > 0) 40 else 60,
-            power(a, priority = priority).value,
-        )
+        for (priority in -7..5) {
+            assertEquals(
+                if (priority > 0) 40 else 60,
+                power(a, priority = priority).value,
+            )
+        }
     }
 
     @TestFactory
     fun `every natural multi hit move retains its low per-hit power`() =
         listOf(
-                "DoubleKick",
-                "SurgingStrikes",
-                "DoubleHit",
-                "Bonemerang",
-                "DoubleIronBash",
-                "DragonDarts",
-                "DualChop",
-                "DualWingbeat",
-                "GearGrind",
-                "Twineedle",
-                "TwinBeam",
-                "TripleDive",
-                "BulletSeed",
-                "RockBlast",
-                "IcicleSpear",
-                "PinMissile",
-                "TailSlap",
-                "ArmThrust",
-                "Barrage",
-                "BoneRush",
-                "CometPunch",
-                "DoubleSlap",
-                "FuryAttack",
-                "FurySwipes",
-                "SpikeCannon",
-                "WaterShuriken",
-                "ScaleShot",
-                "TripleAxel",
-                "TripleKick",
-                "PopulationBomb",
-            )
-            .map { name ->
-                dynamicTest(name) {
-                    assertEquals(
-                        40,
-                        power(pokemon.copy(teraType = TeraType.NORMAL), name = name).value,
-                    )
-                    assertEquals(
-                        40,
-                        power(pokemon.copy(teraType = TeraType.STELLAR), name = name).value,
-                    )
-                }
+            "DoubleKick",
+            "SurgingStrikes",
+            "DoubleHit",
+            "Bonemerang",
+            "DoubleIronBash",
+            "DragonDarts",
+            "DualChop",
+            "DualWingbeat",
+            "GearGrind",
+            "Twineedle",
+            "TwinBeam",
+            "TripleDive",
+            "BulletSeed",
+            "RockBlast",
+            "IcicleSpear",
+            "PinMissile",
+            "TailSlap",
+            "ArmThrust",
+            "Barrage",
+            "BoneRush",
+            "CometPunch",
+            "DoubleSlap",
+            "FuryAttack",
+            "FurySwipes",
+            "SpikeCannon",
+            "WaterShuriken",
+            "ScaleShot",
+            "TripleAxel",
+            "TripleKick",
+            "PopulationBomb",
+        ).map { name ->
+            dynamicTest(name) {
+                assertEquals(
+                    40,
+                    power(pokemon.copy(teraType = TeraType.NORMAL), name = name).value,
+                )
+                assertEquals(
+                    40,
+                    power(pokemon.copy(teraType = TeraType.STELLAR), name = name).value,
+                )
             }
+        }
 
     @TestFactory
     fun `HP proportional moves never receive the tera minimum`() =
