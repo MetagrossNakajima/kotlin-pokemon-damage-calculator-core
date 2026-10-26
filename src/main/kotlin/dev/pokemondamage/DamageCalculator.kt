@@ -9,9 +9,7 @@ import dev.pokemondamage.model.DamageResult
 import dev.pokemondamage.model.FailureKind
 import dev.pokemondamage.rules.MoveRules
 
-/**
- * Calculates one hit at level 50 using the caller's explicit battle conditions and hit position.
- */
+/** 指定されたバトル条件と命中位置を使い、レベル50で1発分を計算する。 */
 fun calculateDamage(request: DamageRequest): Calculation<DamageResult> {
     if (MoveRules.isUnsupported(request.move.id)) {
         return Calculation.Failure(FailureKind.UNSUPPORTED, "move.${request.move.id.value}")

@@ -17,7 +17,7 @@ enum class KoCategory {
     NOT_APPLICABLE,
 }
 
-/** Counts attack uses, not individual hits; evaluated attacks need not guarantee an eventual KO. */
+/** 命中数ではなく攻撃の使用回数を数える。指定された攻撃で必ず相手を倒せるとは限らない。 */
 data class KoInfo(
     val status: KoStatus,
     val evaluatedAttacks: Int,

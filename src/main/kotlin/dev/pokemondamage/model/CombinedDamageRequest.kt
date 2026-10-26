@@ -2,7 +2,7 @@ package dev.pokemondamage.model
 
 import java.math.BigInteger
 
-/** Ordered attacks begin on turn one and may share a turn; turn numbers cannot skip. */
+/** 攻撃は1ターン目から順に指定する。同じターンに複数回攻撃できるが、ターンは飛ばせない。 */
 class CombinedDamageRequest(
     val defender: PokemonState,
     attacks: List<Attack>,
@@ -38,7 +38,7 @@ class CombinedDamageRequest(
     override fun hashCode(): Int = listOf(defender, attacks, field, setup, limits).hashCode()
 
     companion object {
-        /** Four consecutive turns with fixed distributions, even if an earlier attack misses. */
+        /** 途中で外れても、固定の攻撃分布を使って4ターン連続で攻撃する。 */
         fun repeatSingleHit(
             firstHit: DamageDistribution,
             defender: PokemonState,

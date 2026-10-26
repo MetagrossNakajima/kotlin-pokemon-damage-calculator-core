@@ -63,8 +63,7 @@ class StabTest {
                             mapOf(PokemonFlag.STELLAR_BOOST_AVAILABLE to c[5].toBooleanStrict()),
                         ),
                 )
-            // Tera Starstorm prepares Stellar on Terapagos-Stellar; ordinary moves preserve caller
-            // type.
+            // テラパゴス（ステラ）のテラクラスターはステラタイプになり、通常技は指定タイプを保つ。
             val move =
                 if (c[2] == "STELLAR") {
                     Move(MoveId("TeraStarstorm"), PokemonType.NORMAL, 120, Category.SPECIAL)

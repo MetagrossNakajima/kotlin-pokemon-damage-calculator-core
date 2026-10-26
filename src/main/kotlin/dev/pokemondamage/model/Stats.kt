@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** Actual level-50 stats, before battle stages and modifiers. */
+/** ランクや補正を適用する前の、レベル50の能力実数値。 */
 data class Stats(
     val hp: Int,
     val attack: Int,

@@ -102,7 +102,7 @@ class ReferenceFixedDamageTest {
                                     calculateDamage(request),
                                 ).value
                                     .hit
-                            // The stored reference returns zero at HP 1; the move must deal one.
+                            // 保存済みの参照値はHP1で0を返すが、この技は1ダメージを与える。
                             val expected =
                                 if (name == "NaturesMadness" && c[4] == "1") 1 else c[8].toInt()
                             assertEquals(

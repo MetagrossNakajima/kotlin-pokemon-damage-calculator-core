@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** Historical faint count; Last Respects and Supreme Overlord have different caps. */
+/** これまでに味方がひんしになった回数。おはかまいりとそうだいしょうでは上限が異なる。 */
 @JvmInline
 value class FaintedAllies(
     val value: Int,

@@ -3,7 +3,7 @@ package dev.pokemondamage.model
 import java.math.BigInteger
 import java.util.Collections
 
-/** Nonempty, immutable distribution with exact integer weights and arbitrary-size damage. */
+/** 整数の重みと任意精度のダメージを持つ、空でない変更不可の分布。 */
 class DamageDistribution(
     weights: Map<BigInteger, BigInteger>,
 ) {
@@ -48,7 +48,7 @@ class DamageDistribution(
     override fun toString(): String = "DamageDistribution($weights)"
 
     companion object {
-        /** Each roll is equally likely; repeated damage values retain their multiplicity. */
+        /** 各乱数は等確率とし、同じダメージが複数回現れた場合もその回数を保持する。 */
         fun fromRolls(rolls: Iterable<Int>): DamageDistribution {
             val weights = sortedMapOf<BigInteger, BigInteger>()
             for (roll in rolls) {

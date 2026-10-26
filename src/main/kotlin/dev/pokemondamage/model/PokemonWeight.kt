@@ -2,7 +2,7 @@ package dev.pokemondamage.model
 
 import kotlin.math.roundToInt
 
-/** Weight stored exactly in 0.1 kg units. */
+/** 重さを0.1kg単位の整数で保持する。 */
 @JvmInline
 value class PokemonWeight(
     val hectograms: Int,

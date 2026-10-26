@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** Toxic damage grows each turn, saturating at fifteen sixteenths of maximum HP. */
+/** もうどくのダメージは毎ターン増え、最大HPの15/16で上限となる。 */
 @JvmInline
 value class ToxicCounter(
     val value: Int,

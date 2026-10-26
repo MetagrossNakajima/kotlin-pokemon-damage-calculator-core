@@ -2,7 +2,7 @@ package dev.pokemondamage.model
 
 import java.util.Collections
 
-/** Immutable set shared by move traits and field effects. */
+/** 技の性質や場の効果で共有する、変更不可の集合。 */
 class EnumFlags<E : Enum<E>>(
     vararg flags: E,
 ) {

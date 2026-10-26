@@ -206,7 +206,7 @@ class CombinedCalculatorTest {
 
     @Test
     fun `post-damage recovery merges branches with different prior HP but matching histories`() {
-        // Per-hit conditional runs erase attack totals, permitting healing to merge HP branches.
+        // 1発ごとの条件付き計算では攻撃ダメージ合計を除外し、回復で同じHPになった分岐を統合する。
         val p = defender.copy(ability = AbilityId("PoisonHeal"), status = Status.POISON)
         val r =
             result(

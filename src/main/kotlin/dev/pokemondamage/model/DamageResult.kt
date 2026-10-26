@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** The single-hit API returns one hit, its exact distribution and percentages of maximum HP. */
+/** 単発計算APIは、1発分の結果・正確な分布・最大HPに対する割合を返す。 */
 data class DamageResult(
     val hit: HitResult,
     val referenceHp: Int,

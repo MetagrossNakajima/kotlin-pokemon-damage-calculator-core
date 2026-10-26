@@ -2,10 +2,7 @@ package dev.pokemondamage.model
 
 import java.math.BigInteger
 
-/**
- * Exact final HP, executed attack damage (including overkill), and accuracy-inclusive KO
- * probability.
- */
+/** 最終HP・与えた攻撃ダメージ（残りHPを超えた分も含む）・命中率込みのひんし確率を正確に保持する。 */
 class CombinedDamageResult(
     val referenceHp: Int,
     val finalHp: DamageDistribution,

@@ -15,7 +15,7 @@ class ModifierChainTest {
         chain.add("Inactive", 8192, applies = false)
         chain.add("Second", 2048)
         val product = chain.finish()
-        assertEquals(2, product.value) // 3 * 0.5 rounds up during chaining.
+        assertEquals(2, product.value) // 補正の連結では3 × 0.5を切り上げる。
         assertEquals(
             listOf(
                 ModifierTrace("First", ModifierStage.POWER_MODIFIER, 3, 4096, 4096, 3),
@@ -24,7 +24,7 @@ class ModifierChainTest {
             product.trace,
         )
         val applied = chain.apply(3072, ModifierStage.POWER)
-        assertEquals(1, applied.value) // 3072 * 2 / 4096 = 1.5 rounds down during application.
+        assertEquals(1, applied.value) // 補正の適用では3072 × 2 / 4096 = 1.5を切り捨てる。
         assertEquals(
             product.trace + ModifierTrace("PowerModifiers", ModifierStage.POWER, 2, 4096, 3072, 1),
             applied.trace,

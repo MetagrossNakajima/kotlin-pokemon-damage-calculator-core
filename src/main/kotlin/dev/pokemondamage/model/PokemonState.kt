@@ -4,7 +4,7 @@ data class PokemonState(
     val profile: PokemonProfile,
     val stats: Stats,
     val stages: StatStages = StatStages(),
-    /** Already activated; weather/HP/status activation conditions are not inferred. */
+    /** 発動済みの特性を指定する。天候・HP・状態異常による発動条件は推定しない。 */
     val ability: AbilityId? = null,
     val item: ItemId? = null,
     val status: Status? = null,

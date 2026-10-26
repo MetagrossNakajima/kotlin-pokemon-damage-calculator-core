@@ -103,7 +103,7 @@ class HealthEventsTest {
                 ability = AbilityId("Ripen"),
             )
         val initial = state.copy(hp = 201)
-        // 201 - 150 + 2 * floor(201 / 4) = 151; neither result reaches the cap.
+        // 201 - 150 + 2 × ⌊201 / 4⌋ = 151。どちらの結果も回復上限には届かない。
         assertEquals(
             initial.copy(hp = 151, itemConsumed = true),
             events(p).damage(initial, 150.toBigInteger(), 1),

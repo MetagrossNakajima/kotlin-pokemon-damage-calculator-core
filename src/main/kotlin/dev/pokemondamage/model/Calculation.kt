@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** Input validity is enforced by constructors; calculation failures are explicit values. */
+/** 入力の妥当性はコンストラクタで保証し、計算の失敗は値として返す。 */
 sealed interface Calculation<out T> {
     data class Success<T>(
         val value: T,

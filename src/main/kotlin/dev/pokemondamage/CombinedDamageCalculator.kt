@@ -5,6 +5,6 @@ import dev.pokemondamage.model.Calculation
 import dev.pokemondamage.model.CombinedDamageRequest
 import dev.pokemondamage.model.CombinedDamageResult
 
-/** Combines the supplied fixed attack distributions with setup and end-of-turn HP events. */
+/** 指定された固定の攻撃分布に、事前処理とターン終了時のHP変化を組み合わせる。 */
 fun calculateCombinedDamage(request: CombinedDamageRequest): Calculation<CombinedDamageResult> =
     CombinedEngine.calculate(request)

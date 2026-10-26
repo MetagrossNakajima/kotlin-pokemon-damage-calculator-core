@@ -7,7 +7,7 @@ data class StatStages(
     val specialDefense: StatStage = StatStage.NEUTRAL,
     val speed: StatStage = StatStage.NEUTRAL,
 ) {
-    /** HP has no battle stage. */
+    /** HPには能力ランクがない。 */
     operator fun get(stat: Stat): StatStage? =
         when (stat) {
             Stat.HP -> null
@@ -19,7 +19,7 @@ data class StatStages(
         }
 
     companion object {
-        /** Parses raw input together, retaining all field-specific validation errors. */
+        /** 入力をまとめて解析し、項目ごとの検証エラーをすべて保持する。 */
         fun fromValues(
             attack: Int = 0,
             defense: Int = 0,

@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** One hit and its ordered arithmetic trace. Fixed hits retain stats as metadata only. */
+/** 1発分の結果と計算順の履歴。固定ダメージ技の能力値は付随情報としてのみ保持する。 */
 class HitResult(
     val power: Int,
     val attack: Int,

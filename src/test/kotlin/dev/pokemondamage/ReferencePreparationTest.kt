@@ -128,8 +128,7 @@ class ReferencePreparationTest {
                             .removeSuffix("]")
                             .split(',')
                             .map(String::toInt)
-                    // Reference represents an immune result as scalar 0; this API retains all 16
-                    // rolls.
+                    // 参照実装は無効時に単一の0を返すが、このAPIは16通りの乱数を保持する。
                     assertEquals(
                         if (expectedRolls.size == 1) {
                             List(16) { expectedRolls.single() }

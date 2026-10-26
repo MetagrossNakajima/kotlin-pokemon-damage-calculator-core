@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** Input diagnostics are separate from failures of an otherwise valid calculation. */
+/** 入力の検証エラーと、妥当な入力での計算失敗を区別する。 */
 enum class ValidationCode {
     REQUIRED,
     OUT_OF_RANGE,
@@ -14,7 +14,7 @@ data class ValidationError(
     val code: ValidationCode,
 )
 
-/** Parses Kotlin enum names without throwing for unknown input. Names are case-sensitive. */
+/** Kotlinの列挙名を解析する。大文字・小文字を区別し、未知の値でも例外を投げない。 */
 fun <E : Enum<E>> validateEnum(
     value: String,
     entries: kotlin.enums.EnumEntries<E>,
@@ -43,14 +43,12 @@ sealed interface Validation<out T> {
     }
 }
 
-/**
- * Direct construction still rejects invalid input; callers may use [validate] to inspect errors.
- */
+/** 直接生成する場合も不正な入力は拒否する。[validate]でエラーの詳細を確認できる。 */
 class InputValidationException internal constructor(
     val failure: Validation.Invalid,
 ) : IllegalArgumentException(failure.errors.joinToString { "${it.path}: ${it.code}" })
 
-/** Captures model validation only. Programming errors and unrelated exceptions propagate. */
+/** モデルの検証エラーだけを捕捉し、実装上の不具合や無関係な例外は呼び出し側へ伝える。 */
 fun <T> validate(
     path: String = "",
     build: () -> T,
@@ -69,7 +67,7 @@ fun <T> validate(
         }
     }
 
-/** Combines independently validated inputs, retaining errors from both in input order. */
+/** 個別に検証した入力を組み合わせ、両方のエラーを入力順に保持する。 */
 fun <A, B, R> Validation<A>.zip(
     other: Validation<B>,
     build: (A, B) -> R,

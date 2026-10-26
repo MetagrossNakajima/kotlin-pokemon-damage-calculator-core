@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** An exact rational modifier with the intermediate values at its point of application. */
+/** 正確な分数の補正値と、適用時の計算途中の値。 */
 data class ModifierTrace(
     val id: String,
     val stage: ModifierStage,

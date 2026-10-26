@@ -2,7 +2,7 @@ package dev.pokemondamage.model
 
 import java.math.BigInteger
 
-/** An exact probability whose floating-point view also preserves subnormal values. */
+/** 正確な確率を保持し、浮動小数点への変換時も非正規化数を保持する。 */
 data class ExactProbability(
     val weight: BigInteger,
     val totalWeight: BigInteger,

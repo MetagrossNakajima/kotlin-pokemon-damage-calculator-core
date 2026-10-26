@@ -220,6 +220,6 @@ class FinalPowerTest {
         val zero = power(name = "SeismicToss", input = 0)
         assertEquals(1, zero.value)
         assertEquals(1L, zero.trace.first().denominator)
-        // The fixed-damage engine bypasses this stage; this checks arithmetic only.
+        // 固定ダメージ技はこの段階を通らないため、ここでは数値計算のみ確認する。
     }
 }

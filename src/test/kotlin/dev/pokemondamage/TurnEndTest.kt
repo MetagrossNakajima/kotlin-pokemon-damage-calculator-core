@@ -253,7 +253,7 @@ class TurnEndTest {
         val field = BattleField(weather = Weather.SANDSTORM, terrain = Terrain.GRASS)
         val p = pokemon.copy(item = ItemId("Leftovers"), status = Status.POISON)
         assertEquals(175, apply(p, state.copy(hp = 199), field).hp) // 199-12+12+1-25.
-        assertEquals(0, apply(p, state.copy(hp = 12), field).hp) // Sand KO precedes all healing.
+        assertEquals(0, apply(p, state.copy(hp = 12), field).hp) // 砂ダメージでひんしになった場合は、その後の回復を行わない。
         val cud =
             pokemon.copy(
                 item = ItemId("SitrusBerry"),
@@ -261,7 +261,7 @@ class TurnEndTest {
                 status = Status.POISON,
             )
         val scheduled = state.copy(hp = 25, itemConsumed = true, cudChewTurn = 2)
-        assertEquals(0, apply(cud, scheduled, turn = 2).hp) // Poison KO precedes repeat berry.
+        assertEquals(0, apply(cud, scheduled, turn = 2).hp) // どくでひんしになった場合は、きのみを再発動しない。
         val triggered = apply(cud, state.copy(hp = 110), field, 1)
         assertEquals(135, triggered.hp) // 110-12+50+12-25.
         assertEquals(2L, triggered.cudChewTurn)

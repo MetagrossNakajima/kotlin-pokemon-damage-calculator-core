@@ -3,7 +3,7 @@ package dev.pokemondamage.model
 import java.math.BigInteger
 import java.util.Collections
 
-/** A fixed sequence of per-hit distributions; count zero represents a miss. */
+/** 1発ごとの固定ダメージ分布を順に保持する。命中数0は外れを表す。 */
 class Attack(
     val turn: Long,
     hits: List<DamageDistribution>,
@@ -13,7 +13,7 @@ class Attack(
     val hits: List<DamageDistribution> = java.util.List.copyOf(hits)
     val hitCounts: Map<Int, BigInteger> = Collections.unmodifiableMap(hitCounts.toSortedMap())
 
-    /** Counts conditional on accuracy succeeding; absent for independent per-hit accuracy. */
+    /** 命中判定成功を条件とした命中回数。1発ごとに独立判定する場合は保持しない。 */
     val conditionalHitCounts: Map<Int, BigInteger>? =
         conditionalHitCounts?.let {
             Collections.unmodifiableMap(it.toSortedMap())
@@ -40,7 +40,7 @@ class Attack(
     override fun hashCode(): Int = listOf(turn, hits, hitCounts, conditionalHitCounts).hashCode()
 
     companion object {
-        /** Exact accuracy weights; per-hit accuracy stops at the first miss. */
+        /** 命中率を正確な重みで表す。1発ごとの判定では最初に外れた時点で終了する。 */
         fun fromAccuracy(
             turn: Long,
             hits: List<DamageDistribution>,

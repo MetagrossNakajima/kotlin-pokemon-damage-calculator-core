@@ -242,7 +242,7 @@ class BattleInputTest {
         assertEquals(false, configured.flags[PokemonFlag.GROUNDED])
         assertTrue(configured.sideConditions.reflect)
         assertTrue(configured.sideConditions.lightScreen)
-        // Abilities are already active inputs, even at full HP without weather.
+        // HPが満タンで天候がなくても、入力された特性は発動済みとして扱う。
         assertEquals(AbilityId("Blaze"), pokemon.copy(ability = AbilityId("Blaze")).ability)
         assertEquals(200, pokemon.copy(currentHp = 200).hp)
         assertEquals(

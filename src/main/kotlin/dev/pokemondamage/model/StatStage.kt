@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** A battle stat rank, independent of the raw stat and its later modifiers. */
+/** 能力実数値や後続の補正とは独立した、バトル中の能力ランク。 */
 @JvmInline
 value class StatStage(
     val value: Int,

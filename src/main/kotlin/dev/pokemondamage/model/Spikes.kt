@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** Placement count and the corresponding fraction of maximum HP lost on entry. */
+/** まきびしの設置回数と、登場時に失う最大HPの割合。 */
 enum class Spikes(
     val layers: Int,
     val damageDenominator: Int?,

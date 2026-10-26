@@ -183,7 +183,7 @@ class DamageModifiersTest {
                 assertEquals(
                     2048,
                     result(d = d).value,
-                ) // Caller explicitly supplies an active ability.
+                ) // 呼び出し側が発動済みの特性を明示する。
                 assertEquals(4096, result(d = d, hit = 1).value)
                 assertEquals(
                     if (ability == "ShadowShield") 2048 else 4096,

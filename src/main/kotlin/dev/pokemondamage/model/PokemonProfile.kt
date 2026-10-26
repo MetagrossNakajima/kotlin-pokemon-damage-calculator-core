@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** Species data supplied by the caller; types describe the state before Terastallization. */
+/** 呼び出し側が指定するポケモンの種族情報。タイプはテラスタル前のものを使う。 */
 data class PokemonProfile(
     val id: PokemonId,
     val types: PokemonTypes,

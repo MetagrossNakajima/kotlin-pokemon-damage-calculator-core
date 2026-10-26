@@ -260,7 +260,7 @@ class PreRandomDamageTest {
                 field = BattleField(weather = Weather.SUNLIGHT),
             )
         val r = damage(c, true)
-        assertEquals(15, r.value) // 28 -> 7 -> 10 (half down) -> 15.
+        assertEquals(15, r.value) // 28 → 7 → 10（端数0.5を切り捨て）→ 15。
         assertEquals(
             listOf("BaseDamage", "ParentalBond", "Weather", "Critical"),
             r.trace.map { it.id },

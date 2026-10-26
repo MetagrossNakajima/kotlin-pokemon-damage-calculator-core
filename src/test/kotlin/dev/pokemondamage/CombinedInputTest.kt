@@ -106,8 +106,8 @@ class CombinedInputTest {
 
     @Test
     fun `per-hit accuracy preserves unequal hit count weights on miss branches`() {
-        // Select one hit with probability 1/3 or three hits with probability 2/3.
-        // At 75% accuracy, P(0,1,2,3 hits) = (1/4,3/8,3/32,9/32).
+        // 確率1/3で1発、確率2/3で3発を選ぶ。
+        // 命中率75%では、0・1・2・3発の確率はそれぞれ1/4・3/8・3/32・9/32。
         val attack =
             Attack.fromAccuracy(
                 1,

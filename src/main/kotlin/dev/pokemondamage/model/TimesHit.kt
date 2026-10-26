@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** Historical hit count; Rage Fist reaches its maximum power after six hits. */
+/** これまでに攻撃を受けた回数。ふんどのこぶしは6回で最大威力になる。 */
 @JvmInline
 value class TimesHit(
     val value: Int,

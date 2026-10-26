@@ -2,7 +2,7 @@ package dev.pokemondamage.model
 
 import java.util.Collections
 
-/** Unspecified and explicitly false are different battle states. */
+/** 未指定と明示的なfalseは異なるバトル状態として扱う。 */
 class PokemonFlags(
     overrides: Map<PokemonFlag, Boolean> = emptyMap(),
 ) {

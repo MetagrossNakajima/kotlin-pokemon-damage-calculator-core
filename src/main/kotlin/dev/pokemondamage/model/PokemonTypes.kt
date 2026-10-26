@@ -1,6 +1,6 @@
 package dev.pokemondamage.model
 
-/** One or two distinct types; the original ordering is retained. */
+/** 重複のない1～2種類のタイプ。指定された順序を保持する。 */
 data class PokemonTypes(
     val primary: PokemonType,
     val secondary: PokemonType? = null,
@@ -11,6 +11,6 @@ data class PokemonTypes(
 
     operator fun contains(type: PokemonType): Boolean = primary == type || secondary == type
 
-    /** A fresh view: changing a returned list cannot alter this value. */
+    /** 新しいリストを返し、返却後の変更が元の値に影響しないようにする。 */
     fun toList(): List<PokemonType> = listOfNotNull(primary, secondary)
 }
