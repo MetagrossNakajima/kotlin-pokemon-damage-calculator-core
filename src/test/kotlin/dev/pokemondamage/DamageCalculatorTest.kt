@@ -139,6 +139,24 @@ class DamageCalculatorTest {
             }
 
     @Test
+    fun `NaturesMadness halves current HP rounding down with minimum one`() {
+        for ((hp, expected) in listOf(1 to 1, 2 to 1, 3 to 1, 7 to 3, 101 to 50, 200 to 100)) {
+            val r =
+                result(
+                    request(
+                        d = base.copy(currentHp = hp),
+                        name = "NaturesMadness",
+                        type = PokemonType.FAIRY,
+                        category = Category.SPECIAL,
+                        power = 0,
+                    ),
+                )
+            assertEquals(listOf(expected), r.hit.rolls, "current HP=$hp")
+            assertEquals(DamageKind.FIXED, r.hit.kind)
+        }
+    }
+
+    @Test
     fun `fixed HP rounding minima and Endeavor lower bound are explicit`() {
         for (hp in 1..8) {
             val d = base.copy(currentHp = hp)
@@ -146,7 +164,6 @@ class DamageCalculatorTest {
                 maxOf(1, hp / 2),
                 result(request(d = d, name = "SuperFang", power = 0)).max,
             )
-            assertEquals(hp / 2, result(request(d = d, name = "NaturesMadness", power = 0)).max)
             assertEquals(
                 hp * 3 / 4,
                 result(request(d = d, name = "GuardianofAlola", power = 0)).max,

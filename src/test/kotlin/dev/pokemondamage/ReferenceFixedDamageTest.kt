@@ -7,7 +7,7 @@ import org.junit.jupiter.api.TestFactory
 
 class ReferenceFixedDamageTest {
     @TestFactory
-    fun `fixed moves match native damage across HP boundaries modifiers and immunity`() =
+    fun `fixed moves match expected damage across HP boundaries modifiers and immunity`() =
         javaClass
             .getResourceAsStream("/reference/fixed.tsv")!!
             .bufferedReader()
@@ -65,8 +65,11 @@ class ReferenceFixedDamageTest {
                             assertIs<Calculation.Success<DamageResult>>(calculateDamage(request))
                                 .value
                                 .hit
+                        // The stored reference returns zero at HP 1; the move must deal one.
+                        val expected =
+                            if (name == "NaturesMadness" && c[4] == "1") 1 else c[8].toInt()
                         assertEquals(
-                            listOf(c[8].toInt()),
+                            listOf(expected),
                             result.rolls,
                             "$name HP=${c[3]} modified=$modified target=${c[5]}/${c[6]}",
                         )

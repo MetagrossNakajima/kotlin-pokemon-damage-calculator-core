@@ -17,8 +17,8 @@ internal object FixedDamage {
         val damage =
             when (id) {
                 "SuperFang",
-                "Ruination" -> maxOf(1, hp / 2)
-                "NaturesMadness" -> hp / 2
+                "Ruination",
+                "NaturesMadness" -> maxOf(1, hp / 2)
                 "GuardianofAlola" -> hp * 3 / 4
                 "FinalGambit" -> attackerHp
                 "Endeavor" -> maxOf(0, hp - attackerHp)
