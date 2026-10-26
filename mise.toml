@@ -1,0 +1,18 @@
+[tools]
+java = "temurin-26.0.2+101"
+
+[tasks.build]
+description = "ライブラリのビルドと検証"
+run = "./gradlew build"
+
+[tasks.test]
+description = "テストを実行"
+run = "./gradlew test"
+
+[tasks.check]
+description = "検証タスクを実行"
+run = "./gradlew check"
+
+[tasks.clean]
+description = "ビルド成果物を削除"
+run = "./gradlew clean"
