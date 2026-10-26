@@ -2,28 +2,54 @@
 
 ポケモンのダメージ計算用 Kotlin/JVM ライブラリ。
 
-## 開発環境
+- `calculateDamage(request)`：単発のダメージ分布を計算
+- `calculateCombinedDamage(request)`：連続攻撃のHP推移・撃破率・確定数を計算
 
-- JDK 26（mise）
-- Kotlin 2.4.21
-- Gradle 9.7.0（Gradle Wrapper）
-- kotlin.test / JUnit 5
+## 使用例
 
-## セットアップ
+能力値はレベル50の実数値を指定します。
 
-[mise](https://mise.jdx.dev/getting-started.html) をインストールし、リポジトリのルートで実行します。
+```kotlin
+import dev.pokemondamage.calculateDamage
+import dev.pokemondamage.model.*
+
+val attacker = PokemonState(
+    profile = PokemonProfile(
+        PokemonId("Mew"),
+        PokemonTypes(PokemonType.PSYCHIC),
+        PokemonWeight.fromKilograms(4.0),
+    ),
+    stats = Stats(
+        hp = 175,
+        attack = 120,
+        defense = 120,
+        specialAttack = 150,
+        specialDefense = 120,
+        speed = 120,
+    ),
+)
+val defender = attacker.copy(stats = attacker.stats.copy(specialDefense = 140))
+val move = Move(MoveId("Psychic"), PokemonType.PSYCHIC, 90, Category.SPECIAL)
+
+when (val result = calculateDamage(DamageRequest(attacker, defender, move))) {
+    is Calculation.Success -> println("${result.value.min}〜${result.value.max}ダメージ")
+    is Calculation.Failure -> println("${result.kind}: ${result.path}")
+}
+```
+
+## 開発
+
+JDK 26を使用します。miseを導入後、次を実行してください。
 
 ```sh
 mise trust
 mise install
-mise run build
+mise run build  # ビルド・テスト・カバレッジ検証
 ```
 
-## 開発コマンド
-
 ```sh
-mise run build  # ビルド
 mise run test   # テスト
-mise run check  # 検証
+mise run format # Kotlinコードを100文字幅で整形
+mise run check  # テスト・カバレッジ100%検証
 mise run clean  # ビルド成果物の削除
 ```
