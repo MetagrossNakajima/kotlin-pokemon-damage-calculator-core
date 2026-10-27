@@ -1,6 +1,11 @@
 # kotlin-pokemon-damage-calculator-core
 
-ポケモンのダメージ計算用 Kotlin/JVM ライブラリ。
+ポケモンのダメージ計算用 Kotlin Multiplatform ライブラリ。
+
+計算実装は `commonMain` に置き、Androidから利用するJVMターゲットと
+iOS実機・Apple Siliconシミュレーターのターゲットを提供します。
+任意精度整数は `dev.pokemondamage.math.BigInteger` を使います。
+Java専用APIには依存しません。
 
 - `calculateDamage(request)`：単発のダメージ分布を計算
 - `calculateCombinedDamage(request)`：連続攻撃のHP推移・撃破率・確定数を計算
@@ -75,7 +80,8 @@ val pokemon = attacker.copy(
 
 ## 開発
 
-JDK 26を使用します。miseを導入後、次を実行してください。
+JDK 26（mise）・Kotlin 2.4.21・Gradle Wrapper 9.7.0を使用します。
+JVMバイトコードはAndroid互換の17を対象にします。miseを導入後、次を実行してください。
 
 ```sh
 mise trust
@@ -104,3 +110,13 @@ mise run clean  # ビルド成果物の削除
 この場合、`DamageResult.hit`が特殊側、`alternativeHit`が物理側の計算根拠を保持し、
 `distribution`・`min`・`max`・割合には両方の結果を反映します。
 連続計算へは`DamageResult.distribution`を渡してください。
+
+### 共通コードの検証
+
+`mise run test` は共通テストとJVM上の参照値テストを実行します。
+`mise run metadata` は共通メタデータをコンパイルしてJVM専用APIの混入を検出します。
+iOSの実行テストにはmacOSとXcodeが必要です。Linux上ではiOS実行テストは行いません。
+
+任意精度整数の実装には `com.ionspin.kotlin:bignum:0.3.10` を使用します。
+元のJava実装との演算比較と、非正規化数・偶数丸め・命中率0%を含む既存テストで
+計算仕様を検証します。
