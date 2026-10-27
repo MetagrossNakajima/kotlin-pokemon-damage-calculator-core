@@ -1,5 +1,6 @@
 package dev.pokemondamage.engine.combined
 
+import dev.pokemondamage.model.Attack
 import dev.pokemondamage.model.BattleState
 import dev.pokemondamage.model.Calculation
 import dev.pokemondamage.model.CombinedDamageRequest
@@ -54,83 +55,30 @@ internal object CombinedEngine {
         val completed =
             request.attacks.withIndex().fold(progress) { current, (index, attack) ->
                 val needsConditional = applicable && current.guaranteed == null
-                val shared = needsConditional && current.branches === current.conditional
-                val sameCounts =
-                    shared && attack.hitCounts.keys == attack.conditionalHitCounts!!.keys
-                val sharedCounts = if (shared && !sameCounts) attack.conditionalHitCounts else null
-                val result =
-                    convolution.apply(
-                        current.branches,
-                        attack,
-                        sharedConditionalCounts = sharedCounts,
-                    )
-                if (result is Calculation.Failure) {
-                    return result
-                }
-                val value = (result as Calculation.Success).value
-                val conditional =
-                    when {
-                        !needsConditional -> {
-                            current.conditional
-                        }
-
-                        shared -> {
-                            if (sameCounts) value.actual else value.conditional!!
-                        }
-
-                        else -> {
-                            val conditionalResult =
-                                convolution.apply(
-                                    current.conditional,
-                                    attack,
-                                    attack.conditionalHitCounts!!,
-                                    trackAttackDamage = false,
-                                )
-                            if (conditionalResult is Calculation.Failure) {
-                                return conditionalResult
-                            }
-                            (conditionalResult as Calculation.Success).value.actual
-                        }
+                val distributions =
+                    when (
+                        val result =
+                            applyAttack(
+                                current,
+                                attack,
+                                needsConditional,
+                                convolution,
+                            )
+                    ) {
+                        is Calculation.Failure -> return result
+                        is Calculation.Success -> result.value
                     }
                 val endsTurn =
                     index == request.attacks.lastIndex ||
                         request.attacks[index + 1].turn != attack.turn
                 val afterTurn =
-                    if (endsTurn) {
-                        endTurn(
-                            value.actual,
-                            turnEnd,
-                            attack.turn,
-                        )
-                    } else {
-                        value.actual
-                    }
-                val conditionalAfterTurn =
-                    when {
-                        !endsTurn || !needsConditional -> conditional
-                        value.actual === conditional -> afterTurn
-                        else -> endTurn(conditional, turnEnd, attack.turn)
-                    }
-                val possible =
-                    if (needsConditional && current.possible == null &&
-                        conditionalAfterTurn.keys.any { it.hp == 0 }
-                    ) {
-                        index + 1
-                    } else {
-                        current.possible
-                    }
-                val guaranteed =
-                    if (needsConditional && conditionalAfterTurn.keys.all { it.hp == 0 }) {
-                        index + 1
-                    } else {
-                        current.guaranteed
-                    }
-                val conditionalSize = if (needsConditional) conditionalAfterTurn.size else 0
-                val operations = afterTurn.size.toLong() + conditionalSize
-                if (!budget.spend(operations, maxOf(afterTurn.size, conditionalSize))) {
+                    finishTurn(distributions, needsConditional, endsTurn, turnEnd, attack.turn)
+                val conditionalSize = if (needsConditional) afterTurn.conditional.size else 0
+                val operations = afterTurn.actual.size.toLong() + conditionalSize
+                if (!budget.spend(operations, maxOf(afterTurn.actual.size, conditionalSize))) {
                     return failure()
                 }
-                AttackProgress(afterTurn, conditionalAfterTurn, possible, guaranteed)
+                updateKnockout(current, afterTurn, needsConditional, index + 1)
             }
         return Calculation.Success(
             result(
@@ -149,6 +97,103 @@ internal object CombinedEngine {
         val possible: Int?,
         val guaranteed: Int?,
     )
+
+    private class AttackDistributions(
+        val actual: Map<BattleProgress, BigInteger>,
+        val conditional: Map<BattleProgress, BigInteger>,
+    )
+
+    /** 同じ入力分布なら畳み込みを共有し、必要な場合だけ条件付き分布を別に計算する。 */
+    private fun applyAttack(
+        current: AttackProgress,
+        attack: Attack,
+        needsConditional: Boolean,
+        convolution: AttackConvolution,
+    ): Calculation<AttackDistributions> {
+        val shared = needsConditional && current.branches === current.conditional
+        val sameCounts = shared && attack.hitCounts.keys == attack.conditionalHitCounts!!.keys
+        val sharedCounts = if (shared && !sameCounts) attack.conditionalHitCounts else null
+        val outcomes =
+            when (
+                val result =
+                    convolution.apply(
+                        current.branches,
+                        attack,
+                        sharedConditionalCounts = sharedCounts,
+                    )
+            ) {
+                is Calculation.Failure -> return result
+                is Calculation.Success -> result.value
+            }
+        val conditional =
+            when {
+                !needsConditional -> {
+                    current.conditional
+                }
+
+                shared -> {
+                    if (sameCounts) outcomes.actual else outcomes.conditional!!
+                }
+
+                else -> {
+                    when (
+                        val result =
+                            convolution.apply(
+                                current.conditional,
+                                attack,
+                                attack.conditionalHitCounts!!,
+                                trackAttackDamage = false,
+                            )
+                    ) {
+                        is Calculation.Failure -> return result
+                        is Calculation.Success -> result.value.actual
+                    }
+                }
+            }
+        return Calculation.Success(AttackDistributions(outcomes.actual, conditional))
+    }
+
+    /** 共有中の分布にはターン終了処理を一度だけ適用し、共有関係を維持する。 */
+    private fun finishTurn(
+        distributions: AttackDistributions,
+        needsConditional: Boolean,
+        endsTurn: Boolean,
+        turnEnd: TurnEnd,
+        turn: Long,
+    ): AttackDistributions {
+        val actual =
+            if (endsTurn) endTurn(distributions.actual, turnEnd, turn) else distributions.actual
+        val conditional =
+            when {
+                !endsTurn || !needsConditional -> distributions.conditional
+                distributions.actual === distributions.conditional -> actual
+                else -> endTurn(distributions.conditional, turnEnd, turn)
+            }
+        return AttackDistributions(actual, conditional)
+    }
+
+    private fun updateKnockout(
+        current: AttackProgress,
+        distributions: AttackDistributions,
+        needsConditional: Boolean,
+        attackCount: Int,
+    ): AttackProgress {
+        val possible =
+            if (needsConditional && current.possible == null &&
+                distributions.conditional.keys.any { it.hp == 0 }
+            ) {
+                attackCount
+            } else {
+                current.possible
+            }
+        val guaranteed =
+            if (needsConditional && distributions.conditional.keys.all { it.hp == 0 }) {
+                attackCount
+            } else {
+                current.guaranteed
+            }
+        return AttackProgress(distributions.actual, distributions.conditional, possible, guaranteed)
+    }
 
     private fun endTurn(
         branches: Map<BattleProgress, BigInteger>,
