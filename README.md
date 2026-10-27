@@ -57,6 +57,12 @@ val pokemon = attacker.copy(
 `Attack.fromAccuracy`の命中判定方式は`accuracyMode`で指定します
 （`AccuracyMode.ONCE_PER_ATTACK`／`AccuracyMode.UNTIL_FIRST_MISS`）。
 
+## 計算仕様
+
+- `PokemonState.ability`には発動済みの特性を指定します。天候・HP・状態異常による発動条件は推定しません。
+- 連続計算は指定された固定の攻撃分布を使います。途中のHP変化によるダメージの再計算は行いません。
+- 不正な入力はモデル生成時に`InputValidationException`になります。`validate { ... }`で`Validation.Invalid`として受け取れます。未対応の技や計算量上限超過は`Calculation.Failure`で返します。
+
 ## 開発
 
 JDK 26を使用します。miseを導入後、次を実行してください。
