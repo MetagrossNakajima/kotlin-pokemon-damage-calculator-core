@@ -13,6 +13,7 @@ import dev.pokemondamage.rules.BattleEffects
 /** 1発分の計算条件。特性・持ち物の無効判定を技の変化より先に解決する。 */
 internal class DamageContext(
     val request: DamageRequest,
+    moveOverride: EffectiveMove? = null,
 ) {
     val attacker = request.attacker
     val defender = request.defender
@@ -26,7 +27,7 @@ internal class DamageContext(
     val attackerGrounded = BattleEffects.isGrounded(attacker, field, attackerAbility, attackerItem)
     val defenderGrounded = BattleEffects.isGrounded(defender, field, defenderAbility, defenderItem)
     val defenderTypes = BattleEffects.currentTypes(defender)
-    val move = MovePreparation.prepare(this)
+    val move = moveOverride ?: MovePreparation.prepare(this)
 
     val physical: Boolean
         get() = move.category == Category.PHYSICAL

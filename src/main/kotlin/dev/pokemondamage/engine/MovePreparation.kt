@@ -167,8 +167,11 @@ internal object MovePreparation {
         val defense = BattleMath.rankedStat(defender.stats.defense, defenseStage)
         val specialDefense =
             BattleMath.rankedStat(defender.stats.specialDefense, specialDefenseStage)
-        // 交差積で大小を比較し、同値や能力値0でも除算を避ける
-        val physical = attack.toLong() * specialDefense > specialAttack.toLong() * defense
+        // レベル50・威力90の基礎ダメージを端数処理して比較する。
+        val physicalDamage = kotlin.math.floor(kotlin.math.floor(22.0 * 90 * attack / defense) / 50)
+        val specialDamage =
+            kotlin.math.floor(kotlin.math.floor(22.0 * 90 * specialAttack / specialDefense) / 50)
+        val physical = physicalDamage > specialDamage
         val flags =
             if (physical) {
                 move.flags.values + MoveFlag.CONTACT
@@ -177,6 +180,7 @@ internal object MovePreparation {
             }
         return move.copy(
             category = if (physical) Category.PHYSICAL else Category.SPECIAL,
+            categoryTied = physicalDamage == specialDamage,
             flags = EnumFlags(*flags.toTypedArray()),
         )
     }

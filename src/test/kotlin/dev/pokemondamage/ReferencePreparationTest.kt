@@ -112,12 +112,16 @@ class ReferencePreparationTest {
                         )
                     val description = row.take(18).joinToString("/")
                     assertEquals(TeraType.valueOf(row[18]), context.move.type, description)
-                    assertEquals(Category.valueOf(row[19]), context.move.category, description)
-                    assertEquals(
-                        row[20].toBooleanStrict(),
-                        MoveFlag.CONTACT in context.move.flags,
-                        description,
-                    )
+                    // 旧参照実装は交差積で分類を一つに決める。同値時の分布は回帰テストで検証する。
+                    // ここでは参照実装が選んだ分類の計算根拠を引き続き照合する。
+                    if (!context.move.categoryTied) {
+                        assertEquals(Category.valueOf(row[19]), context.move.category, description)
+                        assertEquals(
+                            row[20].toBooleanStrict(),
+                            MoveFlag.CONTACT in context.move.flags,
+                            description,
+                        )
+                    }
                     val calculated =
                         assertIs<Calculation.Success<DamageResult>>(
                             calculateDamage(context.request),
@@ -135,7 +139,11 @@ class ReferencePreparationTest {
                         } else {
                             expectedRolls
                         },
-                        calculated.hit.rolls,
+                        if (context.move.categoryTied && row[19] == "PHYSICAL") {
+                            checkNotNull(calculated.alternativeHit).rolls
+                        } else {
+                            calculated.hit.rolls
+                        },
                         description,
                     )
                 }

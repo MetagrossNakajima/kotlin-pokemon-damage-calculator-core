@@ -83,3 +83,14 @@ mise run clean  # ビルド成果物の削除
 整形にはSpotless経由でktlintの標準ルールを使用し、行幅は100文字に設定しています。
 複数行の`if` / `else`には`{}`を付けます。
 1行に収まる場合は`{}`を省略できます。
+
+### 特殊技の分布と能力ランク
+
+`StatStages`の`accuracy`・`evasion`で命中率・回避率ランクも指定できます。
+アシストパワー／つけあがるは、これらを含む7項目の正のランクを威力に反映します。
+命中判定自体は引き続き`Attack.fromAccuracy`に渡す命中率で指定します。
+
+シェルアームズは、端数処理後の基礎ダメージが同値なら物理・特殊を各50%で計算します。
+この場合、`DamageResult.hit`が特殊側、`alternativeHit`が物理側の計算根拠を保持し、
+`distribution`・`min`・`max`・割合には両方の結果を反映します。
+連続計算へは`DamageResult.distribution`を渡してください。
