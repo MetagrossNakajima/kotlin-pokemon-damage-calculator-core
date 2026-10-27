@@ -6,6 +6,8 @@ data class StatStages(
     val specialAttack: StatStage = StatStage.NEUTRAL,
     val specialDefense: StatStage = StatStage.NEUTRAL,
     val speed: StatStage = StatStage.NEUTRAL,
+    val accuracy: StatStage = StatStage.NEUTRAL,
+    val evasion: StatStage = StatStage.NEUTRAL,
 ) {
     /** HPには能力ランクがない。 */
     operator fun get(stat: Stat): StatStage? =
@@ -26,6 +28,8 @@ data class StatStages(
             specialAttack: Int = 0,
             specialDefense: Int = 0,
             speed: Int = 0,
+            accuracy: Int = 0,
+            evasion: Int = 0,
         ): StatStages {
             val checks = InputChecks()
             for (
@@ -36,6 +40,8 @@ data class StatStages(
                 "specialAttack" to specialAttack,
                 "specialDefense" to specialDefense,
                 "speed" to speed,
+                "accuracy" to accuracy,
+                "evasion" to evasion,
             )
             ) {
                 checks.require(stage in -6..6, name, ValidationCode.OUT_OF_RANGE)
@@ -47,6 +53,8 @@ data class StatStages(
                 StatStage(specialAttack),
                 StatStage(specialDefense),
                 StatStage(speed),
+                StatStage(accuracy),
+                StatStage(evasion),
             )
         }
     }

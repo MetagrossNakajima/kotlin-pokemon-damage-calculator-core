@@ -13,4 +13,5 @@ internal data class EffectiveMove(
     val power: Int,
     val category: Category,
     val flags: EnumFlags<MoveFlag> = original.flags,
+    val categoryTied: Boolean = false,
 )

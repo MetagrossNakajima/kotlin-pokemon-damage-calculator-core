@@ -144,7 +144,15 @@ internal object BasePower {
             -> {
                 with(attacker.stages) {
                     val positiveStages =
-                        listOf(attack, defense, specialAttack, specialDefense, speed).sumOf {
+                        listOf(
+                            attack,
+                            defense,
+                            specialAttack,
+                            specialDefense,
+                            speed,
+                            accuracy,
+                            evasion,
+                        ).sumOf {
                             it.positive
                         }
                     20L * (1 + positiveStages)
