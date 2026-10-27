@@ -5,7 +5,7 @@ plugins {
     id("com.diffplug.spotless") version "8.10.4"
 }
 
-version = "0.1.0-SNAPSHOT"
+version = providers.gradleProperty("releaseVersion").getOrElse("0.1.0-SNAPSHOT")
 
 repositories {
     mavenCentral()
@@ -28,6 +28,12 @@ kotlin {
 
 java {
     withSourcesJar()
+}
+
+tasks.withType<Jar>().configureEach {
+    from("LICENSE") {
+        into("META-INF")
+    }
 }
 
 dependencies {

@@ -5,6 +5,76 @@
 - `calculateDamage(request)`：単発のダメージ分布を計算
 - `calculateCombinedDamage(request)`：連続攻撃のHP推移・撃破率・確定数を計算
 
+## 別プロジェクトから利用する
+
+GitHub ReleasesのJARをGradleから直接取得できます。公開リポジトリでは認証は不要です。
+利用先はJDK 26と、互換性のあるKotlinコンパイラ（本ライブラリは2.4.21）を使用してください。
+以下は`v0.1.0`を公開した後に利用できる設定例です。
+
+利用先の`build.gradle.kts`に追加します。
+リポジトリを`settings.gradle.kts`に集約している場合は、
+`repositories`の内容を`dependencyResolutionManagement.repositories`に追加してください。
+
+```kotlin
+repositories {
+    mavenCentral()
+    exclusiveContent {
+        forRepository {
+            ivy {
+                name = "pokemonDamageReleases"
+                url = uri(
+                    "https://github.com/MetagrossNakajima/" +
+                        "kotlin-pokemon-damage-calculator-core/releases/download",
+                )
+                patternLayout {
+                    artifact("v[revision]/[artifact]-[revision](-[classifier]).[ext]")
+                }
+                metadataSources { artifact() }
+            }
+        }
+        filter {
+            includeModule("dev.pokemondamage", "kotlin-pokemon-damage-calculator-core")
+        }
+    }
+}
+
+dependencies {
+    implementation("dev.pokemondamage:kotlin-pokemon-damage-calculator-core:0.1.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.4.21")
+}
+```
+
+`dev.pokemondamage`はこの取得設定内で使う識別子です。Maven Centralへの登録は不要です。
+Gradleが指定バージョンのJARをダウンロードしてキャッシュするため、手動コピーは不要です。
+JARには依存関係のメタデータがないので、Kotlin標準ライブラリは利用先で明示します。
+更新時は依存関係のバージョンを公開済みのものに変更してください。
+非公開リポジトリからの取得には別途認証が必要で、この例は公開リポジトリ向けです。
+
+## リリース
+
+`.github/workflows/release.yml`は、`v0.1.0`のような`vメジャー.マイナー.パッチ`タグのpushで起動します。
+テスト・カバレッジ・整形チェックの成功後、GitHub Releaseを作成し、
+本体JAR・ソースJAR・`SHA256SUMS`を添付します。両JARにはMITライセンスを同梱します。
+バージョンはタグから設定するため、通常開発用の`0.1.0-SNAPSHOT`を書き換える必要はありません。
+本名の登録や公開用トークンの追加は不要で、Actionsの`GITHUB_TOKEN`を使います。
+
+変更をコミットし、GitHubへpushした後に実行してください。
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+公開済みタグやReleaseは上書きせず、変更時は新しいバージョンを作成してください。
+ビルド段階で失敗した場合は原因を解消して再実行できます。
+Release作成後の再実行では既存Releaseを上書きしません。
+
+公開せずにリリース用ビルドを確認する場合：
+
+```sh
+mise exec -- ./gradlew clean build spotlessCheck -PreleaseVersion=0.1.0
+```
+
 ## 使用例
 
 能力値はレベル50の実数値を指定します。
