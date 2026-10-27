@@ -1,5 +1,6 @@
 package dev.pokemondamage
 
+import dev.pokemondamage.fixtures.parentalBondCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.Calculation
 import dev.pokemondamage.model.Category
@@ -27,12 +28,7 @@ class ReferenceParentalBondTest {
     @Test
     fun `AbilityId ParentalBond matches native parent child and ability-free control rolls`() {
         val rows =
-            javaClass
-                .getResourceAsStream("/reference/parental-bond.tsv")!!
-                .bufferedReader()
-                .readLines()
-                .drop(1)
-                .map { it.split('\t') }
+            parentalBondCases()
         assertEquals(64, rows.size)
         val pokemon =
             PokemonState(
@@ -45,18 +41,12 @@ class ReferenceParentalBondTest {
                 ability = AbilityId("Illuminate"),
             )
 
-        fun rolls(s: String) =
-            s
-                .removePrefix("[")
-                .removeSuffix("]")
-                .split(',')
-                .map(String::toInt)
         for (c in rows) {
             val a =
                 pokemon.copy(
                     ability = AbilityId("ParentalBond"),
-                    item = c[4].takeUnless { it == "-" }?.let(::ItemId),
-                    status = if (c[3].toBooleanStrict()) Status.BURN else null,
+                    item = c.item,
+                    status = if (c.burn) Status.BURN else null,
                 )
             val request =
                 DamageRequest(
@@ -65,11 +55,11 @@ class ReferenceParentalBondTest {
                     Move(
                         MoveId("Tackle"),
                         PokemonType.NORMAL,
-                        c[0].toInt(),
-                        Category.valueOf(c[1]),
+                        c.power,
+                        c.category,
                     ),
-                    critical = c[2].toBooleanStrict(),
-                    hitIndex = c[5].toLong(),
+                    critical = c.critical,
+                    hitIndex = c.hit,
                 )
             val actual =
                 assertIs<Calculation.Success<DamageResult>>(calculateDamage(request))
@@ -84,14 +74,14 @@ class ReferenceParentalBondTest {
                 ).value
                     .hit
                     .rolls
-            val label = c.take(6).joinToString("/")
-            assertEquals(rolls(c[6]), actual, "$label parental hit")
-            assertEquals(rolls(c[7]), control, "$label control")
-            if (c[5] == "0") {
+            val label = c.toString()
+            assertEquals(c.damage, actual, "$label parental hit")
+            assertEquals(c.control, control, "$label control")
+            if (c.hit == 0L) {
                 assertEquals(control, actual, "parent retains ordinary damage")
             } else {
                 assertTrue(actual.zip(control).all { (child, parent) -> child <= parent }, label)
-                if (c[0] == "80") {
+                if (c.power == 80) {
                     assertNotEquals(control, actual, "child damage reduction must activate")
                 }
             }

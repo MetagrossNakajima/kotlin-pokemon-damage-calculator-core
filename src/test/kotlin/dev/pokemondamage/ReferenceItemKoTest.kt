@@ -1,5 +1,6 @@
 package dev.pokemondamage
 
+import dev.pokemondamage.fixtures.itemKoCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.BattleField
 import dev.pokemondamage.model.BattleSetup
@@ -27,13 +28,8 @@ import kotlin.test.assertIs
 class ReferenceItemKoTest {
     @TestFactory
     fun `combined item effects match native guaranteed KO attack counts`() =
-        javaClass
-            .getResourceAsStream("/reference/item-ko.tsv")!!
-            .bufferedReader()
-            .readLines()
-            .drop(1)
-            .map { it.split('\t') }
-            .groupBy { it[0] }
+        itemKoCases()
+            .groupBy { it.item }
             .also { assertEquals(3, it.size) }
             .map { (item, rows) ->
                 dynamicTest("ItemId/$item") {
@@ -48,17 +44,17 @@ class ReferenceItemKoTest {
                                     ),
                                     Stats(100, 100, 100, 100, 100, 100),
                                     ability = AbilityId("Illuminate"),
-                                    item = if (c[1].toBooleanStrict()) ItemId(item) else null,
+                                    item = if (c.enabled) ItemId(item) else null,
                                 )
-                            val hazards = c[3].toBooleanStrict()
+                            val hazards = c.hazards
                             val request =
                                 CombinedDamageRequest.repeatSingleHit(
-                                    DamageDistribution.fromRolls(listOf(c[2].toInt())),
+                                    DamageDistribution.fromRolls(listOf(c.damage)),
                                     defender,
                                     field =
                                         BattleField(
                                             weather =
-                                                if (c[4].toBooleanStrict()) {
+                                                if (c.sand) {
                                                     Weather.SANDSTORM
                                                 } else {
                                                     null
@@ -76,17 +72,17 @@ class ReferenceItemKoTest {
                                 assertIs<Calculation.Success<CombinedDamageResult>>(
                                     calculateCombinedDamage(request),
                                 ).value
-                            val expectedHits = c[5].toInt()
-                            assertEquals("1", c[6], "reference is a guaranteed KO")
+                            val expectedHits = c.hits
+                            assertEquals(1, c.chance, "reference is a guaranteed KO")
                             assertEquals(
                                 expectedHits,
                                 result.ko.possibleHits,
-                                "$item enabled=${c[1]}",
+                                "$item enabled=${c.enabled}",
                             )
                             assertEquals(
                                 expectedHits,
                                 result.ko.guaranteedHits,
-                                "$item enabled=${c[1]}",
+                                "$item enabled=${c.enabled}",
                             )
                             assertEquals(
                                 ExactProbability(

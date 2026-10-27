@@ -2,6 +2,7 @@ package dev.pokemondamage
 
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.engine.damage.Stab
+import dev.pokemondamage.fixtures.stabCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.Category
 import dev.pokemondamage.model.DamageRequest
@@ -17,6 +18,8 @@ import dev.pokemondamage.model.PokemonTypes
 import dev.pokemondamage.model.PokemonWeight
 import dev.pokemondamage.model.Stats
 import dev.pokemondamage.model.TeraType
+import org.junit.jupiter.api.DynamicTest.dynamicTest
+import org.junit.jupiter.api.TestFactory
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -36,47 +39,42 @@ class StabTest {
         ),
     )
 
-    @Test
-    fun `STAB matches reference across types tera abilities and stellar availability`() {
-        val rows =
-            javaClass
-                .getResourceAsStream("/reference/stab.tsv")!!
-                .bufferedReader()
-                .readLines()
-                .drop(1)
-        assertEquals(720, rows.size)
-        val differences = mutableListOf<String>()
-        for (row in rows) {
-            val c = row.split('\t')
-            val types = c[1].split(',').map(PokemonType::valueOf)
-            val a =
-                base.copy(
-                    profile =
-                        base.profile.copy(
-                            id = PokemonId(c[0]),
-                            types = PokemonTypes(types[0], types.getOrNull(1)),
-                        ),
-                    teraType = c[3].takeIf { it.isNotEmpty() }?.let(TeraType::valueOf),
-                    ability = AbilityId(c[4]),
-                    flags =
-                        PokemonFlags(
-                            mapOf(PokemonFlag.STELLAR_BOOST_AVAILABLE to c[5].toBooleanStrict()),
-                        ),
+    @TestFactory
+    fun `STAB matches reference across types tera abilities and stellar availability`() =
+        stabCases().also { assertEquals(720, it.size) }.map { case ->
+            val name =
+                "${case.species.value}/${case.originalTypes} move=${case.moveType} " +
+                    "tera=${case.teraType} ability=${case.ability.value} " +
+                    "stellarAvailable=${case.stellarAvailable}"
+            dynamicTest(name) {
+                val attacker =
+                    base.copy(
+                        profile = base.profile.copy(id = case.species, types = case.originalTypes),
+                        teraType = case.teraType,
+                        ability = case.ability,
+                        flags =
+                            PokemonFlags(
+                                mapOf(PokemonFlag.STELLAR_BOOST_AVAILABLE to case.stellarAvailable),
+                            ),
+                    )
+                // テラパゴス（ステラ）のテラクラスターのみ、準備後のステラタイプを検証する。
+                val move =
+                    if (case.moveType == TeraType.STELLAR) {
+                        Move(MoveId("TeraStarstorm"), PokemonType.NORMAL, 120, Category.SPECIAL)
+                    } else {
+                        Move(
+                            MoveId("Custom"),
+                            checkNotNull(case.moveType.pokemonType),
+                            60,
+                            Category.PHYSICAL,
+                        )
+                    }
+                assertEquals(
+                    case.expectedModifier,
+                    Stab.calculate(DamageContext(DamageRequest(attacker, base, move))),
                 )
-            // テラパゴス（ステラ）のテラクラスターはステラタイプになり、通常技は指定タイプを保つ。
-            val move =
-                if (c[2] == "STELLAR") {
-                    Move(MoveId("TeraStarstorm"), PokemonType.NORMAL, 120, Category.SPECIAL)
-                } else {
-                    Move(MoveId("Custom"), PokemonType.valueOf(c[2]), 60, Category.PHYSICAL)
-                }
-            val actual = Stab.calculate(DamageContext(DamageRequest(a, base, move)))
-            if (actual != c[6].toInt()) {
-                differences += "$row actual=$actual"
             }
         }
-        assertEquals(emptyList(), differences)
-    }
 
     @Test
     fun `stellar default availability and Tera Blast use the prepared move type`() {

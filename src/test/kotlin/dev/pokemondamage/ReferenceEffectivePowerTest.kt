@@ -1,8 +1,8 @@
 package dev.pokemondamage
 
+import dev.pokemondamage.fixtures.EffectivePowerCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.Calculation
-import dev.pokemondamage.model.Category
 import dev.pokemondamage.model.DamageRequest
 import dev.pokemondamage.model.DamageResult
 import dev.pokemondamage.model.FaintedAllies
@@ -28,13 +28,8 @@ import kotlin.test.assertNotEquals
 class ReferenceEffectivePowerTest {
     @TestFactory
     fun `caller counters and damage flag match native resolved power inputs`() =
-        javaClass
-            .getResourceAsStream("/reference/effective-power.tsv")!!
-            .bufferedReader()
-            .readLines()
-            .drop(1)
-            .map { it.split('\t') }
-            .groupBy { it[0] }
+        EffectivePowerCases.all
+            .groupBy { it.move }
             .also { assertEquals(3, it.size) }
             .map { (name, rows) ->
                 dynamicTest("MoveId/$name") {
@@ -51,8 +46,8 @@ class ReferenceEffectivePowerTest {
                         )
                     val outputs =
                         rows.map { c ->
-                            val count = c[1].toInt()
-                            val modified = c[6].toBooleanStrict()
+                            val count = c.count
+                            val modified = c.modified
                             val a =
                                 pokemon.copy(
                                     ability =
@@ -85,9 +80,9 @@ class ReferenceEffectivePowerTest {
                             val move =
                                 Move(
                                     MoveId(name),
-                                    PokemonType.valueOf(c[4]),
-                                    c[2].toInt(),
-                                    Category.valueOf(c[5]),
+                                    c.type,
+                                    c.inputPower,
+                                    c.category,
                                 )
                             val result =
                                 assertIs<Calculation.Success<DamageResult>>(
@@ -95,16 +90,12 @@ class ReferenceEffectivePowerTest {
                                 ).value
                                     .hit
                             assertEquals(
-                                c[7].toInt(),
+                                c.finalPower,
                                 result.power,
                                 "$name count=$count modified=$modified power",
                             )
                             val expected =
-                                c[8]
-                                    .removePrefix("[")
-                                    .removeSuffix("]")
-                                    .split(',')
-                                    .map(String::toInt)
+                                c.damage
                             assertEquals(
                                 expected,
                                 result.rolls,
@@ -112,7 +103,7 @@ class ReferenceEffectivePowerTest {
                             )
                             if (!modified) {
                                 assertEquals(
-                                    c[3].toInt(),
+                                    c.effectiveBasePower,
                                     result.power,
                                     "independently specified effective base power",
                                 )
@@ -127,7 +118,7 @@ class ReferenceEffectivePowerTest {
                     if (name == "RageFist") {
                         val capped =
                             rows.indices
-                                .filter { rows[it][1].toInt() >= 6 && rows[it][6] == "false" }
+                                .filter { rows[it].count >= 6 && !rows[it].modified }
                                 .map { outputs[it] }
                         assertEquals(
                             1,

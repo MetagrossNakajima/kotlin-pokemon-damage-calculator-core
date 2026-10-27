@@ -1,15 +1,13 @@
 package dev.pokemondamage
 
+import dev.pokemondamage.fixtures.EffectPairsCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.BattleField
 import dev.pokemondamage.model.Calculation
-import dev.pokemondamage.model.Category
 import dev.pokemondamage.model.DamageRequest
 import dev.pokemondamage.model.DamageResult
 import dev.pokemondamage.model.EnumFlags
 import dev.pokemondamage.model.FaintedAllies
-import dev.pokemondamage.model.FieldEffect
-import dev.pokemondamage.model.Gender
 import dev.pokemondamage.model.ItemId
 import dev.pokemondamage.model.Move
 import dev.pokemondamage.model.MoveFlag
@@ -25,8 +23,6 @@ import dev.pokemondamage.model.PokemonWeight
 import dev.pokemondamage.model.SideConditions
 import dev.pokemondamage.model.StatStages
 import dev.pokemondamage.model.Stats
-import dev.pokemondamage.model.Status
-import dev.pokemondamage.model.Weather
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
 import kotlin.test.assertEquals
@@ -36,17 +32,12 @@ import kotlin.test.assertNotEquals
 class ReferenceEffectPairsTest {
     @TestFactory
     fun `each effect changes full damage and agrees with native Reference`() =
-        javaClass
-            .getResourceAsStream("/reference/effect-pairs.tsv")!!
-            .bufferedReader()
-            .readLines()
-            .drop(1)
-            .map { it.split('\t') }
-            .groupBy { it[0] }
+        EffectPairsCases.all
+            .groupBy { it.effect }
             .also { assertEquals(152, it.size) }
             .map { (effect, rows) ->
                 dynamicTest(effect) {
-                    assertEquals(listOf("false", "true"), rows.map { it[1] })
+                    assertEquals(listOf(false, true), rows.map { it.enabled })
                     val results =
                         rows.map { c ->
                             val profile =
@@ -59,47 +50,50 @@ class ReferenceEffectPairsTest {
                             val a =
                                 PokemonState(
                                     profile.copy(
-                                        id = PokemonId(c[15]),
-                                        gender = Gender.valueOf(c[23]),
+                                        id = PokemonId(c.attackerSpecies),
+                                        gender = c.attackerGender,
                                     ),
                                     stats,
-                                    faintedAllies = FaintedAllies(c[25].toInt()),
+                                    faintedAllies = FaintedAllies(c.fainted),
                                     stages =
                                         StatStages.fromValues(
-                                            attack = c[22].toInt(),
-                                            specialAttack = c[22].toInt(),
+                                            attack = c.attackerStage,
+                                            specialAttack = c.attackerStage,
                                         ),
-                                    ability = AbilityId(c[2]),
-                                    item = c[4].takeUnless { it == "-" }?.let(::ItemId),
+                                    ability = AbilityId(c.attackerAbility),
+                                    item = c.attackerItem?.let(::ItemId),
                                 )
                             val d =
                                 PokemonState(
                                     profile.copy(
-                                        id = PokemonId(c[16]),
-                                        gender = Gender.valueOf(c[24]),
-                                        types = PokemonTypes(PokemonType.valueOf(c[7])),
+                                        id = PokemonId(c.defenderSpecies),
+                                        gender = c.defenderGender,
+                                        types = PokemonTypes(c.defenderType),
                                     ),
                                     stats,
-                                    status = c[21].takeUnless { it == "-" }?.let(Status::valueOf),
+                                    status = c.defenderStatus,
                                     sideConditions =
                                         SideConditions(
-                                            c[20].toBooleanStrict(),
-                                            c[20].toBooleanStrict(),
+                                            c.screen,
+                                            c.screen,
                                         ),
-                                    ability = AbilityId(c[3]),
-                                    item = c[5].takeUnless { it == "-" }?.let(::ItemId),
+                                    ability = AbilityId(c.defenderAbility),
+                                    item = c.defenderItem?.let(::ItemId),
                                     flags =
                                         PokemonFlags(
-                                            mapOf(PokemonFlag.CAN_EVOLVE to (c[16] == "Chansey")),
+                                            mapOf(
+                                                PokemonFlag.CAN_EVOLVE to
+                                                    (c.defenderSpecies == "Chansey"),
+                                            ),
                                         ),
                                 )
                             val flags =
-                                listOf(
-                                    MoveFlag.CONTACT,
-                                    MoveFlag.SOUND,
-                                    MoveFlag.BULLET,
-                                    MoveFlag.WIND,
-                                ).filterIndexed { index, _ -> c[9 + index].toBooleanStrict() } +
+                                listOfNotNull(
+                                    MoveFlag.CONTACT.takeIf { c.contact },
+                                    MoveFlag.SOUND.takeIf { c.sound },
+                                    MoveFlag.BULLET.takeIf { c.bullet },
+                                    MoveFlag.WIND.takeIf { c.wind },
+                                ) +
                                     if (effect == "ItemId/PunchingGlove") {
                                         listOf(MoveFlag.PUNCH)
                                     } else {
@@ -110,27 +104,22 @@ class ReferenceEffectPairsTest {
                                     a,
                                     d,
                                     Move(
-                                        MoveId(c[18]),
-                                        PokemonType.valueOf(c[6]),
+                                        MoveId(c.move),
+                                        c.type,
                                         80,
-                                        Category.valueOf(c[8]),
+                                        c.category,
                                         flags = EnumFlags(*flags.toTypedArray()),
                                     ),
                                     field =
                                         BattleField(
                                             effects =
                                                 EnumFlags(
-                                                    *c[19]
-                                                        .takeUnless { it == "-" }
-                                                        ?.let { arrayOf(FieldEffect.valueOf(it)) }
-                                                        .orEmpty(),
+                                                    *listOfNotNull(c.fieldEffect).toTypedArray(),
                                                 ),
                                             weather =
-                                                c[17].takeUnless { it == "-" }?.let(
-                                                    Weather::valueOf,
-                                                ),
+                                                c.weather,
                                         ),
-                                    critical = c[13].toBooleanStrict(),
+                                    critical = c.critical,
                                 )
                             val actual =
                                 assertIs<Calculation.Success<DamageResult>>(
@@ -139,14 +128,10 @@ class ReferenceEffectPairsTest {
                                     .hit
                                     .rolls
                             val encoded =
-                                c[14]
-                                    .removePrefix("[")
-                                    .removeSuffix("]")
-                                    .split(',')
-                                    .map(String::toInt)
+                                c.damage
                             val expected =
                                 if (encoded.size == 1) List(16) { encoded.single() } else encoded
-                            assertEquals(expected, actual, "$effect enabled=${c[1]}")
+                            assertEquals(expected, actual, "$effect enabled=${c.enabled}")
                             actual
                         }
                     assertNotEquals(

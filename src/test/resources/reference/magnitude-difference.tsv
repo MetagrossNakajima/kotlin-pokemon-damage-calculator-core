@@ -1,3 +1,0 @@
-move	enabled	power	type	category	flags	aHp	dHp	aStatus	dStatus	aItem	weather	terrain	gravity	aWeight	dWeight	stages	dType	damage	dAbility	aTera	aSpecies	screen	dStages	genericDamage	dItem	movesFirst
-Magnitude	false	70	GROUND	PHYSICAL	-	200	200	-	-	-	-	-	false	100	100	0,0,0,0,0	NORMAL	[27,27,27,28,28,28,29,29,29,30,30,30,31,31,31,32]	Illuminate	-	Mew	false	0,0,0,0,0	-	-	false
-Magnitude	true	70	GROUND	PHYSICAL	-	200	200	-	-	-	-	GRASS	false	100	100	0,0,0,0,0	NORMAL	[27,27,27,28,28,28,29,29,29,30,30,30,31,31,31,32]	Illuminate	-	Mew	false	0,0,0,0,0	-	-	false
