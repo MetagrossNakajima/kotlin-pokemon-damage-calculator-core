@@ -59,8 +59,9 @@ internal object BasePower {
 
             // アクロバット
             "Acrobatics" -> {
+                // 持ち物の効果が無効でも所持中なら倍化しない。ジュエルの発動は有効性を確認する。
                 if (
-                    attackerItem == null ||
+                    attacker.item == null || attacker.itemConsumed ||
                     (
                         attackerItem ==
                             ItemId(

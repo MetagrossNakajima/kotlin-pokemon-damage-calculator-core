@@ -36,7 +36,7 @@ import kotlin.test.assertIs
 
 class DartCombinedTest {
     @TestFactory
-    fun `combined API matches Dart HP damage KO counts and final states`(): List<DynamicTest> {
+    fun `combined API matches reference HP damage KO counts and final states`(): List<DynamicTest> {
         val cases = dartCombinedCases()
         assertEquals(810, cases.size)
         return cases.map { case ->

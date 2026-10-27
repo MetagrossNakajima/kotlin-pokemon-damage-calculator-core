@@ -146,11 +146,8 @@ class TurnEndTest {
             val expected =
                 when (status) {
                     Status.BURN -> 88
-
-                    Status.POISON,
-                    Status.TOXIC,
-                    -> 75
-
+                    Status.POISON -> 75
+                    Status.TOXIC -> 76
                     else -> 100
                 }
             assertEquals(expected, apply(p, s).hp)
@@ -198,6 +195,28 @@ class TurnEndTest {
                 ?.value,
         )
     }
+
+    @TestFactory
+    fun `toxic rounds its base damage before multiplying the counter`() =
+        listOf(
+            Triple(175, 2, 155),
+            Triple(175, 15, 25),
+            Triple(160, 2, 140),
+            Triple(15, 2, 13),
+            Triple(1, 2, 0),
+        ).map { (hp, counter, remaining) ->
+            dynamicTest("hp=$hp counter=$counter") {
+                val p =
+                    pokemon.copy(
+                        stats = pokemon.stats.copy(hp = hp),
+                        status = Status.TOXIC,
+                        toxicCounter = ToxicCounter(counter),
+                    )
+                val after = apply(p, state.copy(hp = hp, toxicCounter = p.toxicCounter))
+                assertEquals(remaining, after.hp)
+                assertEquals(minOf(15, counter + 1), after.toxicCounter?.value)
+            }
+        }
 
     @Test
     fun `all damage and healing fractions have minimum one for tiny max HP`() {

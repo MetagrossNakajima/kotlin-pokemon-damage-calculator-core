@@ -3,9 +3,12 @@ package dev.pokemondamage
 import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.engine.power.BasePower
 import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
 import dev.pokemondamage.model.Category
 import dev.pokemondamage.model.DamageRequest
+import dev.pokemondamage.model.EnumFlags
 import dev.pokemondamage.model.FaintedAllies
+import dev.pokemondamage.model.FieldEffect
 import dev.pokemondamage.model.ItemId
 import dev.pokemondamage.model.Move
 import dev.pokemondamage.model.MoveId
@@ -184,7 +187,7 @@ class BasePowerTest {
         }
 
     @Test
-    fun `Acrobatics uses active item and the source Normal Gem condition`() {
+    fun `Acrobatics uses held item consumption and the Normal Gem condition`() {
         assertEquals(100L, power("Acrobatics"))
         assertEquals(50L, power("Acrobatics", pokemon.copy(item = ItemId("LifeOrb"))))
         assertEquals(
@@ -192,7 +195,7 @@ class BasePowerTest {
             power("Acrobatics", pokemon.copy(item = ItemId("LifeOrb"), itemConsumed = true)),
         )
         assertEquals(
-            100L,
+            50L,
             power(
                 "Acrobatics",
                 pokemon.copy(item = ItemId("LifeOrb"), ability = AbilityId("Klutz")),
@@ -208,6 +211,32 @@ class BasePowerTest {
             ),
         )
     }
+
+    @TestFactory
+    fun `Acrobatics keeps base power while a held item is suppressed`() =
+        listOf(
+            pokemon.copy(ability = AbilityId("Klutz")) to BattleField(),
+            pokemon to BattleField(effects = EnumFlags(FieldEffect.MAGIC_ROOM)),
+            pokemon.copy(
+                flags = PokemonFlags(mapOf(PokemonFlag.ITEM_SUPPRESSED to true)),
+            ) to BattleField(),
+        ).mapIndexed { index, (attacker, field) ->
+            dynamicTest("suppression=$index") {
+                val move = Move(MoveId("Acrobatics"), PokemonType.FLYING, 55, Category.PHYSICAL)
+                for (item in listOf("Leftovers", "NormalGem")) {
+                    val holding = attacker.copy(item = ItemId(item))
+
+                    fun power(
+                        p: PokemonState,
+                        m: Move = move,
+                    ) = BasePower.calculate(DamageContext(DamageRequest(p, pokemon, m, field)))
+                    assertEquals(55L, power(holding), item)
+                    assertEquals(110L, power(holding.copy(itemConsumed = true)), item)
+                    assertEquals(110L, power(attacker), "no item")
+                    assertEquals(55L, power(holding, move.copy(type = PokemonType.NORMAL)), item)
+                }
+            }
+        }
 
     @Test
     fun `Hex doubles against Comatose under neutralizing gas`() {

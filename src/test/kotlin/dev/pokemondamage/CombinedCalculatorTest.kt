@@ -185,6 +185,28 @@ class CombinedCalculatorTest {
     }
 
     @Test
+    fun `toxic rounding preserves survival and delays berry consumption`() {
+        val p =
+            defender.copy(
+                stats = defender.stats.copy(hp = 175),
+                status = Status.TOXIC,
+                toxicCounter = ToxicCounter(2),
+            )
+        val surviving = result(CombinedDamageRequest(p, listOf(attack(1, 154))))
+        assertEquals(weights(1 to 1), surviving.finalHp.weights)
+        assertEquals(0.0, surviving.knockout.probability)
+        assertNull(surviving.ko.possibleHits)
+        val berry =
+            result(
+                CombinedDamageRequest(p.copy(item = ItemId("SitrusBerry")), listOf(attack(1, 67))),
+            )
+        assertEquals(weights(88 to 1), berry.finalHp.weights)
+        val finalState = berry.finalStates.single().state
+        assertFalse(finalState.itemConsumed)
+        assertEquals(3, finalState.toxicCounter?.value)
+    }
+
+    @Test
     fun `final snapshots retain toxicity item consumption reservation and original metadata`() {
         val p =
             defender.copy(
