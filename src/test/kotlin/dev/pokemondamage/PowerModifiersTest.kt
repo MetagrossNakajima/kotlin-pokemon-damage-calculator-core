@@ -490,7 +490,7 @@ class PowerModifiersTest {
                 )
                 assertEquals(4096, result(a, name = "WeatherBall").value)
                 assertEquals(4096, result(a, name = "Judgment").value)
-                assertEquals(4915, result(a, name = "TerrainPulse").value)
+                assertEquals(4096, result(a, name = "TerrainPulse").value)
                 assertEquals(
                     4096,
                     result(

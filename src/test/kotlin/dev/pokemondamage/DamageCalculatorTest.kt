@@ -1,15 +1,20 @@
 package dev.pokemondamage
 
+import dev.pokemondamage.engine.DamageContext
 import dev.pokemondamage.model.AbilityId
+import dev.pokemondamage.model.BattleField
 import dev.pokemondamage.model.Calculation
 import dev.pokemondamage.model.Category
 import dev.pokemondamage.model.DamageKind
 import dev.pokemondamage.model.DamageRequest
 import dev.pokemondamage.model.DamageResult
 import dev.pokemondamage.model.FailureKind
+import dev.pokemondamage.model.InputValidationException
 import dev.pokemondamage.model.ItemId
 import dev.pokemondamage.model.Move
 import dev.pokemondamage.model.MoveId
+import dev.pokemondamage.model.PokemonFlag
+import dev.pokemondamage.model.PokemonFlags
 import dev.pokemondamage.model.PokemonId
 import dev.pokemondamage.model.PokemonProfile
 import dev.pokemondamage.model.PokemonState
@@ -18,11 +23,14 @@ import dev.pokemondamage.model.PokemonTypes
 import dev.pokemondamage.model.PokemonWeight
 import dev.pokemondamage.model.Stats
 import dev.pokemondamage.model.Status
+import dev.pokemondamage.model.TeraType
+import dev.pokemondamage.model.Terrain
 import dev.pokemondamage.model.ToxicCounter
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
@@ -132,7 +140,70 @@ class DamageCalculatorTest {
     }
 
     @TestFactory
-    fun `unsupported moves return explicit failures`() =
+    fun `Terrain Pulse ignores skins with and without grounded terrain`() =
+        listOf("Normalize", "Aerilate", "Pixilate", "Refrigerate", "Galvanize", "Dragonize")
+            .map { ability ->
+                dynamicTest(ability) {
+                    val ghost =
+                        base.copy(
+                            profile = base.profile.copy(types = PokemonTypes(PokemonType.GHOST)),
+                        )
+                    for (terrain in listOf(null) + Terrain.entries) {
+                        for (grounded in listOf(false, true)) {
+                            val attacker =
+                                base.copy(
+                                    ability = AbilityId(ability),
+                                    flags = PokemonFlags(mapOf(PokemonFlag.GROUNDED to grounded)),
+                                )
+                            val input =
+                                request(
+                                    a = attacker,
+                                    d = ghost,
+                                    name = "TerrainPulse",
+                                    category = Category.SPECIAL,
+                                    power = 50,
+                                ).copy(field = BattleField(terrain = terrain))
+                            val expectedType =
+                                if (!grounded) {
+                                    TeraType.NORMAL
+                                } else {
+                                    when (terrain) {
+                                        Terrain.ELECTRIC -> TeraType.ELECTRIC
+                                        Terrain.GRASS -> TeraType.GRASS
+                                        Terrain.MISTY -> TeraType.FAIRY
+                                        Terrain.PSYCHIC -> TeraType.PSYCHIC
+                                        null -> TeraType.NORMAL
+                                    }
+                                }
+                            val actual = result(input)
+                            assertEquals(expectedType, DamageContext(input).move.type)
+                            assertEquals(
+                                if (grounded && terrain != null) 100 else 50,
+                                DamageContext(input).move.power,
+                            )
+                            val expectedPower =
+                                when {
+                                    !grounded || terrain == null -> 50
+                                    terrain == Terrain.MISTY -> 100
+                                    else -> 130
+                                }
+                            assertEquals(expectedPower, actual.hit.power)
+                            assertEquals(
+                                result(
+                                    input.copy(attacker = attacker.copy(ability = null)),
+                                ).hit.rolls,
+                                actual.hit.rolls,
+                            )
+                            if (expectedType == TeraType.NORMAL) {
+                                assertEquals(List(16) { 0 }, actual.hit.rolls)
+                            }
+                        }
+                    }
+                }
+            }
+
+    @TestFactory
+    fun `unsupported moves with zero power return explicit failures`() =
         listOf(
             "Counter",
             "Bide",
@@ -142,10 +213,17 @@ class DamageCalculatorTest {
             "Psywave",
         ).map { name ->
             dynamicTest(name) {
-                assertEquals(
-                    Calculation.Failure(FailureKind.UNSUPPORTED, "move.$name"),
-                    calculateDamage(request(name = name)),
-                )
+                for (power in listOf(0, 60)) {
+                    assertEquals(
+                        Calculation.Failure(FailureKind.UNSUPPORTED, "move.$name"),
+                        calculateDamage(request(name = name, power = power)),
+                    )
+                }
+                for (power in listOf(-1, 1001)) {
+                    assertFailsWith<InputValidationException> {
+                        request(name = name, power = power)
+                    }
+                }
             }
         }
 

@@ -109,7 +109,7 @@ internal object MovePreparation {
                             type = it.terrainPulseType,
                             power = move.power * 2,
                         )
-                    }
+                    } ?: move
             }
 
             // レイジングブル

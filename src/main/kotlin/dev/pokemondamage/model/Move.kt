@@ -14,7 +14,8 @@ data class Move(
     init {
         val checks = InputChecks()
         checks.require(
-            power in 0..1000 && (power != 0 || MoveRules.isFixedDamage(id)),
+            power in 0..1000 &&
+                (power != 0 || MoveRules.isFixedDamage(id) || MoveRules.isUnsupported(id)),
             "power",
             ValidationCode.OUT_OF_RANGE,
         )

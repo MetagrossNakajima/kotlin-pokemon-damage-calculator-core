@@ -212,7 +212,7 @@ internal object PowerModifiers {
         val convertible =
             move.id != MoveId("Judgment") &&
                 move.id != MoveId("WeatherBall") &&
-                !(move.id == MoveId("TerrainPulse") && context.field.terrain != null) &&
+                move.id != MoveId("TerrainPulse") &&
                 !(move.id == MoveId("TeraBlast") && context.attacker.teraType != null)
         // スキン系特性･ノーマルスキン
         val skinType = AbilityRules.skinType(context.attackerAbility)
