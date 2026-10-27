@@ -25,6 +25,7 @@ import dev.pokemondamage.model.Status
 import dev.pokemondamage.model.Weather
 import dev.pokemondamage.model.zip
 import org.junit.jupiter.api.DynamicTest.dynamicTest
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -32,6 +33,33 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class ReferenceFixedDamageTest {
+    @Test
+    fun `guardian of alola knocks out one HP targets unless immune`() {
+        val pokemon =
+            PokemonState(
+                PokemonProfile(
+                    PokemonId("Mew"),
+                    PokemonTypes(PokemonType.NORMAL),
+                    PokemonWeight(100),
+                ),
+                Stats(200, 100, 100, 100, 100, 100),
+            )
+        val move = Move(MoveId("GuardianofAlola"), PokemonType.FAIRY, 0, Category.SPECIAL)
+        for ((ability, expected) in listOf(null to 1, AbilityId("WonderGuard") to 0)) {
+            val defender = pokemon.copy(currentHp = 1, ability = ability)
+            val result =
+                assertIs<Calculation.Success<DamageResult>>(
+                    calculateDamage(DamageRequest(pokemon, defender, move)),
+                ).value
+            assertEquals(listOf(expected), result.hit.rolls, "ability=$ability")
+            assertEquals(
+                expected == 1,
+                result.distribution.knockoutProbability(1.toBigInteger()).guaranteed,
+                "ability=$ability",
+            )
+        }
+    }
+
     @TestFactory
     fun `fixed moves match expected damage across HP boundaries modifiers and immunity`() =
         fixedDamageCases()
@@ -99,9 +127,16 @@ class ReferenceFixedDamageTest {
                                     calculateDamage(request),
                                 ).value
                                     .hit
-                            // 保存済みの参照値はHP1で0を返すが、この技は1ダメージを与える。
+                            // 保存済みの参照値はHP1で0を返すが、これらの技は1ダメージを与える。
                             val expected =
-                                if (name == "NaturesMadness" && c.defenderHp == 1) 1 else c.damage
+                                if (
+                                    name in setOf("NaturesMadness", "GuardianofAlola") &&
+                                    c.defenderHp == 1
+                                ) {
+                                    1
+                                } else {
+                                    c.damage
+                                }
                             assertEquals(
                                 listOf(expected),
                                 result.rolls,

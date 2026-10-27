@@ -293,7 +293,7 @@ class DamageCalculatorTest {
                 result(request(d = d, name = "SuperFang", power = 0)).max,
             )
             assertEquals(
-                hp * 3 / 4,
+                listOf(1, 1, 2, 3, 3, 4, 5, 6)[hp - 1],
                 result(request(d = d, name = "GuardianofAlola", power = 0)).max,
             )
             assertEquals(0, result(request(d = d, name = "Endeavor", power = 0)).max)

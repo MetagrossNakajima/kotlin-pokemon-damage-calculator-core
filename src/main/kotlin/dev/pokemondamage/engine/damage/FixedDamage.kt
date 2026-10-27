@@ -32,7 +32,7 @@ internal object FixedDamage {
                 FixedDamageKind.HALF_CURRENT_HP -> maxOf(1, hp / 2)
 
                 // ガーディアン・デ・アローラ
-                FixedDamageKind.THREE_QUARTERS_CURRENT_HP -> hp * 3 / 4
+                FixedDamageKind.THREE_QUARTERS_CURRENT_HP -> maxOf(1, hp * 3 / 4)
 
                 // いのちがけ
                 FixedDamageKind.ATTACKER_HP -> attackerHp
