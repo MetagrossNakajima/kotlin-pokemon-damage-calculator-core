@@ -210,6 +210,20 @@ class BasePowerTest {
     }
 
     @Test
+    fun `Hex doubles against Comatose under neutralizing gas`() {
+        assertEquals(
+            130L,
+            power(
+                "Hex",
+                a = pokemon.copy(ability = AbilityId("NeutralizingGas")),
+                d = pokemon.copy(ability = AbilityId("Comatose")),
+                input = 65,
+                type = PokemonType.GHOST,
+            ),
+        )
+    }
+
+    @Test
     fun `Hex responds to each status and to effective Comatose`() {
         assertEquals(50L, power("Hex"))
         for (status in Status.entries) {

@@ -75,6 +75,48 @@ class BattleEffectsTest {
     }
 
     @Test
+    fun `neutralizing gas preserves exempt abilities from either source`() {
+        val gasField = field.copy(effects = EnumFlags(FieldEffect.NEUTRALIZING_GAS))
+        val exemptAbilities =
+            listOf(
+                "AsOneGlastrier",
+                "AsOneSpectrier",
+                "BattleBond",
+                "Comatose",
+                "Disguise",
+                "GulpMissile",
+                "IceFace",
+                "Multitype",
+                "NeutralizingGas",
+                "PowerConstruct",
+                "RKSSystem",
+                "Schooling",
+                "ShieldsDown",
+                "StanceChange",
+                "TeraShift",
+                "ZenMode",
+                "ZeroToHero",
+            )
+        for (name in exemptAbilities) {
+            val ability = AbilityId(name)
+            val holder = normal.copy(ability = ability)
+            assertEquals(ability, BattleEffects.ability(holder, gasField), name)
+            assertEquals(ability, BattleEffects.ability(holder, field, gas), name)
+            assertEquals(ability, BattleEffects.ability(holder, gasField, gas), name)
+            assertNull(
+                BattleEffects.ability(
+                    holder.copy(flags = flags(PokemonFlag.ABILITY_SUPPRESSED to true)),
+                    gasField,
+                    gas,
+                ),
+                name,
+            )
+        }
+        assertNull(BattleEffects.ability(normal, gasField, gas))
+        assertNull(BattleEffects.ability(normal.copy(ability = AbilityId("Custom")), gasField, gas))
+    }
+
+    @Test
     fun `ability shield takes precedence over gas and individual suppression`() {
         val shielded =
             guts.copy(item = shield, flags = flags(PokemonFlag.ABILITY_SUPPRESSED to true))

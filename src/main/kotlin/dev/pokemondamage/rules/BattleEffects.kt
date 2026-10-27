@@ -14,6 +14,26 @@ import dev.pokemondamage.model.Weather
 internal object BattleEffects {
     private val abilityShield = ItemId("AbilityShield")
     private val neutralizingGas = AbilityId("NeutralizingGas")
+    private val gasExemptAbilities =
+        setOf(
+            neutralizingGas,
+            AbilityId("AsOneGlastrier"),
+            AbilityId("AsOneSpectrier"),
+            AbilityId("BattleBond"),
+            AbilityId("Comatose"),
+            AbilityId("Disguise"),
+            AbilityId("GulpMissile"),
+            AbilityId("IceFace"),
+            AbilityId("Multitype"),
+            AbilityId("PowerConstruct"),
+            AbilityId("RKSSystem"),
+            AbilityId("Schooling"),
+            AbilityId("ShieldsDown"),
+            AbilityId("StanceChange"),
+            AbilityId("TeraShift"),
+            AbilityId("ZenMode"),
+            AbilityId("ZeroToHero"),
+        )
     private val klutz = AbilityId("Klutz")
     private val ironBall = ItemId("IronBall")
     private val airBalloon = ItemId("AirBalloon")
@@ -38,9 +58,9 @@ internal object BattleEffects {
         if (pokemon.flags[PokemonFlag.ABILITY_SUPPRESSED] == true) {
             return null
         }
-        // かがくへんかガス
+        // かがくへんかガス（ぜったいねむり・じんばいったい等は無効化されない）
         if (
-            pokemon.ability != neutralizingGas &&
+            pokemon.ability !in gasExemptAbilities &&
             (
                 FieldEffect.NEUTRALIZING_GAS in field.effects ||
                     (
