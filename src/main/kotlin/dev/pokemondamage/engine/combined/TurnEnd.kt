@@ -104,8 +104,9 @@ internal class TurnEnd(
 
                 // もうどく：経過ターンに応じたダメージ
                 Status.TOXIC -> {
-                    defender.stats.hp * (state.toxicCounter ?: ToxicCounter.INITIAL).value /
-                        16
+                    // 1回分を切り捨てて最低1にしてから、もうどくカウンターを掛ける。
+                    maxOf(1, defender.stats.hp / 16) *
+                        (state.toxicCounter ?: ToxicCounter.INITIAL).value
                 }
 
                 else -> {

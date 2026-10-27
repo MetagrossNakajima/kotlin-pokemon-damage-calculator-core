@@ -5,7 +5,8 @@ import dev.pokemondamage.model.Status
 import java.math.BigInteger
 
 // Fixed expectations migrated from dart/combined.tsv.
-// Dart parity; the original snapshot did not record a revision.
+// Dart parity except corrected Toxic rounding (floor HP/16 before scaling).
+// Toxic expectations independently enumerated; original snapshot revision unknown.
 // Literal expected values, grouped by ability and accuracy.
 internal fun dartCombinedRipenAccuracy0Cases(): List<DartCombinedCase> =
     buildList {
@@ -73,12 +74,12 @@ private fun dartCombinedRipenAccuracy0CasesPart1(): List<DartCombinedCase> =
             item = null,
             status = Status.TOXIC,
             hazards = false,
-            hp = mapOf(BigInteger("36") to BigInteger("1")),
+            hp = mapOf(BigInteger("37") to BigInteger("1")),
             damage = mapOf(BigInteger("0") to BigInteger("1")),
             koStatus = KoStatus.RESOLVED,
             possible = 2,
             guaranteed = 3,
-            states = listOf(ExpectedCombinedState(36, false, 5, null, BigInteger("1"))),
+            states = listOf(ExpectedCombinedState(37, false, 5, null, BigInteger("1"))),
         ),
         DartCombinedCase(
             accuracy = 0,
@@ -86,12 +87,12 @@ private fun dartCombinedRipenAccuracy0CasesPart1(): List<DartCombinedCase> =
             item = null,
             status = Status.TOXIC,
             hazards = true,
-            hp = mapOf(BigInteger("8") to BigInteger("1")),
+            hp = mapOf(BigInteger("9") to BigInteger("1")),
             damage = mapOf(BigInteger("0") to BigInteger("1")),
             koStatus = KoStatus.RESOLVED,
             possible = 2,
             guaranteed = 3,
-            states = listOf(ExpectedCombinedState(8, false, 5, null, BigInteger("1"))),
+            states = listOf(ExpectedCombinedState(9, false, 5, null, BigInteger("1"))),
         ),
         DartCombinedCase(
             accuracy = 0,
@@ -151,12 +152,12 @@ private fun dartCombinedRipenAccuracy0CasesPart1(): List<DartCombinedCase> =
             item = "SitrusBerry",
             status = Status.TOXIC,
             hazards = false,
-            hp = mapOf(BigInteger("86") to BigInteger("1")),
+            hp = mapOf(BigInteger("87") to BigInteger("1")),
             damage = mapOf(BigInteger("0") to BigInteger("1")),
             koStatus = KoStatus.RESOLVED,
             possible = 2,
             guaranteed = 4,
-            states = listOf(ExpectedCombinedState(86, true, 5, null, BigInteger("1"))),
+            states = listOf(ExpectedCombinedState(87, true, 5, null, BigInteger("1"))),
         ),
         DartCombinedCase(
             accuracy = 0,
@@ -164,12 +165,12 @@ private fun dartCombinedRipenAccuracy0CasesPart1(): List<DartCombinedCase> =
             item = "SitrusBerry",
             status = Status.TOXIC,
             hazards = true,
-            hp = mapOf(BigInteger("57") to BigInteger("1")),
+            hp = mapOf(BigInteger("58") to BigInteger("1")),
             damage = mapOf(BigInteger("0") to BigInteger("1")),
             koStatus = KoStatus.RESOLVED,
             possible = 3,
             guaranteed = 4,
-            states = listOf(ExpectedCombinedState(57, true, 5, null, BigInteger("1"))),
+            states = listOf(ExpectedCombinedState(58, true, 5, null, BigInteger("1"))),
         ),
         DartCombinedCase(
             accuracy = 0,
@@ -233,12 +234,12 @@ private fun dartCombinedRipenAccuracy0CasesPart2(): List<DartCombinedCase> =
             item = "Leftovers",
             status = Status.TOXIC,
             hazards = false,
-            hp = mapOf(BigInteger("57") to BigInteger("1")),
+            hp = mapOf(BigInteger("58") to BigInteger("1")),
             damage = mapOf(BigInteger("0") to BigInteger("1")),
             koStatus = KoStatus.RESOLVED,
             possible = 2,
             guaranteed = 3,
-            states = listOf(ExpectedCombinedState(57, false, 5, null, BigInteger("1"))),
+            states = listOf(ExpectedCombinedState(58, false, 5, null, BigInteger("1"))),
         ),
         DartCombinedCase(
             accuracy = 0,
@@ -246,12 +247,12 @@ private fun dartCombinedRipenAccuracy0CasesPart2(): List<DartCombinedCase> =
             item = "Leftovers",
             status = Status.TOXIC,
             hazards = true,
-            hp = mapOf(BigInteger("32") to BigInteger("1")),
+            hp = mapOf(BigInteger("33") to BigInteger("1")),
             damage = mapOf(BigInteger("0") to BigInteger("1")),
             koStatus = KoStatus.RESOLVED,
             possible = 2,
             guaranteed = 3,
-            states = listOf(ExpectedCombinedState(32, false, 5, null, BigInteger("1"))),
+            states = listOf(ExpectedCombinedState(33, false, 5, null, BigInteger("1"))),
         ),
         DartCombinedCase(
             accuracy = 0,
@@ -311,12 +312,12 @@ private fun dartCombinedRipenAccuracy0CasesPart2(): List<DartCombinedCase> =
             item = "Heavy-DutyBoots",
             status = Status.TOXIC,
             hazards = false,
-            hp = mapOf(BigInteger("36") to BigInteger("1")),
+            hp = mapOf(BigInteger("37") to BigInteger("1")),
             damage = mapOf(BigInteger("0") to BigInteger("1")),
             koStatus = KoStatus.RESOLVED,
             possible = 2,
             guaranteed = 3,
-            states = listOf(ExpectedCombinedState(36, false, 5, null, BigInteger("1"))),
+            states = listOf(ExpectedCombinedState(37, false, 5, null, BigInteger("1"))),
         ),
         DartCombinedCase(
             accuracy = 0,
@@ -324,12 +325,12 @@ private fun dartCombinedRipenAccuracy0CasesPart2(): List<DartCombinedCase> =
             item = "Heavy-DutyBoots",
             status = Status.TOXIC,
             hazards = true,
-            hp = mapOf(BigInteger("36") to BigInteger("1")),
+            hp = mapOf(BigInteger("37") to BigInteger("1")),
             damage = mapOf(BigInteger("0") to BigInteger("1")),
             koStatus = KoStatus.RESOLVED,
             possible = 2,
             guaranteed = 3,
-            states = listOf(ExpectedCombinedState(36, false, 5, null, BigInteger("1"))),
+            states = listOf(ExpectedCombinedState(37, false, 5, null, BigInteger("1"))),
         ),
         DartCombinedCase(
             accuracy = 0,
@@ -389,12 +390,12 @@ private fun dartCombinedRipenAccuracy0CasesPart2(): List<DartCombinedCase> =
             item = "SafetyGoggles",
             status = Status.TOXIC,
             hazards = false,
-            hp = mapOf(BigInteger("57") to BigInteger("1")),
+            hp = mapOf(BigInteger("58") to BigInteger("1")),
             damage = mapOf(BigInteger("0") to BigInteger("1")),
             koStatus = KoStatus.RESOLVED,
             possible = 2,
             guaranteed = 3,
-            states = listOf(ExpectedCombinedState(57, false, 5, null, BigInteger("1"))),
+            states = listOf(ExpectedCombinedState(58, false, 5, null, BigInteger("1"))),
         ),
         DartCombinedCase(
             accuracy = 0,
@@ -402,12 +403,12 @@ private fun dartCombinedRipenAccuracy0CasesPart2(): List<DartCombinedCase> =
             item = "SafetyGoggles",
             status = Status.TOXIC,
             hazards = true,
-            hp = mapOf(BigInteger("32") to BigInteger("1")),
+            hp = mapOf(BigInteger("33") to BigInteger("1")),
             damage = mapOf(BigInteger("0") to BigInteger("1")),
             koStatus = KoStatus.RESOLVED,
             possible = 2,
             guaranteed = 3,
-            states = listOf(ExpectedCombinedState(32, false, 5, null, BigInteger("1"))),
+            states = listOf(ExpectedCombinedState(33, false, 5, null, BigInteger("1"))),
         ),
     )
 
@@ -638,9 +639,9 @@ private fun dartCombinedRipenAccuracy50CasesPart1(): List<DartCombinedCase> =
             hp =
                 mapOf(
                     BigInteger("0") to BigInteger("316"),
-                    BigInteger("6") to BigInteger("36"),
-                    BigInteger("16") to BigInteger("8"),
-                    BigInteger("36") to BigInteger("24"),
+                    BigInteger("7") to BigInteger("36"),
+                    BigInteger("17") to BigInteger("8"),
+                    BigInteger("37") to BigInteger("24"),
                 ),
             damage =
                 mapOf(
@@ -679,9 +680,9 @@ private fun dartCombinedRipenAccuracy50CasesPart1(): List<DartCombinedCase> =
                     ExpectedCombinedState(0, false, 4, null, BigInteger("8")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("12")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("16")),
-                    ExpectedCombinedState(16, false, 5, null, BigInteger("8")),
-                    ExpectedCombinedState(36, false, 5, null, BigInteger("24")),
-                    ExpectedCombinedState(6, false, 5, null, BigInteger("36")),
+                    ExpectedCombinedState(17, false, 5, null, BigInteger("8")),
+                    ExpectedCombinedState(37, false, 5, null, BigInteger("24")),
+                    ExpectedCombinedState(7, false, 5, null, BigInteger("36")),
                 ),
         ),
         DartCombinedCase(
@@ -690,7 +691,7 @@ private fun dartCombinedRipenAccuracy50CasesPart1(): List<DartCombinedCase> =
             item = null,
             status = Status.TOXIC,
             hazards = true,
-            hp = mapOf(BigInteger("0") to BigInteger("360"), BigInteger("8") to BigInteger("24")),
+            hp = mapOf(BigInteger("0") to BigInteger("360"), BigInteger("9") to BigInteger("24")),
             damage =
                 mapOf(
                     BigInteger("0") to BigInteger("24"),
@@ -728,7 +729,7 @@ private fun dartCombinedRipenAccuracy50CasesPart1(): List<DartCombinedCase> =
                     ExpectedCombinedState(0, false, 4, null, BigInteger("4")),
                     ExpectedCombinedState(0, false, 4, null, BigInteger("4")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("8")),
-                    ExpectedCombinedState(8, false, 5, null, BigInteger("24")),
+                    ExpectedCombinedState(9, false, 5, null, BigInteger("24")),
                 ),
         ),
         DartCombinedCase(
@@ -1016,15 +1017,15 @@ private fun dartCombinedRipenAccuracy50CasesPart1(): List<DartCombinedCase> =
             hp =
                 mapOf(
                     BigInteger("0") to BigInteger("196"),
-                    BigInteger("6") to BigInteger("14"),
-                    BigInteger("15") to BigInteger("16"),
-                    BigInteger("16") to BigInteger("8"),
-                    BigInteger("26") to BigInteger("54"),
-                    BigInteger("36") to BigInteger("12"),
-                    BigInteger("45") to BigInteger("16"),
-                    BigInteger("56") to BigInteger("36"),
-                    BigInteger("66") to BigInteger("8"),
-                    BigInteger("86") to BigInteger("24"),
+                    BigInteger("7") to BigInteger("14"),
+                    BigInteger("16") to BigInteger("16"),
+                    BigInteger("17") to BigInteger("8"),
+                    BigInteger("27") to BigInteger("54"),
+                    BigInteger("37") to BigInteger("12"),
+                    BigInteger("46") to BigInteger("16"),
+                    BigInteger("57") to BigInteger("36"),
+                    BigInteger("67") to BigInteger("8"),
+                    BigInteger("87") to BigInteger("24"),
                 ),
             damage =
                 mapOf(
@@ -1064,15 +1065,15 @@ private fun dartCombinedRipenAccuracy50CasesPart1(): List<DartCombinedCase> =
                     ExpectedCombinedState(0, true, 4, null, BigInteger("6")),
                     ExpectedCombinedState(0, true, 5, null, BigInteger("28")),
                     ExpectedCombinedState(0, true, 5, null, BigInteger("39")),
-                    ExpectedCombinedState(15, true, 5, null, BigInteger("16")),
-                    ExpectedCombinedState(16, true, 5, null, BigInteger("8")),
-                    ExpectedCombinedState(26, true, 5, null, BigInteger("54")),
-                    ExpectedCombinedState(36, true, 5, null, BigInteger("12")),
-                    ExpectedCombinedState(45, true, 5, null, BigInteger("16")),
-                    ExpectedCombinedState(56, true, 5, null, BigInteger("36")),
-                    ExpectedCombinedState(66, true, 5, null, BigInteger("8")),
-                    ExpectedCombinedState(6, true, 5, null, BigInteger("14")),
-                    ExpectedCombinedState(86, true, 5, null, BigInteger("24")),
+                    ExpectedCombinedState(16, true, 5, null, BigInteger("16")),
+                    ExpectedCombinedState(17, true, 5, null, BigInteger("8")),
+                    ExpectedCombinedState(27, true, 5, null, BigInteger("54")),
+                    ExpectedCombinedState(37, true, 5, null, BigInteger("12")),
+                    ExpectedCombinedState(46, true, 5, null, BigInteger("16")),
+                    ExpectedCombinedState(57, true, 5, null, BigInteger("36")),
+                    ExpectedCombinedState(67, true, 5, null, BigInteger("8")),
+                    ExpectedCombinedState(7, true, 5, null, BigInteger("14")),
+                    ExpectedCombinedState(87, true, 5, null, BigInteger("24")),
                 ),
         ),
         DartCombinedCase(
@@ -1084,12 +1085,12 @@ private fun dartCombinedRipenAccuracy50CasesPart1(): List<DartCombinedCase> =
             hp =
                 mapOf(
                     BigInteger("0") to BigInteger("288"),
-                    BigInteger("8") to BigInteger("12"),
-                    BigInteger("18") to BigInteger("16"),
-                    BigInteger("27") to BigInteger("12"),
-                    BigInteger("28") to BigInteger("24"),
-                    BigInteger("38") to BigInteger("8"),
-                    BigInteger("57") to BigInteger("24"),
+                    BigInteger("9") to BigInteger("12"),
+                    BigInteger("19") to BigInteger("16"),
+                    BigInteger("28") to BigInteger("12"),
+                    BigInteger("29") to BigInteger("24"),
+                    BigInteger("39") to BigInteger("8"),
+                    BigInteger("58") to BigInteger("24"),
                 ),
             damage =
                 mapOf(
@@ -1130,12 +1131,12 @@ private fun dartCombinedRipenAccuracy50CasesPart1(): List<DartCombinedCase> =
                     ExpectedCombinedState(0, true, 4, null, BigInteger("9")),
                     ExpectedCombinedState(0, true, 5, null, BigInteger("24")),
                     ExpectedCombinedState(0, true, 5, null, BigInteger("42")),
-                    ExpectedCombinedState(18, true, 5, null, BigInteger("16")),
-                    ExpectedCombinedState(27, true, 5, null, BigInteger("12")),
-                    ExpectedCombinedState(28, true, 5, null, BigInteger("24")),
-                    ExpectedCombinedState(38, true, 5, null, BigInteger("8")),
-                    ExpectedCombinedState(57, true, 5, null, BigInteger("24")),
-                    ExpectedCombinedState(8, true, 5, null, BigInteger("12")),
+                    ExpectedCombinedState(19, true, 5, null, BigInteger("16")),
+                    ExpectedCombinedState(28, true, 5, null, BigInteger("12")),
+                    ExpectedCombinedState(29, true, 5, null, BigInteger("24")),
+                    ExpectedCombinedState(39, true, 5, null, BigInteger("8")),
+                    ExpectedCombinedState(58, true, 5, null, BigInteger("24")),
+                    ExpectedCombinedState(9, true, 5, null, BigInteger("12")),
                 ),
         ),
         DartCombinedCase(
@@ -1385,11 +1386,11 @@ private fun dartCombinedRipenAccuracy50CasesPart2(): List<DartCombinedCase> =
             hp =
                 mapOf(
                     BigInteger("0") to BigInteger("288"),
-                    BigInteger("10") to BigInteger("12"),
-                    BigInteger("20") to BigInteger("16"),
-                    BigInteger("27") to BigInteger("36"),
-                    BigInteger("40") to BigInteger("8"),
-                    BigInteger("57") to BigInteger("24"),
+                    BigInteger("11") to BigInteger("12"),
+                    BigInteger("21") to BigInteger("16"),
+                    BigInteger("28") to BigInteger("36"),
+                    BigInteger("41") to BigInteger("8"),
+                    BigInteger("58") to BigInteger("24"),
                 ),
             damage =
                 mapOf(
@@ -1428,11 +1429,11 @@ private fun dartCombinedRipenAccuracy50CasesPart2(): List<DartCombinedCase> =
                     ExpectedCombinedState(0, false, 4, null, BigInteger("8")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("24")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("54")),
-                    ExpectedCombinedState(10, false, 5, null, BigInteger("12")),
-                    ExpectedCombinedState(20, false, 5, null, BigInteger("16")),
-                    ExpectedCombinedState(27, false, 5, null, BigInteger("36")),
-                    ExpectedCombinedState(40, false, 5, null, BigInteger("8")),
-                    ExpectedCombinedState(57, false, 5, null, BigInteger("24")),
+                    ExpectedCombinedState(11, false, 5, null, BigInteger("12")),
+                    ExpectedCombinedState(21, false, 5, null, BigInteger("16")),
+                    ExpectedCombinedState(28, false, 5, null, BigInteger("36")),
+                    ExpectedCombinedState(41, false, 5, null, BigInteger("8")),
+                    ExpectedCombinedState(58, false, 5, null, BigInteger("24")),
                 ),
         ),
         DartCombinedCase(
@@ -1444,9 +1445,9 @@ private fun dartCombinedRipenAccuracy50CasesPart2(): List<DartCombinedCase> =
             hp =
                 mapOf(
                     BigInteger("0") to BigInteger("316"),
-                    BigInteger("2") to BigInteger("36"),
-                    BigInteger("12") to BigInteger("8"),
-                    BigInteger("32") to BigInteger("24"),
+                    BigInteger("3") to BigInteger("36"),
+                    BigInteger("13") to BigInteger("8"),
+                    BigInteger("33") to BigInteger("24"),
                 ),
             damage =
                 mapOf(
@@ -1486,9 +1487,9 @@ private fun dartCombinedRipenAccuracy50CasesPart2(): List<DartCombinedCase> =
                     ExpectedCombinedState(0, false, 4, null, BigInteger("8")),
                     ExpectedCombinedState(0, false, 4, null, BigInteger("8")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("16")),
-                    ExpectedCombinedState(12, false, 5, null, BigInteger("8")),
-                    ExpectedCombinedState(2, false, 5, null, BigInteger("36")),
-                    ExpectedCombinedState(32, false, 5, null, BigInteger("24")),
+                    ExpectedCombinedState(13, false, 5, null, BigInteger("8")),
+                    ExpectedCombinedState(3, false, 5, null, BigInteger("36")),
+                    ExpectedCombinedState(33, false, 5, null, BigInteger("24")),
                 ),
         ),
         DartCombinedCase(
@@ -1728,9 +1729,9 @@ private fun dartCombinedRipenAccuracy50CasesPart2(): List<DartCombinedCase> =
             hp =
                 mapOf(
                     BigInteger("0") to BigInteger("316"),
-                    BigInteger("6") to BigInteger("36"),
-                    BigInteger("16") to BigInteger("8"),
-                    BigInteger("36") to BigInteger("24"),
+                    BigInteger("7") to BigInteger("36"),
+                    BigInteger("17") to BigInteger("8"),
+                    BigInteger("37") to BigInteger("24"),
                 ),
             damage =
                 mapOf(
@@ -1769,9 +1770,9 @@ private fun dartCombinedRipenAccuracy50CasesPart2(): List<DartCombinedCase> =
                     ExpectedCombinedState(0, false, 4, null, BigInteger("8")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("12")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("16")),
-                    ExpectedCombinedState(16, false, 5, null, BigInteger("8")),
-                    ExpectedCombinedState(36, false, 5, null, BigInteger("24")),
-                    ExpectedCombinedState(6, false, 5, null, BigInteger("36")),
+                    ExpectedCombinedState(17, false, 5, null, BigInteger("8")),
+                    ExpectedCombinedState(37, false, 5, null, BigInteger("24")),
+                    ExpectedCombinedState(7, false, 5, null, BigInteger("36")),
                 ),
         ),
         DartCombinedCase(
@@ -1783,9 +1784,9 @@ private fun dartCombinedRipenAccuracy50CasesPart2(): List<DartCombinedCase> =
             hp =
                 mapOf(
                     BigInteger("0") to BigInteger("316"),
-                    BigInteger("6") to BigInteger("36"),
-                    BigInteger("16") to BigInteger("8"),
-                    BigInteger("36") to BigInteger("24"),
+                    BigInteger("7") to BigInteger("36"),
+                    BigInteger("17") to BigInteger("8"),
+                    BigInteger("37") to BigInteger("24"),
                 ),
             damage =
                 mapOf(
@@ -1824,9 +1825,9 @@ private fun dartCombinedRipenAccuracy50CasesPart2(): List<DartCombinedCase> =
                     ExpectedCombinedState(0, false, 4, null, BigInteger("8")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("12")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("16")),
-                    ExpectedCombinedState(16, false, 5, null, BigInteger("8")),
-                    ExpectedCombinedState(36, false, 5, null, BigInteger("24")),
-                    ExpectedCombinedState(6, false, 5, null, BigInteger("36")),
+                    ExpectedCombinedState(17, false, 5, null, BigInteger("8")),
+                    ExpectedCombinedState(37, false, 5, null, BigInteger("24")),
+                    ExpectedCombinedState(7, false, 5, null, BigInteger("36")),
                 ),
         ),
         DartCombinedCase(
@@ -2077,11 +2078,11 @@ private fun dartCombinedRipenAccuracy50CasesPart2(): List<DartCombinedCase> =
             hp =
                 mapOf(
                     BigInteger("0") to BigInteger("288"),
-                    BigInteger("10") to BigInteger("12"),
-                    BigInteger("20") to BigInteger("16"),
-                    BigInteger("27") to BigInteger("36"),
-                    BigInteger("40") to BigInteger("8"),
-                    BigInteger("57") to BigInteger("24"),
+                    BigInteger("11") to BigInteger("12"),
+                    BigInteger("21") to BigInteger("16"),
+                    BigInteger("28") to BigInteger("36"),
+                    BigInteger("41") to BigInteger("8"),
+                    BigInteger("58") to BigInteger("24"),
                 ),
             damage =
                 mapOf(
@@ -2120,11 +2121,11 @@ private fun dartCombinedRipenAccuracy50CasesPart2(): List<DartCombinedCase> =
                     ExpectedCombinedState(0, false, 4, null, BigInteger("8")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("24")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("54")),
-                    ExpectedCombinedState(10, false, 5, null, BigInteger("12")),
-                    ExpectedCombinedState(20, false, 5, null, BigInteger("16")),
-                    ExpectedCombinedState(27, false, 5, null, BigInteger("36")),
-                    ExpectedCombinedState(40, false, 5, null, BigInteger("8")),
-                    ExpectedCombinedState(57, false, 5, null, BigInteger("24")),
+                    ExpectedCombinedState(11, false, 5, null, BigInteger("12")),
+                    ExpectedCombinedState(21, false, 5, null, BigInteger("16")),
+                    ExpectedCombinedState(28, false, 5, null, BigInteger("36")),
+                    ExpectedCombinedState(41, false, 5, null, BigInteger("8")),
+                    ExpectedCombinedState(58, false, 5, null, BigInteger("24")),
                 ),
         ),
         DartCombinedCase(
@@ -2136,9 +2137,9 @@ private fun dartCombinedRipenAccuracy50CasesPart2(): List<DartCombinedCase> =
             hp =
                 mapOf(
                     BigInteger("0") to BigInteger("316"),
-                    BigInteger("2") to BigInteger("36"),
-                    BigInteger("12") to BigInteger("8"),
-                    BigInteger("32") to BigInteger("24"),
+                    BigInteger("3") to BigInteger("36"),
+                    BigInteger("13") to BigInteger("8"),
+                    BigInteger("33") to BigInteger("24"),
                 ),
             damage =
                 mapOf(
@@ -2177,9 +2178,9 @@ private fun dartCombinedRipenAccuracy50CasesPart2(): List<DartCombinedCase> =
                     ExpectedCombinedState(0, false, 4, null, BigInteger("84")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("12")),
                     ExpectedCombinedState(0, false, 5, null, BigInteger("16")),
-                    ExpectedCombinedState(12, false, 5, null, BigInteger("8")),
-                    ExpectedCombinedState(2, false, 5, null, BigInteger("36")),
-                    ExpectedCombinedState(32, false, 5, null, BigInteger("24")),
+                    ExpectedCombinedState(13, false, 5, null, BigInteger("8")),
+                    ExpectedCombinedState(3, false, 5, null, BigInteger("36")),
+                    ExpectedCombinedState(33, false, 5, null, BigInteger("24")),
                 ),
         ),
     )

@@ -5,7 +5,8 @@ import dev.pokemondamage.model.Status
 import java.math.BigInteger
 
 // Fixed expectations migrated from dart/combined.tsv.
-// Dart implementation parity; the original fixture did not record a revision.
+// Dart parity except Toxic damage, corrected to floor HP/16 before scaling.
+// The original fixture did not record a revision.
 // Expectations are literals, independent of the implementation under test.
 internal data class DartCombinedCase(
     val accuracy: Int,
