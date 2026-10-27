@@ -1,9 +1,9 @@
 package dev.pokemondamage
 
+import dev.pokemondamage.fixtures.FieldMoveCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.BattleField
 import dev.pokemondamage.model.Calculation
-import dev.pokemondamage.model.Category
 import dev.pokemondamage.model.DamageRequest
 import dev.pokemondamage.model.DamageResult
 import dev.pokemondamage.model.EnumFlags
@@ -29,17 +29,12 @@ import kotlin.test.assertNotEquals
 class ReferenceFieldMoveTest {
     @TestFactory
     fun `field move effects match native complete damage when activated`() =
-        javaClass
-            .getResourceAsStream("/reference/field-moves.tsv")!!
-            .bufferedReader()
-            .readLines()
-            .drop(1)
-            .map { it.split('\t') }
-            .groupBy { it[0] }
+        FieldMoveCases.all
+            .groupBy { it.effect }
             .also { assertEquals(4, it.size) }
             .map { (effect, rows) ->
                 dynamicTest("MoveId/$effect") {
-                    assertEquals(listOf("false", "true"), rows.map { it[1] })
+                    assertEquals(listOf(false, true), rows.map { it.enabled })
                     val pokemon =
                         PokemonState(
                             PokemonProfile(
@@ -52,7 +47,7 @@ class ReferenceFieldMoveTest {
                         )
                     val results =
                         rows.map { c ->
-                            val enabled = c[1].toBooleanStrict()
+                            val enabled = c.enabled
                             val field =
                                 if (!enabled) {
                                     BattleField()
@@ -89,10 +84,10 @@ class ReferenceFieldMoveTest {
                                 )
                             val move =
                                 Move(
-                                    MoveId(c[2]),
-                                    PokemonType.valueOf(c[4]),
-                                    c[3].toInt(),
-                                    Category.valueOf(c[5]),
+                                    MoveId(c.move),
+                                    c.type,
+                                    c.power,
+                                    c.category,
                                 )
                             val result =
                                 assertIs<Calculation.Success<DamageResult>>(
@@ -101,11 +96,7 @@ class ReferenceFieldMoveTest {
                                     .hit
                                     .rolls
                             assertEquals(
-                                c[6]
-                                    .removePrefix("[")
-                                    .removeSuffix("]")
-                                    .split(',')
-                                    .map(String::toInt),
+                                c.damage,
                                 result,
                                 "$effect enabled=$enabled",
                             )

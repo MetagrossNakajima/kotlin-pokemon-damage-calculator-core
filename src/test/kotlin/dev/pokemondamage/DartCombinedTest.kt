@@ -1,5 +1,8 @@
 package dev.pokemondamage
 
+import dev.pokemondamage.fixtures.DartCombinedCase
+import dev.pokemondamage.fixtures.ExpectedCombinedState
+import dev.pokemondamage.fixtures.dartCombinedCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.BattleField
 import dev.pokemondamage.model.BattleSetup
@@ -34,25 +37,34 @@ import kotlin.test.assertIs
 class DartCombinedTest {
     @TestFactory
     fun `combined API matches Dart HP damage KO counts and final states`(): List<DynamicTest> {
-        val rows =
-            javaClass
-                .getResourceAsStream("/dart/combined.tsv")!!
-                .bufferedReader()
-                .readLines()
-                .drop(1)
-                .map { it.split('\t') }
-        assertEquals(810, rows.size)
-        val dimensions = mapOf("ItemId" to 2, "AbilityId" to 1)
-        return dimensions.flatMap { (kind, column) ->
-            fun key(c: List<String>) = c.take(5).filterIndexed { index, _ -> index != column }
-            val controls = rows.filter { it[column] == "-" }.associateBy(::key)
-            val groups = rows.groupBy { it[column] }
+        val cases = dartCombinedCases()
+        assertEquals(810, cases.size)
+        return cases.map { case ->
+            dynamicTest(label(case)) { verifyCase(case) }
+        }
+    }
+
+    @TestFactory
+    fun `combined item and ability cases differ from their controls`(): List<DynamicTest> {
+        val cases = dartCombinedCases()
+        return listOf("ItemId", "AbilityId").flatMap { kind ->
+            fun id(case: DartCombinedCase) = if (kind == "ItemId") case.item else case.ability
+
+            fun key(case: DartCombinedCase) =
+                ControlKey(
+                    case.accuracy,
+                    if (kind == "ItemId") case.ability else case.item,
+                    case.status,
+                    case.hazards,
+                )
+            val controls = cases.filter { id(it) == null }.associateBy(::key)
+            val groups = cases.groupBy(::id)
             val ids =
                 if (kind == "ItemId") {
-                    setOf("-", "SitrusBerry", "Leftovers", "Heavy-DutyBoots", "SafetyGoggles")
+                    setOf(null, "SitrusBerry", "Leftovers", "Heavy-DutyBoots", "SafetyGoggles")
                 } else {
                     setOf(
-                        "-",
+                        null,
                         "CudChew",
                         "PoisonHeal",
                         "MagicGuard",
@@ -64,20 +76,20 @@ class DartCombinedTest {
                     )
                 }
             assertEquals(ids, groups.keys)
-            groups.map { (id, cases) ->
-                dynamicTest("$kind/$id") {
-                    assertEquals(if (kind == "ItemId") 162 else 90, cases.size)
-                    val results = cases.map { c -> c to verifyCase(c) }
+            groups.map { (id, rows) ->
+                dynamicTest("$kind/${id ?: "none"}/control") {
+                    assertEquals(if (kind == "ItemId") 162 else 90, rows.size)
+                    val results = rows.map { it to verifyCase(it) }
                     val changedHp =
-                        results.any { (c, result) ->
-                            result.finalHp.weights != distribution(controls.getValue(key(c))[5])
+                        results.any { (case, result) ->
+                            result.finalHp.weights != controls.getValue(key(case)).hp
                         }
                     val consumed =
                         results.any { (_, result) ->
                             result.finalStates.any { it.state.itemConsumed }
                         }
                     assertEquals(
-                        id != "-",
+                        id != null,
                         changedHp,
                         "$kind/$id must change HP versus its control",
                     )
@@ -89,14 +101,19 @@ class DartCombinedTest {
         }
     }
 
-    private fun distribution(text: String) =
-        text.split(',').associate { entry ->
-            entry.split(':').let { it[0].toBigInteger() to it[1].toBigInteger() }
-        }
+    private data class ControlKey(
+        val accuracy: Int,
+        val otherEffect: String?,
+        val status: Status?,
+        val hazards: Boolean,
+    )
 
-    private fun verifyCase(c: List<String>): CombinedDamageResult {
-        val label = c.take(5).joinToString("/")
-        val status = c[3].takeUnless { it == "-" }?.let(Status::valueOf)
+    private fun label(case: DartCombinedCase) =
+        "accuracy=${case.accuracy}/ability=${case.ability}/item=${case.item}/" +
+            "status=${case.status}/hazards=${case.hazards}"
+
+    private fun verifyCase(case: DartCombinedCase): CombinedDamageResult {
+        val label = label(case)
         val defender =
             PokemonState(
                 PokemonProfile(
@@ -105,18 +122,18 @@ class DartCombinedTest {
                     PokemonWeight(100),
                 ),
                 Stats(100, 100, 100, 100, 100, 100),
-                ability = c[1].takeUnless { it == "-" }?.let(::AbilityId),
-                item = c[2].takeUnless { it == "-" }?.let(::ItemId),
-                status = status,
-                toxicCounter = if (status == Status.TOXIC) ToxicCounter(1) else null,
+                ability = case.ability?.let(::AbilityId),
+                item = case.item?.let(::ItemId),
+                status = case.status,
+                toxicCounter = if (case.status == Status.TOXIC) ToxicCounter(1) else null,
             )
-        val hazards = c[4].toBooleanStrict()
+        val hazards = case.hazards
         val request =
             CombinedDamageRequest.repeatSingleHit(
                 DamageDistribution.fromRolls(listOf(20, 40, 40)),
                 defender,
                 DamageDistribution.fromRolls(listOf(30, 60)),
-                c[0].toInt(),
+                case.accuracy,
                 field = BattleField(weather = Weather.SANDSTORM, terrain = Terrain.GRASS),
                 setup =
                     BattleSetup(
@@ -127,34 +144,34 @@ class DartCombinedTest {
         val result =
             assertIs<Calculation.Success<CombinedDamageResult>>(calculateCombinedDamage(request))
                 .value
-        val expectedHp = distribution(c[5])
-        assertEquals(expectedHp, result.finalHp.weights, "$label HP")
-        assertEquals(distribution(c[6]), result.attackDamage.weights, "$label damage")
-        val koStatus =
-            when (c[7]) {
-                "resolved" -> KoStatus.RESOLVED
-                "limitReached" -> KoStatus.LIMIT_REACHED
-                else -> KoStatus.NOT_APPLICABLE
-            }
+        assertEquals(case.hp, result.finalHp.weights, "$label HP")
+        assertEquals(case.damage, result.attackDamage.weights, "$label damage")
         assertEquals(
-            KoInfo(koStatus, 4, c[8].toIntOrNull(), c[9].toIntOrNull()),
+            KoInfo(case.koStatus, 4, case.possible, case.guaranteed),
             result.ko,
             "$label KO",
         )
         val states =
-            result.finalStates
-                .map { entry ->
-                    with(entry.state) {
-                        "$currentHp:$itemConsumed:${toxicCounter?.value ?: "-"}:" +
-                            "${cudChewTurn ?: "-"}:${entry.weight}"
-                    }
-                }.sorted()
-                .joinToString(",")
-        assertEquals(c[10], states, "$label states")
+            result.finalStates.map { entry ->
+                with(entry.state) {
+                    ExpectedCombinedState(
+                        currentHp,
+                        itemConsumed,
+                        toxicCounter?.value,
+                        cudChewTurn,
+                        entry.weight,
+                    )
+                }
+            }
+        assertEquals(
+            case.states.groupingBy { it }.eachCount(),
+            states.groupingBy { it }.eachCount(),
+            "$label states",
+        )
         assertEquals(
             ExactProbability(
-                expectedHp[BigInteger.ZERO] ?: BigInteger.ZERO,
-                expectedHp.values.reduce(BigInteger::add),
+                case.hp[BigInteger.ZERO] ?: BigInteger.ZERO,
+                case.hp.values.reduce(BigInteger::add),
             ),
             result.knockout,
             "$label knockout probability",

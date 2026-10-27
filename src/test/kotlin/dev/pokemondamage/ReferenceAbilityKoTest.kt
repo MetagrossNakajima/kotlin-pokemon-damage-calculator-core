@@ -1,5 +1,6 @@
 package dev.pokemondamage
 
+import dev.pokemondamage.fixtures.abilityKoCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.BattleField
 import dev.pokemondamage.model.Calculation
@@ -25,17 +26,12 @@ import kotlin.test.assertTrue
 class ReferenceAbilityKoTest {
     @TestFactory
     fun `combined abilities match native guaranteed KO attack counts`() =
-        javaClass
-            .getResourceAsStream("/reference/ability-ko.tsv")!!
-            .bufferedReader()
-            .readLines()
-            .drop(1)
-            .map { it.split('\t') }
-            .groupBy { it[0] }
+        abilityKoCases()
+            .groupBy { it.ability }
             .also { assertEquals(5, it.size) }
             .map { (ability, rows) ->
                 dynamicTest("AbilityId/$ability") {
-                    assertEquals(listOf("false", "true"), rows.map { it[1] })
+                    assertEquals(listOf(false, true), rows.map { it.enabled })
                     val counts =
                         rows.map { c ->
                             val defender =
@@ -48,18 +44,18 @@ class ReferenceAbilityKoTest {
                                     Stats(100, 100, 100, 100, 100, 100),
                                     ability =
                                         AbilityId(
-                                            if (c[1].toBooleanStrict()) ability else "Illuminate",
+                                            if (c.enabled) ability else "Illuminate",
                                         ),
-                                    status = c[4].takeUnless { it == "-" }?.let(Status::valueOf),
+                                    status = c.status,
                                 )
                             val request =
                                 CombinedDamageRequest.repeatSingleHit(
-                                    DamageDistribution.fromRolls(listOf(c[2].toInt())),
+                                    DamageDistribution.fromRolls(listOf(c.damage)),
                                     defender,
                                     field =
                                         BattleField(
                                             weather =
-                                                if (c[3].toBooleanStrict()) {
+                                                if (c.sand) {
                                                     Weather.SANDSTORM
                                                 } else {
                                                     null
@@ -70,17 +66,17 @@ class ReferenceAbilityKoTest {
                                 assertIs<Calculation.Success<CombinedDamageResult>>(
                                     calculateCombinedDamage(request),
                                 ).value
-                            val expectedHits = c[5].toInt()
-                            assertEquals("1", c[6])
+                            val expectedHits = c.hits
+                            assertEquals(1, c.chance)
                             assertEquals(
                                 expectedHits,
                                 result.ko.possibleHits,
-                                "$ability enabled=${c[1]}",
+                                "$ability enabled=${c.enabled}",
                             )
                             assertEquals(
                                 expectedHits,
                                 result.ko.guaranteedHits,
-                                "$ability enabled=${c[1]}",
+                                "$ability enabled=${c.enabled}",
                             )
                             assertEquals(
                                 ExactProbability(

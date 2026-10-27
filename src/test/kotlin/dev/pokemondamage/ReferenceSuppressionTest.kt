@@ -1,6 +1,7 @@
 package dev.pokemondamage
 
 import dev.pokemondamage.engine.DamageContext
+import dev.pokemondamage.fixtures.SuppressionCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.BattleField
 import dev.pokemondamage.model.Calculation
@@ -17,7 +18,6 @@ import dev.pokemondamage.model.PokemonType
 import dev.pokemondamage.model.PokemonTypes
 import dev.pokemondamage.model.PokemonWeight
 import dev.pokemondamage.model.Stats
-import dev.pokemondamage.model.Weather
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
 import kotlin.test.assertEquals
@@ -26,32 +26,29 @@ import kotlin.test.assertIs
 class ReferenceSuppressionTest {
     @TestFactory
     fun `each ignorable ability matches native suppression and Ability Shield protection`() =
-        javaClass
-            .getResourceAsStream("/reference/suppression.tsv")!!
-            .bufferedReader()
-            .readLines()
-            .drop(1)
-            .map { it.split('\t') }
-            .groupBy { it[0] }
+        SuppressionCases.all
+            .groupBy { it.ability }
             .also { assertEquals(82, it.size) }
-            .map { (name, rows) ->
-                dynamicTest("AbilityId/$name") {
-                    assertEquals(8, rows.size)
-                    val pokemon =
-                        PokemonState(
-                            PokemonProfile(
-                                PokemonId("Mew"),
-                                PokemonTypes(PokemonType.NORMAL),
-                                PokemonWeight(100),
-                            ),
-                            Stats(200, 100, 100, 100, 100, 100),
-                        )
-                    for (c in rows) {
-                        val shield = c[2].toBooleanStrict()
-                        val a = pokemon.copy(ability = AbilityId(c[1]))
+            .flatMap { (name, rows) ->
+                assertEquals(8, rows.size)
+                val pokemon =
+                    PokemonState(
+                        PokemonProfile(
+                            PokemonId("Mew"),
+                            PokemonTypes(PokemonType.NORMAL),
+                            PokemonWeight(100),
+                        ),
+                        Stats(200, 100, 100, 100, 100, 100),
+                    )
+                rows.mapIndexed { index, c ->
+                    dynamicTest(
+                        "AbilityId/$name/${index + 1}/${c.attackerAbility}/shield=${c.shield}",
+                    ) {
+                        val shield = c.shield
+                        val a = pokemon.copy(ability = AbilityId(c.attackerAbility))
                         val d =
                             pokemon.copy(
-                                profile = pokemon.profile.copy(id = PokemonId(c[5])),
+                                profile = pokemon.profile.copy(id = PokemonId(c.species)),
                                 ability = AbilityId(name),
                                 item = if (shield) ItemId("AbilityShield") else null,
                             )
@@ -61,19 +58,25 @@ class ReferenceSuppressionTest {
                                 d,
                                 Move(MoveId("Tackle"), PokemonType.NORMAL, 80, Category.SPECIAL),
                                 BattleField(
-                                    weather = c[6].takeUnless { it == "-" }?.let(Weather::valueOf),
+                                    weather = c.weather,
                                 ),
                             )
                         val context = DamageContext(request)
-                        val expectedAbility = c[3].takeUnless { it == "-" }?.let(::AbilityId)
+                        val expectedAbility = c.resolved?.let(::AbilityId)
                         assertEquals(
-                            if (shield || c[1] == "Illuminate") AbilityId(name) else null,
+                            if (shield ||
+                                c.attackerAbility == "Illuminate"
+                            ) {
+                                AbilityId(name)
+                            } else {
+                                null
+                            },
                             expectedAbility,
                         )
                         assertEquals(
                             expectedAbility,
                             context.defenderAbility,
-                            "$name attacker=${c[1]} shield=$shield",
+                            "$name attacker=${c.attackerAbility} shield=$shield",
                         )
                         val result =
                             assertIs<Calculation.Success<DamageResult>>(calculateDamage(request))
@@ -81,15 +84,11 @@ class ReferenceSuppressionTest {
                                 .hit
                                 .rolls
                         val native =
-                            c[4]
-                                .removePrefix("[")
-                                .removeSuffix("]")
-                                .split(',')
-                                .map(String::toInt)
+                            c.damage
                         assertEquals(
                             if (native.size == 1) List(16) { native.single() } else native,
                             result,
-                            "$name attacker=${c[1]} shield=$shield damage",
+                            "$name attacker=${c.attackerAbility} shield=$shield damage",
                         )
                         assertEquals(
                             AbilityId(name),

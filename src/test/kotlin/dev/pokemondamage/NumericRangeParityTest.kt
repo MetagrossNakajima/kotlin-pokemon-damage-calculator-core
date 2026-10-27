@@ -4,6 +4,7 @@ import dev.pokemondamage.engine.combined.BattleProgress
 import dev.pokemondamage.engine.combined.CalculationBudget
 import dev.pokemondamage.engine.combined.HealthEvents
 import dev.pokemondamage.engine.combined.TurnEnd
+import dev.pokemondamage.fixtures.wideHitIndexCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.Attack
 import dev.pokemondamage.model.BattleField
@@ -144,38 +145,33 @@ class NumericRangeParityTest {
     @Test
     fun `wide hit indices reproduce native Dart power overflow and final damage`() {
         val rows =
-            javaClass
-                .getResourceAsStream("/dart/wide-hit-index.tsv")!!
-                .bufferedReader()
-                .readLines()
-                .drop(1)
-                .map { it.split('\t') }
+            wideHitIndexCases()
         assertEquals(36, rows.size)
-        assertEquals(setOf("TripleAxel", "TripleKick"), rows.map { it[0] }.toSet())
-        assertEquals(Long.MAX_VALUE, rows.maxOf { it[2].toLong() })
+        assertEquals(setOf("TripleAxel", "TripleKick"), rows.map { it.move }.toSet())
+        assertEquals(Long.MAX_VALUE, rows.maxOf { it.hitIndex })
         val combatant = pokemon.copy(stats = Stats(200, 100, 100, 100, 100, 100))
         for (c in rows) {
             val attacker =
                 combatant.copy(
-                    ability = if (c[3].toBooleanStrict()) AbilityId("Technician") else null,
+                    ability = if (c.technician) AbilityId("Technician") else null,
                 )
             val request =
                 DamageRequest(
                     attacker,
                     combatant,
-                    Move(MoveId(c[0]), PokemonType.NORMAL, c[1].toInt(), Category.PHYSICAL),
-                    hitIndex = c[2].toLong(),
+                    Move(MoveId(c.move), PokemonType.NORMAL, c.power, Category.PHYSICAL),
+                    hitIndex = c.hitIndex,
                 )
             val result =
                 assertIs<Calculation.Success<DamageResult>>(calculateDamage(request)).value.hit
-            val label = c.take(4).joinToString("/")
+            val label = c.toString()
             assertEquals(
-                c[4].toLong(),
+                c.basePower,
                 result.trace.first { it.stage == ModifierStage.BASE_POWER }.after,
                 "$label base power",
             )
-            assertEquals(c[5].toInt(), result.power, "$label final power")
-            assertEquals(c[6].split(',').map(String::toInt), result.rolls, "$label damage")
+            assertEquals(c.finalPower, result.power, "$label final power")
+            assertEquals(c.damage, result.rolls, "$label damage")
         }
         assertFailsWith<IllegalArgumentException> {
             DamageRequest(

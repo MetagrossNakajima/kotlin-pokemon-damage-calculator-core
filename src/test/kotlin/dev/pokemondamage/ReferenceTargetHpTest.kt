@@ -1,5 +1,6 @@
 package dev.pokemondamage
 
+import dev.pokemondamage.fixtures.targetHpCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.Calculation
 import dev.pokemondamage.model.Category
@@ -23,20 +24,15 @@ import kotlin.test.assertNotEquals
 class ReferenceTargetHpTest {
     @TestFactory
     fun `target HP moves match native power and all damage rolls`() =
-        javaClass
-            .getResourceAsStream("/reference/target-hp.tsv")!!
-            .bufferedReader()
-            .readLines()
-            .drop(1)
-            .map { it.split('\t') }
-            .groupBy { it[0] }
+        targetHpCases()
+            .groupBy { it.move }
             .also {
                 assertEquals(setOf("CrushGrip", "WringOut", "HardPress"), it.keys)
             }.map { (name, rows) ->
                 dynamicTest("MoveId/$name") {
                     assertEquals(
                         listOf(1, 2, 3, 7, 99, 100, 101, 199, 200),
-                        rows.map { it[3].toInt() },
+                        rows.map { it.hp },
                     )
                     val pokemon =
                         PokemonState(
@@ -53,12 +49,12 @@ class ReferenceTargetHpTest {
                             val request =
                                 DamageRequest(
                                     pokemon,
-                                    pokemon.copy(currentHp = c[3].toInt()),
+                                    pokemon.copy(currentHp = c.hp),
                                     Move(
                                         MoveId(name),
-                                        PokemonType.valueOf(c[1]),
+                                        c.type,
                                         1,
-                                        Category.valueOf(c[2]),
+                                        c.category,
                                     ),
                                 )
                             val hit =
@@ -66,11 +62,11 @@ class ReferenceTargetHpTest {
                                     calculateDamage(request),
                                 ).value
                                     .hit
-                            assertEquals(c[4].toInt(), hit.power, "$name HP=${c[3]} power")
+                            assertEquals(c.power, hit.power, "$name HP=${c.hp} power")
                             assertEquals(
-                                c[5].removeSurrounding("[", "]").split(',').map(String::toInt),
+                                c.damage,
                                 hit.rolls,
-                                "$name HP=${c[3]} damage",
+                                "$name HP=${c.hp} damage",
                             )
                             hit.rolls
                         }

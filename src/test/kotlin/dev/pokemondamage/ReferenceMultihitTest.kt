@@ -1,5 +1,6 @@
 package dev.pokemondamage
 
+import dev.pokemondamage.fixtures.multihitCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.Calculation
 import dev.pokemondamage.model.Category
@@ -25,13 +26,8 @@ import kotlin.test.assertTrue
 class ReferenceMultihitTest {
     @TestFactory
     fun `every natural multihit move matches each native hit with Tera and Parental Bond`() =
-        javaClass
-            .getResourceAsStream("/reference/multihit.tsv")!!
-            .bufferedReader()
-            .readLines()
-            .drop(1)
-            .map { it.split('\t') }
-            .groupBy { it[0] }
+        multihitCases()
+            .groupBy { it.move }
             .also { assertEquals(30, it.size) }
             .map { (name, rows) ->
                 dynamicTest("MoveId/$name") {
@@ -49,49 +45,48 @@ class ReferenceMultihitTest {
                         )
                     val results =
                         rows.map { c ->
-                            val tera = c[5].toBooleanStrict()
-                            val type = PokemonType.valueOf(c[2])
+                            val tera = c.tera
+                            val type = c.type
                             val a =
                                 pokemon.copy(
-                                    ability = AbilityId(c[6]),
-                                    teraType = if (tera) TeraType.valueOf(c[2]) else null,
+                                    ability = AbilityId(c.ability),
+                                    teraType = if (tera) TeraType.valueOf(c.type.name) else null,
                                 )
                             val move =
                                 Move(
                                     MoveId(name),
                                     type,
-                                    c[1].toInt(),
-                                    Category.valueOf(c[3]),
-                                    priority = c[4].toInt(),
+                                    c.power,
+                                    c.category,
+                                    priority = c.priority,
                                 )
                             val result =
                                 assertIs<Calculation.Success<DamageResult>>(
                                     calculateDamage(
-                                        DamageRequest(a, pokemon, move, hitIndex = c[8].toLong()),
+                                        DamageRequest(a, pokemon, move, hitIndex = c.hitIndex),
                                     ),
                                 ).value
                                     .hit
                             val expected =
-                                c[9]
-                                    .removePrefix("[")
-                                    .removeSuffix("]")
-                                    .split(',')
-                                    .map(String::toInt)
+                                c.damage
                             assertEquals(
                                 expected,
                                 result.rolls,
-                                "$name tera=$tera ability=${c[6]} hit=${c[8]}",
+                                "$name tera=$tera ability=${c.ability} hit=${c.hitIndex}",
                             )
                             assertEquals(16, result.rolls.size)
                             result.rolls
                         }
-                    for (tera in listOf("false", "true")) {
-                        val indices = rows.indices.filter { rows[it][5] == tera }
+                    for (tera in listOf(false, true)) {
+                        val indices = rows.indices.filter { rows[it].tera == tera }
                         val plain =
-                            indices.filter { rows[it][6] == "Illuminate" }.map { results[it] }
+                            indices.filter { rows[it].ability == "Illuminate" }.map { results[it] }
                         val parent =
-                            indices.filter { rows[it][6] == "ParentalBond" }.map { results[it] }
-                        assertEquals(rows.first()[7].toInt(), plain.size)
+                            indices
+                                .filter {
+                                    rows[it].ability == "ParentalBond"
+                                }.map { results[it] }
+                        assertEquals(rows.first().hits, plain.size)
                         assertEquals(
                             plain,
                             parent,

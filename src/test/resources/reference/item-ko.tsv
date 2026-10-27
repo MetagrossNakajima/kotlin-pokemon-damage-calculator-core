@@ -1,7 +1,0 @@
-item	enabled	damage	hazards	sand	hits	chance
-Heavy-DutyBoots	false	30	true	false	3	1
-Heavy-DutyBoots	true	30	true	false	4	1
-Leftovers	false	35	false	false	3	1
-Leftovers	true	35	false	false	4	1
-SafetyGoggles	false	30	false	true	3	1
-SafetyGoggles	true	30	false	true	4	1

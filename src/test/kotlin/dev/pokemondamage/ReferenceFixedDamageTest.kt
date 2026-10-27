@@ -1,5 +1,7 @@
 package dev.pokemondamage
 
+import dev.pokemondamage.fixtures.fixedDamageCases
+import dev.pokemondamage.fixtures.unsupportedFixedCases
 import dev.pokemondamage.model.AbilityId
 import dev.pokemondamage.model.BattleField
 import dev.pokemondamage.model.Calculation
@@ -32,20 +34,15 @@ import kotlin.test.assertTrue
 class ReferenceFixedDamageTest {
     @TestFactory
     fun `fixed moves match expected damage across HP boundaries modifiers and immunity`() =
-        javaClass
-            .getResourceAsStream("/reference/fixed.tsv")!!
-            .bufferedReader()
-            .readLines()
-            .drop(1)
-            .map { it.split('\t') }
-            .groupBy { it[0] }
+        fixedDamageCases()
+            .groupBy { it.move }
             .also { assertEquals(7, it.size) }
             .map { (name, rows) ->
                 dynamicTest("MoveId/$name") {
                     assertEquals(13, rows.size)
                     val values =
                         rows.map { c ->
-                            val modified = c[7].toBooleanStrict()
+                            val modified = c.modified
                             val profile =
                                 PokemonProfile(
                                     PokemonId("Mew"),
@@ -57,7 +54,7 @@ class ReferenceFixedDamageTest {
                                 PokemonState(
                                     profile,
                                     stats,
-                                    currentHp = c[3].toInt(),
+                                    currentHp = c.attackerHp,
                                     ability = AbilityId("Illuminate"),
                                     item = if (modified) ItemId("LifeOrb") else null,
                                     status = if (modified) Status.BURN else null,
@@ -70,10 +67,10 @@ class ReferenceFixedDamageTest {
                                 )
                             val d =
                                 PokemonState(
-                                    profile.copy(types = PokemonTypes(PokemonType.valueOf(c[5]))),
+                                    profile.copy(types = PokemonTypes(c.defenderType)),
                                     stats,
-                                    currentHp = c[4].toInt(),
-                                    ability = AbilityId(c[6]),
+                                    currentHp = c.defenderHp,
+                                    ability = AbilityId(c.defenderAbility),
                                     stages =
                                         if (modified) {
                                             StatStages.fromValues(defense = 6, specialDefense = 6)
@@ -85,9 +82,9 @@ class ReferenceFixedDamageTest {
                             val move =
                                 Move(
                                     MoveId(name),
-                                    PokemonType.valueOf(c[1]),
+                                    c.type,
                                     0,
-                                    Category.valueOf(c[2]),
+                                    c.category,
                                 )
                             val request =
                                 DamageRequest(
@@ -104,11 +101,11 @@ class ReferenceFixedDamageTest {
                                     .hit
                             // 保存済みの参照値はHP1で0を返すが、この技は1ダメージを与える。
                             val expected =
-                                if (name == "NaturesMadness" && c[4] == "1") 1 else c[8].toInt()
+                                if (name == "NaturesMadness" && c.defenderHp == 1) 1 else c.damage
                             assertEquals(
                                 listOf(expected),
                                 result.rolls,
-                                "$name HP=${c[3]} modified=$modified target=${c[5]}/${c[6]}",
+                                "$name HP=${c.attackerHp} modified=$modified target=${c.defenderType}/${c.defenderAbility}",
                             )
                             assertEquals(DamageKind.FIXED, result.kind)
                             assertFalse(result.critical)
@@ -127,13 +124,8 @@ class ReferenceFixedDamageTest {
 
     @TestFactory
     fun `source fixed moves retain supported results where native has no implementation`() =
-        javaClass
-            .getResourceAsStream("/reference/fixed-unsupported.tsv")!!
-            .bufferedReader()
-            .readLines()
-            .drop(1)
-            .map { it.split('\t') }
-            .groupBy { it[0] }
+        unsupportedFixedCases()
+            .groupBy { it.move }
             .also { assertEquals(7, it.size) }
             .map { (name, rows) ->
                 dynamicTest("SourceOnly/MoveId/$name") {
@@ -147,11 +139,11 @@ class ReferenceFixedDamageTest {
 
                             else -> listOf(1, 3, 101, 200)
                         }
-                    assertEquals(listOf("1", "3", "101", "200"), rows.map { it[4] })
+                    assertEquals(listOf(1, 3, 101, 200), rows.map { it.defenderHp })
                     rows.zip(expected).forEach { (c, damage) ->
                         assertEquals(
-                            "0",
-                            c[5],
+                            0,
+                            c.nativeDamage,
                             "Pinned native engine has no fixed-damage implementation for $name",
                         )
                         val profile =
@@ -165,22 +157,22 @@ class ReferenceFixedDamageTest {
                             PokemonState(
                                 profile,
                                 stats,
-                                currentHp = c[3].toInt(),
+                                currentHp = c.attackerHp,
                                 ability = AbilityId("Illuminate"),
                             )
                         val d =
                             a.copy(
                                 profile = profile.copy(types = PokemonTypes(PokemonType.GRASS)),
-                                currentHp = c[4].toInt(),
+                                currentHp = c.defenderHp,
                             )
                         val move =
-                            Move(MoveId(name), PokemonType.valueOf(c[1]), 0, Category.valueOf(c[2]))
+                            Move(MoveId(name), c.type, 0, c.category)
                         val result =
                             assertIs<Calculation.Success<DamageResult>>(
                                 calculateDamage(DamageRequest(a, d, move)),
                             ).value
                                 .hit
-                        assertEquals(listOf(damage), result.rolls, "$name HP=${c[4]}")
+                        assertEquals(listOf(damage), result.rolls, "$name HP=${c.defenderHp}")
                         assertEquals(DamageKind.FIXED, result.kind)
                     }
                 }
