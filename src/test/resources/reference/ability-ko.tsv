@@ -1,0 +1,11 @@
+ability	enabled	damage	sand	status	hits	chance
+MagicGuard	false	30	true	-	3	1
+MagicGuard	true	30	true	-	4	1
+Overcoat	false	30	true	-	3	1
+Overcoat	true	30	true	-	4	1
+SandRush	false	30	true	-	3	1
+SandRush	true	30	true	-	4	1
+SandVeil	false	30	true	-	3	1
+SandVeil	true	30	true	-	4	1
+PoisonHeal	false	40	false	POISON	2	1
+PoisonHeal	true	40	false	POISON	4	1

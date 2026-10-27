@@ -1,0 +1,1153 @@
+move	power	priority	tera	available	hp	ability	result
+Tackle	1	0		false	1	Illuminate	1
+Tackle	1	0		false	1	Technician	1
+Tackle	1	0		false	200	Illuminate	1
+Tackle	1	0		false	200	Technician	1
+Tackle	1	0		true	1	Illuminate	1
+Tackle	1	0		true	1	Technician	1
+Tackle	1	0		true	200	Illuminate	1
+Tackle	1	0		true	200	Technician	1
+Tackle	1	0	NORMAL	false	1	Illuminate	60
+Tackle	1	0	NORMAL	false	1	Technician	60
+Tackle	1	0	NORMAL	false	200	Illuminate	60
+Tackle	1	0	NORMAL	false	200	Technician	60
+Tackle	1	0	NORMAL	true	1	Illuminate	60
+Tackle	1	0	NORMAL	true	1	Technician	60
+Tackle	1	0	NORMAL	true	200	Illuminate	60
+Tackle	1	0	NORMAL	true	200	Technician	60
+Tackle	1	0	WATER	false	1	Illuminate	1
+Tackle	1	0	WATER	false	1	Technician	1
+Tackle	1	0	WATER	false	200	Illuminate	1
+Tackle	1	0	WATER	false	200	Technician	1
+Tackle	1	0	WATER	true	1	Illuminate	1
+Tackle	1	0	WATER	true	1	Technician	1
+Tackle	1	0	WATER	true	200	Illuminate	1
+Tackle	1	0	WATER	true	200	Technician	1
+Tackle	1	0	STELLAR	false	1	Illuminate	1
+Tackle	1	0	STELLAR	false	1	Technician	1
+Tackle	1	0	STELLAR	false	200	Illuminate	1
+Tackle	1	0	STELLAR	false	200	Technician	1
+Tackle	1	0	STELLAR	true	1	Illuminate	60
+Tackle	1	0	STELLAR	true	1	Technician	60
+Tackle	1	0	STELLAR	true	200	Illuminate	60
+Tackle	1	0	STELLAR	true	200	Technician	60
+Tackle	39	0		false	1	Illuminate	39
+Tackle	39	0		false	1	Technician	58
+Tackle	39	0		false	200	Illuminate	39
+Tackle	39	0		false	200	Technician	58
+Tackle	39	0		true	1	Illuminate	39
+Tackle	39	0		true	1	Technician	58
+Tackle	39	0		true	200	Illuminate	39
+Tackle	39	0		true	200	Technician	58
+Tackle	39	0	NORMAL	false	1	Illuminate	60
+Tackle	39	0	NORMAL	false	1	Technician	60
+Tackle	39	0	NORMAL	false	200	Illuminate	60
+Tackle	39	0	NORMAL	false	200	Technician	60
+Tackle	39	0	NORMAL	true	1	Illuminate	60
+Tackle	39	0	NORMAL	true	1	Technician	60
+Tackle	39	0	NORMAL	true	200	Illuminate	60
+Tackle	39	0	NORMAL	true	200	Technician	60
+Tackle	39	0	WATER	false	1	Illuminate	39
+Tackle	39	0	WATER	false	1	Technician	58
+Tackle	39	0	WATER	false	200	Illuminate	39
+Tackle	39	0	WATER	false	200	Technician	58
+Tackle	39	0	WATER	true	1	Illuminate	39
+Tackle	39	0	WATER	true	1	Technician	58
+Tackle	39	0	WATER	true	200	Illuminate	39
+Tackle	39	0	WATER	true	200	Technician	58
+Tackle	39	0	STELLAR	false	1	Illuminate	39
+Tackle	39	0	STELLAR	false	1	Technician	58
+Tackle	39	0	STELLAR	false	200	Illuminate	39
+Tackle	39	0	STELLAR	false	200	Technician	58
+Tackle	39	0	STELLAR	true	1	Illuminate	60
+Tackle	39	0	STELLAR	true	1	Technician	60
+Tackle	39	0	STELLAR	true	200	Illuminate	60
+Tackle	39	0	STELLAR	true	200	Technician	60
+Tackle	40	0		false	1	Illuminate	40
+Tackle	40	0		false	1	Technician	60
+Tackle	40	0		false	200	Illuminate	40
+Tackle	40	0		false	200	Technician	60
+Tackle	40	0		true	1	Illuminate	40
+Tackle	40	0		true	1	Technician	60
+Tackle	40	0		true	200	Illuminate	40
+Tackle	40	0		true	200	Technician	60
+Tackle	40	0	NORMAL	false	1	Illuminate	60
+Tackle	40	0	NORMAL	false	1	Technician	60
+Tackle	40	0	NORMAL	false	200	Illuminate	60
+Tackle	40	0	NORMAL	false	200	Technician	60
+Tackle	40	0	NORMAL	true	1	Illuminate	60
+Tackle	40	0	NORMAL	true	1	Technician	60
+Tackle	40	0	NORMAL	true	200	Illuminate	60
+Tackle	40	0	NORMAL	true	200	Technician	60
+Tackle	40	0	WATER	false	1	Illuminate	40
+Tackle	40	0	WATER	false	1	Technician	60
+Tackle	40	0	WATER	false	200	Illuminate	40
+Tackle	40	0	WATER	false	200	Technician	60
+Tackle	40	0	WATER	true	1	Illuminate	40
+Tackle	40	0	WATER	true	1	Technician	60
+Tackle	40	0	WATER	true	200	Illuminate	40
+Tackle	40	0	WATER	true	200	Technician	60
+Tackle	40	0	STELLAR	false	1	Illuminate	40
+Tackle	40	0	STELLAR	false	1	Technician	60
+Tackle	40	0	STELLAR	false	200	Illuminate	40
+Tackle	40	0	STELLAR	false	200	Technician	60
+Tackle	40	0	STELLAR	true	1	Illuminate	60
+Tackle	40	0	STELLAR	true	1	Technician	60
+Tackle	40	0	STELLAR	true	200	Illuminate	60
+Tackle	40	0	STELLAR	true	200	Technician	60
+Tackle	59	0		false	1	Illuminate	59
+Tackle	59	0		false	1	Technician	88
+Tackle	59	0		false	200	Illuminate	59
+Tackle	59	0		false	200	Technician	88
+Tackle	59	0		true	1	Illuminate	59
+Tackle	59	0		true	1	Technician	88
+Tackle	59	0		true	200	Illuminate	59
+Tackle	59	0		true	200	Technician	88
+Tackle	59	0	NORMAL	false	1	Illuminate	60
+Tackle	59	0	NORMAL	false	1	Technician	88
+Tackle	59	0	NORMAL	false	200	Illuminate	60
+Tackle	59	0	NORMAL	false	200	Technician	88
+Tackle	59	0	NORMAL	true	1	Illuminate	60
+Tackle	59	0	NORMAL	true	1	Technician	88
+Tackle	59	0	NORMAL	true	200	Illuminate	60
+Tackle	59	0	NORMAL	true	200	Technician	88
+Tackle	59	0	WATER	false	1	Illuminate	59
+Tackle	59	0	WATER	false	1	Technician	88
+Tackle	59	0	WATER	false	200	Illuminate	59
+Tackle	59	0	WATER	false	200	Technician	88
+Tackle	59	0	WATER	true	1	Illuminate	59
+Tackle	59	0	WATER	true	1	Technician	88
+Tackle	59	0	WATER	true	200	Illuminate	59
+Tackle	59	0	WATER	true	200	Technician	88
+Tackle	59	0	STELLAR	false	1	Illuminate	59
+Tackle	59	0	STELLAR	false	1	Technician	88
+Tackle	59	0	STELLAR	false	200	Illuminate	59
+Tackle	59	0	STELLAR	false	200	Technician	88
+Tackle	59	0	STELLAR	true	1	Illuminate	60
+Tackle	59	0	STELLAR	true	1	Technician	88
+Tackle	59	0	STELLAR	true	200	Illuminate	60
+Tackle	59	0	STELLAR	true	200	Technician	88
+Tackle	60	0		false	1	Illuminate	60
+Tackle	60	0		false	1	Technician	90
+Tackle	60	0		false	200	Illuminate	60
+Tackle	60	0		false	200	Technician	90
+Tackle	60	0		true	1	Illuminate	60
+Tackle	60	0		true	1	Technician	90
+Tackle	60	0		true	200	Illuminate	60
+Tackle	60	0		true	200	Technician	90
+Tackle	60	0	NORMAL	false	1	Illuminate	60
+Tackle	60	0	NORMAL	false	1	Technician	90
+Tackle	60	0	NORMAL	false	200	Illuminate	60
+Tackle	60	0	NORMAL	false	200	Technician	90
+Tackle	60	0	NORMAL	true	1	Illuminate	60
+Tackle	60	0	NORMAL	true	1	Technician	90
+Tackle	60	0	NORMAL	true	200	Illuminate	60
+Tackle	60	0	NORMAL	true	200	Technician	90
+Tackle	60	0	WATER	false	1	Illuminate	60
+Tackle	60	0	WATER	false	1	Technician	90
+Tackle	60	0	WATER	false	200	Illuminate	60
+Tackle	60	0	WATER	false	200	Technician	90
+Tackle	60	0	WATER	true	1	Illuminate	60
+Tackle	60	0	WATER	true	1	Technician	90
+Tackle	60	0	WATER	true	200	Illuminate	60
+Tackle	60	0	WATER	true	200	Technician	90
+Tackle	60	0	STELLAR	false	1	Illuminate	60
+Tackle	60	0	STELLAR	false	1	Technician	90
+Tackle	60	0	STELLAR	false	200	Illuminate	60
+Tackle	60	0	STELLAR	false	200	Technician	90
+Tackle	60	0	STELLAR	true	1	Illuminate	60
+Tackle	60	0	STELLAR	true	1	Technician	90
+Tackle	60	0	STELLAR	true	200	Illuminate	60
+Tackle	60	0	STELLAR	true	200	Technician	90
+Tackle	61	0		false	1	Illuminate	61
+Tackle	61	0		false	1	Technician	61
+Tackle	61	0		false	200	Illuminate	61
+Tackle	61	0		false	200	Technician	61
+Tackle	61	0		true	1	Illuminate	61
+Tackle	61	0		true	1	Technician	61
+Tackle	61	0		true	200	Illuminate	61
+Tackle	61	0		true	200	Technician	61
+Tackle	61	0	NORMAL	false	1	Illuminate	61
+Tackle	61	0	NORMAL	false	1	Technician	61
+Tackle	61	0	NORMAL	false	200	Illuminate	61
+Tackle	61	0	NORMAL	false	200	Technician	61
+Tackle	61	0	NORMAL	true	1	Illuminate	61
+Tackle	61	0	NORMAL	true	1	Technician	61
+Tackle	61	0	NORMAL	true	200	Illuminate	61
+Tackle	61	0	NORMAL	true	200	Technician	61
+Tackle	61	0	WATER	false	1	Illuminate	61
+Tackle	61	0	WATER	false	1	Technician	61
+Tackle	61	0	WATER	false	200	Illuminate	61
+Tackle	61	0	WATER	false	200	Technician	61
+Tackle	61	0	WATER	true	1	Illuminate	61
+Tackle	61	0	WATER	true	1	Technician	61
+Tackle	61	0	WATER	true	200	Illuminate	61
+Tackle	61	0	WATER	true	200	Technician	61
+Tackle	61	0	STELLAR	false	1	Illuminate	61
+Tackle	61	0	STELLAR	false	1	Technician	61
+Tackle	61	0	STELLAR	false	200	Illuminate	61
+Tackle	61	0	STELLAR	false	200	Technician	61
+Tackle	61	0	STELLAR	true	1	Illuminate	61
+Tackle	61	0	STELLAR	true	1	Technician	61
+Tackle	61	0	STELLAR	true	200	Illuminate	61
+Tackle	61	0	STELLAR	true	200	Technician	61
+QuickAttack	1	1		false	1	Illuminate	1
+QuickAttack	1	1		false	1	Technician	1
+QuickAttack	1	1		false	200	Illuminate	1
+QuickAttack	1	1		false	200	Technician	1
+QuickAttack	1	1		true	1	Illuminate	1
+QuickAttack	1	1		true	1	Technician	1
+QuickAttack	1	1		true	200	Illuminate	1
+QuickAttack	1	1		true	200	Technician	1
+QuickAttack	1	1	NORMAL	false	1	Illuminate	1
+QuickAttack	1	1	NORMAL	false	1	Technician	1
+QuickAttack	1	1	NORMAL	false	200	Illuminate	1
+QuickAttack	1	1	NORMAL	false	200	Technician	1
+QuickAttack	1	1	NORMAL	true	1	Illuminate	1
+QuickAttack	1	1	NORMAL	true	1	Technician	1
+QuickAttack	1	1	NORMAL	true	200	Illuminate	1
+QuickAttack	1	1	NORMAL	true	200	Technician	1
+QuickAttack	1	1	WATER	false	1	Illuminate	1
+QuickAttack	1	1	WATER	false	1	Technician	1
+QuickAttack	1	1	WATER	false	200	Illuminate	1
+QuickAttack	1	1	WATER	false	200	Technician	1
+QuickAttack	1	1	WATER	true	1	Illuminate	1
+QuickAttack	1	1	WATER	true	1	Technician	1
+QuickAttack	1	1	WATER	true	200	Illuminate	1
+QuickAttack	1	1	WATER	true	200	Technician	1
+QuickAttack	1	1	STELLAR	false	1	Illuminate	1
+QuickAttack	1	1	STELLAR	false	1	Technician	1
+QuickAttack	1	1	STELLAR	false	200	Illuminate	1
+QuickAttack	1	1	STELLAR	false	200	Technician	1
+QuickAttack	1	1	STELLAR	true	1	Illuminate	1
+QuickAttack	1	1	STELLAR	true	1	Technician	1
+QuickAttack	1	1	STELLAR	true	200	Illuminate	1
+QuickAttack	1	1	STELLAR	true	200	Technician	1
+QuickAttack	39	1		false	1	Illuminate	39
+QuickAttack	39	1		false	1	Technician	58
+QuickAttack	39	1		false	200	Illuminate	39
+QuickAttack	39	1		false	200	Technician	58
+QuickAttack	39	1		true	1	Illuminate	39
+QuickAttack	39	1		true	1	Technician	58
+QuickAttack	39	1		true	200	Illuminate	39
+QuickAttack	39	1		true	200	Technician	58
+QuickAttack	39	1	NORMAL	false	1	Illuminate	39
+QuickAttack	39	1	NORMAL	false	1	Technician	58
+QuickAttack	39	1	NORMAL	false	200	Illuminate	39
+QuickAttack	39	1	NORMAL	false	200	Technician	58
+QuickAttack	39	1	NORMAL	true	1	Illuminate	39
+QuickAttack	39	1	NORMAL	true	1	Technician	58
+QuickAttack	39	1	NORMAL	true	200	Illuminate	39
+QuickAttack	39	1	NORMAL	true	200	Technician	58
+QuickAttack	39	1	WATER	false	1	Illuminate	39
+QuickAttack	39	1	WATER	false	1	Technician	58
+QuickAttack	39	1	WATER	false	200	Illuminate	39
+QuickAttack	39	1	WATER	false	200	Technician	58
+QuickAttack	39	1	WATER	true	1	Illuminate	39
+QuickAttack	39	1	WATER	true	1	Technician	58
+QuickAttack	39	1	WATER	true	200	Illuminate	39
+QuickAttack	39	1	WATER	true	200	Technician	58
+QuickAttack	39	1	STELLAR	false	1	Illuminate	39
+QuickAttack	39	1	STELLAR	false	1	Technician	58
+QuickAttack	39	1	STELLAR	false	200	Illuminate	39
+QuickAttack	39	1	STELLAR	false	200	Technician	58
+QuickAttack	39	1	STELLAR	true	1	Illuminate	39
+QuickAttack	39	1	STELLAR	true	1	Technician	58
+QuickAttack	39	1	STELLAR	true	200	Illuminate	39
+QuickAttack	39	1	STELLAR	true	200	Technician	58
+QuickAttack	40	1		false	1	Illuminate	40
+QuickAttack	40	1		false	1	Technician	60
+QuickAttack	40	1		false	200	Illuminate	40
+QuickAttack	40	1		false	200	Technician	60
+QuickAttack	40	1		true	1	Illuminate	40
+QuickAttack	40	1		true	1	Technician	60
+QuickAttack	40	1		true	200	Illuminate	40
+QuickAttack	40	1		true	200	Technician	60
+QuickAttack	40	1	NORMAL	false	1	Illuminate	40
+QuickAttack	40	1	NORMAL	false	1	Technician	60
+QuickAttack	40	1	NORMAL	false	200	Illuminate	40
+QuickAttack	40	1	NORMAL	false	200	Technician	60
+QuickAttack	40	1	NORMAL	true	1	Illuminate	40
+QuickAttack	40	1	NORMAL	true	1	Technician	60
+QuickAttack	40	1	NORMAL	true	200	Illuminate	40
+QuickAttack	40	1	NORMAL	true	200	Technician	60
+QuickAttack	40	1	WATER	false	1	Illuminate	40
+QuickAttack	40	1	WATER	false	1	Technician	60
+QuickAttack	40	1	WATER	false	200	Illuminate	40
+QuickAttack	40	1	WATER	false	200	Technician	60
+QuickAttack	40	1	WATER	true	1	Illuminate	40
+QuickAttack	40	1	WATER	true	1	Technician	60
+QuickAttack	40	1	WATER	true	200	Illuminate	40
+QuickAttack	40	1	WATER	true	200	Technician	60
+QuickAttack	40	1	STELLAR	false	1	Illuminate	40
+QuickAttack	40	1	STELLAR	false	1	Technician	60
+QuickAttack	40	1	STELLAR	false	200	Illuminate	40
+QuickAttack	40	1	STELLAR	false	200	Technician	60
+QuickAttack	40	1	STELLAR	true	1	Illuminate	40
+QuickAttack	40	1	STELLAR	true	1	Technician	60
+QuickAttack	40	1	STELLAR	true	200	Illuminate	40
+QuickAttack	40	1	STELLAR	true	200	Technician	60
+QuickAttack	59	1		false	1	Illuminate	59
+QuickAttack	59	1		false	1	Technician	88
+QuickAttack	59	1		false	200	Illuminate	59
+QuickAttack	59	1		false	200	Technician	88
+QuickAttack	59	1		true	1	Illuminate	59
+QuickAttack	59	1		true	1	Technician	88
+QuickAttack	59	1		true	200	Illuminate	59
+QuickAttack	59	1		true	200	Technician	88
+QuickAttack	59	1	NORMAL	false	1	Illuminate	59
+QuickAttack	59	1	NORMAL	false	1	Technician	88
+QuickAttack	59	1	NORMAL	false	200	Illuminate	59
+QuickAttack	59	1	NORMAL	false	200	Technician	88
+QuickAttack	59	1	NORMAL	true	1	Illuminate	59
+QuickAttack	59	1	NORMAL	true	1	Technician	88
+QuickAttack	59	1	NORMAL	true	200	Illuminate	59
+QuickAttack	59	1	NORMAL	true	200	Technician	88
+QuickAttack	59	1	WATER	false	1	Illuminate	59
+QuickAttack	59	1	WATER	false	1	Technician	88
+QuickAttack	59	1	WATER	false	200	Illuminate	59
+QuickAttack	59	1	WATER	false	200	Technician	88
+QuickAttack	59	1	WATER	true	1	Illuminate	59
+QuickAttack	59	1	WATER	true	1	Technician	88
+QuickAttack	59	1	WATER	true	200	Illuminate	59
+QuickAttack	59	1	WATER	true	200	Technician	88
+QuickAttack	59	1	STELLAR	false	1	Illuminate	59
+QuickAttack	59	1	STELLAR	false	1	Technician	88
+QuickAttack	59	1	STELLAR	false	200	Illuminate	59
+QuickAttack	59	1	STELLAR	false	200	Technician	88
+QuickAttack	59	1	STELLAR	true	1	Illuminate	59
+QuickAttack	59	1	STELLAR	true	1	Technician	88
+QuickAttack	59	1	STELLAR	true	200	Illuminate	59
+QuickAttack	59	1	STELLAR	true	200	Technician	88
+QuickAttack	60	1		false	1	Illuminate	60
+QuickAttack	60	1		false	1	Technician	90
+QuickAttack	60	1		false	200	Illuminate	60
+QuickAttack	60	1		false	200	Technician	90
+QuickAttack	60	1		true	1	Illuminate	60
+QuickAttack	60	1		true	1	Technician	90
+QuickAttack	60	1		true	200	Illuminate	60
+QuickAttack	60	1		true	200	Technician	90
+QuickAttack	60	1	NORMAL	false	1	Illuminate	60
+QuickAttack	60	1	NORMAL	false	1	Technician	90
+QuickAttack	60	1	NORMAL	false	200	Illuminate	60
+QuickAttack	60	1	NORMAL	false	200	Technician	90
+QuickAttack	60	1	NORMAL	true	1	Illuminate	60
+QuickAttack	60	1	NORMAL	true	1	Technician	90
+QuickAttack	60	1	NORMAL	true	200	Illuminate	60
+QuickAttack	60	1	NORMAL	true	200	Technician	90
+QuickAttack	60	1	WATER	false	1	Illuminate	60
+QuickAttack	60	1	WATER	false	1	Technician	90
+QuickAttack	60	1	WATER	false	200	Illuminate	60
+QuickAttack	60	1	WATER	false	200	Technician	90
+QuickAttack	60	1	WATER	true	1	Illuminate	60
+QuickAttack	60	1	WATER	true	1	Technician	90
+QuickAttack	60	1	WATER	true	200	Illuminate	60
+QuickAttack	60	1	WATER	true	200	Technician	90
+QuickAttack	60	1	STELLAR	false	1	Illuminate	60
+QuickAttack	60	1	STELLAR	false	1	Technician	90
+QuickAttack	60	1	STELLAR	false	200	Illuminate	60
+QuickAttack	60	1	STELLAR	false	200	Technician	90
+QuickAttack	60	1	STELLAR	true	1	Illuminate	60
+QuickAttack	60	1	STELLAR	true	1	Technician	90
+QuickAttack	60	1	STELLAR	true	200	Illuminate	60
+QuickAttack	60	1	STELLAR	true	200	Technician	90
+QuickAttack	61	1		false	1	Illuminate	61
+QuickAttack	61	1		false	1	Technician	61
+QuickAttack	61	1		false	200	Illuminate	61
+QuickAttack	61	1		false	200	Technician	61
+QuickAttack	61	1		true	1	Illuminate	61
+QuickAttack	61	1		true	1	Technician	61
+QuickAttack	61	1		true	200	Illuminate	61
+QuickAttack	61	1		true	200	Technician	61
+QuickAttack	61	1	NORMAL	false	1	Illuminate	61
+QuickAttack	61	1	NORMAL	false	1	Technician	61
+QuickAttack	61	1	NORMAL	false	200	Illuminate	61
+QuickAttack	61	1	NORMAL	false	200	Technician	61
+QuickAttack	61	1	NORMAL	true	1	Illuminate	61
+QuickAttack	61	1	NORMAL	true	1	Technician	61
+QuickAttack	61	1	NORMAL	true	200	Illuminate	61
+QuickAttack	61	1	NORMAL	true	200	Technician	61
+QuickAttack	61	1	WATER	false	1	Illuminate	61
+QuickAttack	61	1	WATER	false	1	Technician	61
+QuickAttack	61	1	WATER	false	200	Illuminate	61
+QuickAttack	61	1	WATER	false	200	Technician	61
+QuickAttack	61	1	WATER	true	1	Illuminate	61
+QuickAttack	61	1	WATER	true	1	Technician	61
+QuickAttack	61	1	WATER	true	200	Illuminate	61
+QuickAttack	61	1	WATER	true	200	Technician	61
+QuickAttack	61	1	STELLAR	false	1	Illuminate	61
+QuickAttack	61	1	STELLAR	false	1	Technician	61
+QuickAttack	61	1	STELLAR	false	200	Illuminate	61
+QuickAttack	61	1	STELLAR	false	200	Technician	61
+QuickAttack	61	1	STELLAR	true	1	Illuminate	61
+QuickAttack	61	1	STELLAR	true	1	Technician	61
+QuickAttack	61	1	STELLAR	true	200	Illuminate	61
+QuickAttack	61	1	STELLAR	true	200	Technician	61
+DoubleKick	1	0		false	1	Illuminate	1
+DoubleKick	1	0		false	1	Technician	1
+DoubleKick	1	0		false	200	Illuminate	1
+DoubleKick	1	0		false	200	Technician	1
+DoubleKick	1	0		true	1	Illuminate	1
+DoubleKick	1	0		true	1	Technician	1
+DoubleKick	1	0		true	200	Illuminate	1
+DoubleKick	1	0		true	200	Technician	1
+DoubleKick	1	0	NORMAL	false	1	Illuminate	1
+DoubleKick	1	0	NORMAL	false	1	Technician	1
+DoubleKick	1	0	NORMAL	false	200	Illuminate	1
+DoubleKick	1	0	NORMAL	false	200	Technician	1
+DoubleKick	1	0	NORMAL	true	1	Illuminate	1
+DoubleKick	1	0	NORMAL	true	1	Technician	1
+DoubleKick	1	0	NORMAL	true	200	Illuminate	1
+DoubleKick	1	0	NORMAL	true	200	Technician	1
+DoubleKick	1	0	WATER	false	1	Illuminate	1
+DoubleKick	1	0	WATER	false	1	Technician	1
+DoubleKick	1	0	WATER	false	200	Illuminate	1
+DoubleKick	1	0	WATER	false	200	Technician	1
+DoubleKick	1	0	WATER	true	1	Illuminate	1
+DoubleKick	1	0	WATER	true	1	Technician	1
+DoubleKick	1	0	WATER	true	200	Illuminate	1
+DoubleKick	1	0	WATER	true	200	Technician	1
+DoubleKick	1	0	STELLAR	false	1	Illuminate	1
+DoubleKick	1	0	STELLAR	false	1	Technician	1
+DoubleKick	1	0	STELLAR	false	200	Illuminate	1
+DoubleKick	1	0	STELLAR	false	200	Technician	1
+DoubleKick	1	0	STELLAR	true	1	Illuminate	1
+DoubleKick	1	0	STELLAR	true	1	Technician	1
+DoubleKick	1	0	STELLAR	true	200	Illuminate	1
+DoubleKick	1	0	STELLAR	true	200	Technician	1
+DoubleKick	39	0		false	1	Illuminate	39
+DoubleKick	39	0		false	1	Technician	58
+DoubleKick	39	0		false	200	Illuminate	39
+DoubleKick	39	0		false	200	Technician	58
+DoubleKick	39	0		true	1	Illuminate	39
+DoubleKick	39	0		true	1	Technician	58
+DoubleKick	39	0		true	200	Illuminate	39
+DoubleKick	39	0		true	200	Technician	58
+DoubleKick	39	0	NORMAL	false	1	Illuminate	39
+DoubleKick	39	0	NORMAL	false	1	Technician	58
+DoubleKick	39	0	NORMAL	false	200	Illuminate	39
+DoubleKick	39	0	NORMAL	false	200	Technician	58
+DoubleKick	39	0	NORMAL	true	1	Illuminate	39
+DoubleKick	39	0	NORMAL	true	1	Technician	58
+DoubleKick	39	0	NORMAL	true	200	Illuminate	39
+DoubleKick	39	0	NORMAL	true	200	Technician	58
+DoubleKick	39	0	WATER	false	1	Illuminate	39
+DoubleKick	39	0	WATER	false	1	Technician	58
+DoubleKick	39	0	WATER	false	200	Illuminate	39
+DoubleKick	39	0	WATER	false	200	Technician	58
+DoubleKick	39	0	WATER	true	1	Illuminate	39
+DoubleKick	39	0	WATER	true	1	Technician	58
+DoubleKick	39	0	WATER	true	200	Illuminate	39
+DoubleKick	39	0	WATER	true	200	Technician	58
+DoubleKick	39	0	STELLAR	false	1	Illuminate	39
+DoubleKick	39	0	STELLAR	false	1	Technician	58
+DoubleKick	39	0	STELLAR	false	200	Illuminate	39
+DoubleKick	39	0	STELLAR	false	200	Technician	58
+DoubleKick	39	0	STELLAR	true	1	Illuminate	39
+DoubleKick	39	0	STELLAR	true	1	Technician	58
+DoubleKick	39	0	STELLAR	true	200	Illuminate	39
+DoubleKick	39	0	STELLAR	true	200	Technician	58
+DoubleKick	40	0		false	1	Illuminate	40
+DoubleKick	40	0		false	1	Technician	60
+DoubleKick	40	0		false	200	Illuminate	40
+DoubleKick	40	0		false	200	Technician	60
+DoubleKick	40	0		true	1	Illuminate	40
+DoubleKick	40	0		true	1	Technician	60
+DoubleKick	40	0		true	200	Illuminate	40
+DoubleKick	40	0		true	200	Technician	60
+DoubleKick	40	0	NORMAL	false	1	Illuminate	40
+DoubleKick	40	0	NORMAL	false	1	Technician	60
+DoubleKick	40	0	NORMAL	false	200	Illuminate	40
+DoubleKick	40	0	NORMAL	false	200	Technician	60
+DoubleKick	40	0	NORMAL	true	1	Illuminate	40
+DoubleKick	40	0	NORMAL	true	1	Technician	60
+DoubleKick	40	0	NORMAL	true	200	Illuminate	40
+DoubleKick	40	0	NORMAL	true	200	Technician	60
+DoubleKick	40	0	WATER	false	1	Illuminate	40
+DoubleKick	40	0	WATER	false	1	Technician	60
+DoubleKick	40	0	WATER	false	200	Illuminate	40
+DoubleKick	40	0	WATER	false	200	Technician	60
+DoubleKick	40	0	WATER	true	1	Illuminate	40
+DoubleKick	40	0	WATER	true	1	Technician	60
+DoubleKick	40	0	WATER	true	200	Illuminate	40
+DoubleKick	40	0	WATER	true	200	Technician	60
+DoubleKick	40	0	STELLAR	false	1	Illuminate	40
+DoubleKick	40	0	STELLAR	false	1	Technician	60
+DoubleKick	40	0	STELLAR	false	200	Illuminate	40
+DoubleKick	40	0	STELLAR	false	200	Technician	60
+DoubleKick	40	0	STELLAR	true	1	Illuminate	40
+DoubleKick	40	0	STELLAR	true	1	Technician	60
+DoubleKick	40	0	STELLAR	true	200	Illuminate	40
+DoubleKick	40	0	STELLAR	true	200	Technician	60
+DoubleKick	59	0		false	1	Illuminate	59
+DoubleKick	59	0		false	1	Technician	88
+DoubleKick	59	0		false	200	Illuminate	59
+DoubleKick	59	0		false	200	Technician	88
+DoubleKick	59	0		true	1	Illuminate	59
+DoubleKick	59	0		true	1	Technician	88
+DoubleKick	59	0		true	200	Illuminate	59
+DoubleKick	59	0		true	200	Technician	88
+DoubleKick	59	0	NORMAL	false	1	Illuminate	59
+DoubleKick	59	0	NORMAL	false	1	Technician	88
+DoubleKick	59	0	NORMAL	false	200	Illuminate	59
+DoubleKick	59	0	NORMAL	false	200	Technician	88
+DoubleKick	59	0	NORMAL	true	1	Illuminate	59
+DoubleKick	59	0	NORMAL	true	1	Technician	88
+DoubleKick	59	0	NORMAL	true	200	Illuminate	59
+DoubleKick	59	0	NORMAL	true	200	Technician	88
+DoubleKick	59	0	WATER	false	1	Illuminate	59
+DoubleKick	59	0	WATER	false	1	Technician	88
+DoubleKick	59	0	WATER	false	200	Illuminate	59
+DoubleKick	59	0	WATER	false	200	Technician	88
+DoubleKick	59	0	WATER	true	1	Illuminate	59
+DoubleKick	59	0	WATER	true	1	Technician	88
+DoubleKick	59	0	WATER	true	200	Illuminate	59
+DoubleKick	59	0	WATER	true	200	Technician	88
+DoubleKick	59	0	STELLAR	false	1	Illuminate	59
+DoubleKick	59	0	STELLAR	false	1	Technician	88
+DoubleKick	59	0	STELLAR	false	200	Illuminate	59
+DoubleKick	59	0	STELLAR	false	200	Technician	88
+DoubleKick	59	0	STELLAR	true	1	Illuminate	59
+DoubleKick	59	0	STELLAR	true	1	Technician	88
+DoubleKick	59	0	STELLAR	true	200	Illuminate	59
+DoubleKick	59	0	STELLAR	true	200	Technician	88
+DoubleKick	60	0		false	1	Illuminate	60
+DoubleKick	60	0		false	1	Technician	90
+DoubleKick	60	0		false	200	Illuminate	60
+DoubleKick	60	0		false	200	Technician	90
+DoubleKick	60	0		true	1	Illuminate	60
+DoubleKick	60	0		true	1	Technician	90
+DoubleKick	60	0		true	200	Illuminate	60
+DoubleKick	60	0		true	200	Technician	90
+DoubleKick	60	0	NORMAL	false	1	Illuminate	60
+DoubleKick	60	0	NORMAL	false	1	Technician	90
+DoubleKick	60	0	NORMAL	false	200	Illuminate	60
+DoubleKick	60	0	NORMAL	false	200	Technician	90
+DoubleKick	60	0	NORMAL	true	1	Illuminate	60
+DoubleKick	60	0	NORMAL	true	1	Technician	90
+DoubleKick	60	0	NORMAL	true	200	Illuminate	60
+DoubleKick	60	0	NORMAL	true	200	Technician	90
+DoubleKick	60	0	WATER	false	1	Illuminate	60
+DoubleKick	60	0	WATER	false	1	Technician	90
+DoubleKick	60	0	WATER	false	200	Illuminate	60
+DoubleKick	60	0	WATER	false	200	Technician	90
+DoubleKick	60	0	WATER	true	1	Illuminate	60
+DoubleKick	60	0	WATER	true	1	Technician	90
+DoubleKick	60	0	WATER	true	200	Illuminate	60
+DoubleKick	60	0	WATER	true	200	Technician	90
+DoubleKick	60	0	STELLAR	false	1	Illuminate	60
+DoubleKick	60	0	STELLAR	false	1	Technician	90
+DoubleKick	60	0	STELLAR	false	200	Illuminate	60
+DoubleKick	60	0	STELLAR	false	200	Technician	90
+DoubleKick	60	0	STELLAR	true	1	Illuminate	60
+DoubleKick	60	0	STELLAR	true	1	Technician	90
+DoubleKick	60	0	STELLAR	true	200	Illuminate	60
+DoubleKick	60	0	STELLAR	true	200	Technician	90
+DoubleKick	61	0		false	1	Illuminate	61
+DoubleKick	61	0		false	1	Technician	61
+DoubleKick	61	0		false	200	Illuminate	61
+DoubleKick	61	0		false	200	Technician	61
+DoubleKick	61	0		true	1	Illuminate	61
+DoubleKick	61	0		true	1	Technician	61
+DoubleKick	61	0		true	200	Illuminate	61
+DoubleKick	61	0		true	200	Technician	61
+DoubleKick	61	0	NORMAL	false	1	Illuminate	61
+DoubleKick	61	0	NORMAL	false	1	Technician	61
+DoubleKick	61	0	NORMAL	false	200	Illuminate	61
+DoubleKick	61	0	NORMAL	false	200	Technician	61
+DoubleKick	61	0	NORMAL	true	1	Illuminate	61
+DoubleKick	61	0	NORMAL	true	1	Technician	61
+DoubleKick	61	0	NORMAL	true	200	Illuminate	61
+DoubleKick	61	0	NORMAL	true	200	Technician	61
+DoubleKick	61	0	WATER	false	1	Illuminate	61
+DoubleKick	61	0	WATER	false	1	Technician	61
+DoubleKick	61	0	WATER	false	200	Illuminate	61
+DoubleKick	61	0	WATER	false	200	Technician	61
+DoubleKick	61	0	WATER	true	1	Illuminate	61
+DoubleKick	61	0	WATER	true	1	Technician	61
+DoubleKick	61	0	WATER	true	200	Illuminate	61
+DoubleKick	61	0	WATER	true	200	Technician	61
+DoubleKick	61	0	STELLAR	false	1	Illuminate	61
+DoubleKick	61	0	STELLAR	false	1	Technician	61
+DoubleKick	61	0	STELLAR	false	200	Illuminate	61
+DoubleKick	61	0	STELLAR	false	200	Technician	61
+DoubleKick	61	0	STELLAR	true	1	Illuminate	61
+DoubleKick	61	0	STELLAR	true	1	Technician	61
+DoubleKick	61	0	STELLAR	true	200	Illuminate	61
+DoubleKick	61	0	STELLAR	true	200	Technician	61
+Eruption	1	0		false	1	Illuminate	1
+Eruption	1	0		false	1	Technician	1
+Eruption	1	0		false	200	Illuminate	150
+Eruption	1	0		false	200	Technician	150
+Eruption	1	0		true	1	Illuminate	1
+Eruption	1	0		true	1	Technician	1
+Eruption	1	0		true	200	Illuminate	150
+Eruption	1	0		true	200	Technician	150
+Eruption	1	0	NORMAL	false	1	Illuminate	1
+Eruption	1	0	NORMAL	false	1	Technician	1
+Eruption	1	0	NORMAL	false	200	Illuminate	150
+Eruption	1	0	NORMAL	false	200	Technician	150
+Eruption	1	0	NORMAL	true	1	Illuminate	1
+Eruption	1	0	NORMAL	true	1	Technician	1
+Eruption	1	0	NORMAL	true	200	Illuminate	150
+Eruption	1	0	NORMAL	true	200	Technician	150
+Eruption	1	0	WATER	false	1	Illuminate	1
+Eruption	1	0	WATER	false	1	Technician	1
+Eruption	1	0	WATER	false	200	Illuminate	150
+Eruption	1	0	WATER	false	200	Technician	150
+Eruption	1	0	WATER	true	1	Illuminate	1
+Eruption	1	0	WATER	true	1	Technician	1
+Eruption	1	0	WATER	true	200	Illuminate	150
+Eruption	1	0	WATER	true	200	Technician	150
+Eruption	1	0	STELLAR	false	1	Illuminate	1
+Eruption	1	0	STELLAR	false	1	Technician	1
+Eruption	1	0	STELLAR	false	200	Illuminate	150
+Eruption	1	0	STELLAR	false	200	Technician	150
+Eruption	1	0	STELLAR	true	1	Illuminate	1
+Eruption	1	0	STELLAR	true	1	Technician	1
+Eruption	1	0	STELLAR	true	200	Illuminate	150
+Eruption	1	0	STELLAR	true	200	Technician	150
+Eruption	39	0		false	1	Illuminate	1
+Eruption	39	0		false	1	Technician	1
+Eruption	39	0		false	200	Illuminate	150
+Eruption	39	0		false	200	Technician	150
+Eruption	39	0		true	1	Illuminate	1
+Eruption	39	0		true	1	Technician	1
+Eruption	39	0		true	200	Illuminate	150
+Eruption	39	0		true	200	Technician	150
+Eruption	39	0	NORMAL	false	1	Illuminate	1
+Eruption	39	0	NORMAL	false	1	Technician	1
+Eruption	39	0	NORMAL	false	200	Illuminate	150
+Eruption	39	0	NORMAL	false	200	Technician	150
+Eruption	39	0	NORMAL	true	1	Illuminate	1
+Eruption	39	0	NORMAL	true	1	Technician	1
+Eruption	39	0	NORMAL	true	200	Illuminate	150
+Eruption	39	0	NORMAL	true	200	Technician	150
+Eruption	39	0	WATER	false	1	Illuminate	1
+Eruption	39	0	WATER	false	1	Technician	1
+Eruption	39	0	WATER	false	200	Illuminate	150
+Eruption	39	0	WATER	false	200	Technician	150
+Eruption	39	0	WATER	true	1	Illuminate	1
+Eruption	39	0	WATER	true	1	Technician	1
+Eruption	39	0	WATER	true	200	Illuminate	150
+Eruption	39	0	WATER	true	200	Technician	150
+Eruption	39	0	STELLAR	false	1	Illuminate	1
+Eruption	39	0	STELLAR	false	1	Technician	1
+Eruption	39	0	STELLAR	false	200	Illuminate	150
+Eruption	39	0	STELLAR	false	200	Technician	150
+Eruption	39	0	STELLAR	true	1	Illuminate	1
+Eruption	39	0	STELLAR	true	1	Technician	1
+Eruption	39	0	STELLAR	true	200	Illuminate	150
+Eruption	39	0	STELLAR	true	200	Technician	150
+Eruption	40	0		false	1	Illuminate	1
+Eruption	40	0		false	1	Technician	1
+Eruption	40	0		false	200	Illuminate	150
+Eruption	40	0		false	200	Technician	150
+Eruption	40	0		true	1	Illuminate	1
+Eruption	40	0		true	1	Technician	1
+Eruption	40	0		true	200	Illuminate	150
+Eruption	40	0		true	200	Technician	150
+Eruption	40	0	NORMAL	false	1	Illuminate	1
+Eruption	40	0	NORMAL	false	1	Technician	1
+Eruption	40	0	NORMAL	false	200	Illuminate	150
+Eruption	40	0	NORMAL	false	200	Technician	150
+Eruption	40	0	NORMAL	true	1	Illuminate	1
+Eruption	40	0	NORMAL	true	1	Technician	1
+Eruption	40	0	NORMAL	true	200	Illuminate	150
+Eruption	40	0	NORMAL	true	200	Technician	150
+Eruption	40	0	WATER	false	1	Illuminate	1
+Eruption	40	0	WATER	false	1	Technician	1
+Eruption	40	0	WATER	false	200	Illuminate	150
+Eruption	40	0	WATER	false	200	Technician	150
+Eruption	40	0	WATER	true	1	Illuminate	1
+Eruption	40	0	WATER	true	1	Technician	1
+Eruption	40	0	WATER	true	200	Illuminate	150
+Eruption	40	0	WATER	true	200	Technician	150
+Eruption	40	0	STELLAR	false	1	Illuminate	1
+Eruption	40	0	STELLAR	false	1	Technician	1
+Eruption	40	0	STELLAR	false	200	Illuminate	150
+Eruption	40	0	STELLAR	false	200	Technician	150
+Eruption	40	0	STELLAR	true	1	Illuminate	1
+Eruption	40	0	STELLAR	true	1	Technician	1
+Eruption	40	0	STELLAR	true	200	Illuminate	150
+Eruption	40	0	STELLAR	true	200	Technician	150
+Eruption	59	0		false	1	Illuminate	1
+Eruption	59	0		false	1	Technician	1
+Eruption	59	0		false	200	Illuminate	150
+Eruption	59	0		false	200	Technician	150
+Eruption	59	0		true	1	Illuminate	1
+Eruption	59	0		true	1	Technician	1
+Eruption	59	0		true	200	Illuminate	150
+Eruption	59	0		true	200	Technician	150
+Eruption	59	0	NORMAL	false	1	Illuminate	1
+Eruption	59	0	NORMAL	false	1	Technician	1
+Eruption	59	0	NORMAL	false	200	Illuminate	150
+Eruption	59	0	NORMAL	false	200	Technician	150
+Eruption	59	0	NORMAL	true	1	Illuminate	1
+Eruption	59	0	NORMAL	true	1	Technician	1
+Eruption	59	0	NORMAL	true	200	Illuminate	150
+Eruption	59	0	NORMAL	true	200	Technician	150
+Eruption	59	0	WATER	false	1	Illuminate	1
+Eruption	59	0	WATER	false	1	Technician	1
+Eruption	59	0	WATER	false	200	Illuminate	150
+Eruption	59	0	WATER	false	200	Technician	150
+Eruption	59	0	WATER	true	1	Illuminate	1
+Eruption	59	0	WATER	true	1	Technician	1
+Eruption	59	0	WATER	true	200	Illuminate	150
+Eruption	59	0	WATER	true	200	Technician	150
+Eruption	59	0	STELLAR	false	1	Illuminate	1
+Eruption	59	0	STELLAR	false	1	Technician	1
+Eruption	59	0	STELLAR	false	200	Illuminate	150
+Eruption	59	0	STELLAR	false	200	Technician	150
+Eruption	59	0	STELLAR	true	1	Illuminate	1
+Eruption	59	0	STELLAR	true	1	Technician	1
+Eruption	59	0	STELLAR	true	200	Illuminate	150
+Eruption	59	0	STELLAR	true	200	Technician	150
+Eruption	60	0		false	1	Illuminate	1
+Eruption	60	0		false	1	Technician	1
+Eruption	60	0		false	200	Illuminate	150
+Eruption	60	0		false	200	Technician	150
+Eruption	60	0		true	1	Illuminate	1
+Eruption	60	0		true	1	Technician	1
+Eruption	60	0		true	200	Illuminate	150
+Eruption	60	0		true	200	Technician	150
+Eruption	60	0	NORMAL	false	1	Illuminate	1
+Eruption	60	0	NORMAL	false	1	Technician	1
+Eruption	60	0	NORMAL	false	200	Illuminate	150
+Eruption	60	0	NORMAL	false	200	Technician	150
+Eruption	60	0	NORMAL	true	1	Illuminate	1
+Eruption	60	0	NORMAL	true	1	Technician	1
+Eruption	60	0	NORMAL	true	200	Illuminate	150
+Eruption	60	0	NORMAL	true	200	Technician	150
+Eruption	60	0	WATER	false	1	Illuminate	1
+Eruption	60	0	WATER	false	1	Technician	1
+Eruption	60	0	WATER	false	200	Illuminate	150
+Eruption	60	0	WATER	false	200	Technician	150
+Eruption	60	0	WATER	true	1	Illuminate	1
+Eruption	60	0	WATER	true	1	Technician	1
+Eruption	60	0	WATER	true	200	Illuminate	150
+Eruption	60	0	WATER	true	200	Technician	150
+Eruption	60	0	STELLAR	false	1	Illuminate	1
+Eruption	60	0	STELLAR	false	1	Technician	1
+Eruption	60	0	STELLAR	false	200	Illuminate	150
+Eruption	60	0	STELLAR	false	200	Technician	150
+Eruption	60	0	STELLAR	true	1	Illuminate	1
+Eruption	60	0	STELLAR	true	1	Technician	1
+Eruption	60	0	STELLAR	true	200	Illuminate	150
+Eruption	60	0	STELLAR	true	200	Technician	150
+Eruption	61	0		false	1	Illuminate	1
+Eruption	61	0		false	1	Technician	1
+Eruption	61	0		false	200	Illuminate	150
+Eruption	61	0		false	200	Technician	150
+Eruption	61	0		true	1	Illuminate	1
+Eruption	61	0		true	1	Technician	1
+Eruption	61	0		true	200	Illuminate	150
+Eruption	61	0		true	200	Technician	150
+Eruption	61	0	NORMAL	false	1	Illuminate	1
+Eruption	61	0	NORMAL	false	1	Technician	1
+Eruption	61	0	NORMAL	false	200	Illuminate	150
+Eruption	61	0	NORMAL	false	200	Technician	150
+Eruption	61	0	NORMAL	true	1	Illuminate	1
+Eruption	61	0	NORMAL	true	1	Technician	1
+Eruption	61	0	NORMAL	true	200	Illuminate	150
+Eruption	61	0	NORMAL	true	200	Technician	150
+Eruption	61	0	WATER	false	1	Illuminate	1
+Eruption	61	0	WATER	false	1	Technician	1
+Eruption	61	0	WATER	false	200	Illuminate	150
+Eruption	61	0	WATER	false	200	Technician	150
+Eruption	61	0	WATER	true	1	Illuminate	1
+Eruption	61	0	WATER	true	1	Technician	1
+Eruption	61	0	WATER	true	200	Illuminate	150
+Eruption	61	0	WATER	true	200	Technician	150
+Eruption	61	0	STELLAR	false	1	Illuminate	1
+Eruption	61	0	STELLAR	false	1	Technician	1
+Eruption	61	0	STELLAR	false	200	Illuminate	150
+Eruption	61	0	STELLAR	false	200	Technician	150
+Eruption	61	0	STELLAR	true	1	Illuminate	1
+Eruption	61	0	STELLAR	true	1	Technician	1
+Eruption	61	0	STELLAR	true	200	Illuminate	150
+Eruption	61	0	STELLAR	true	200	Technician	150
+WaterSpout	1	0		false	1	Illuminate	1
+WaterSpout	1	0		false	1	Technician	1
+WaterSpout	1	0		false	200	Illuminate	150
+WaterSpout	1	0		false	200	Technician	150
+WaterSpout	1	0		true	1	Illuminate	1
+WaterSpout	1	0		true	1	Technician	1
+WaterSpout	1	0		true	200	Illuminate	150
+WaterSpout	1	0		true	200	Technician	150
+WaterSpout	1	0	NORMAL	false	1	Illuminate	1
+WaterSpout	1	0	NORMAL	false	1	Technician	1
+WaterSpout	1	0	NORMAL	false	200	Illuminate	150
+WaterSpout	1	0	NORMAL	false	200	Technician	150
+WaterSpout	1	0	NORMAL	true	1	Illuminate	1
+WaterSpout	1	0	NORMAL	true	1	Technician	1
+WaterSpout	1	0	NORMAL	true	200	Illuminate	150
+WaterSpout	1	0	NORMAL	true	200	Technician	150
+WaterSpout	1	0	WATER	false	1	Illuminate	1
+WaterSpout	1	0	WATER	false	1	Technician	1
+WaterSpout	1	0	WATER	false	200	Illuminate	150
+WaterSpout	1	0	WATER	false	200	Technician	150
+WaterSpout	1	0	WATER	true	1	Illuminate	1
+WaterSpout	1	0	WATER	true	1	Technician	1
+WaterSpout	1	0	WATER	true	200	Illuminate	150
+WaterSpout	1	0	WATER	true	200	Technician	150
+WaterSpout	1	0	STELLAR	false	1	Illuminate	1
+WaterSpout	1	0	STELLAR	false	1	Technician	1
+WaterSpout	1	0	STELLAR	false	200	Illuminate	150
+WaterSpout	1	0	STELLAR	false	200	Technician	150
+WaterSpout	1	0	STELLAR	true	1	Illuminate	1
+WaterSpout	1	0	STELLAR	true	1	Technician	1
+WaterSpout	1	0	STELLAR	true	200	Illuminate	150
+WaterSpout	1	0	STELLAR	true	200	Technician	150
+WaterSpout	39	0		false	1	Illuminate	1
+WaterSpout	39	0		false	1	Technician	1
+WaterSpout	39	0		false	200	Illuminate	150
+WaterSpout	39	0		false	200	Technician	150
+WaterSpout	39	0		true	1	Illuminate	1
+WaterSpout	39	0		true	1	Technician	1
+WaterSpout	39	0		true	200	Illuminate	150
+WaterSpout	39	0		true	200	Technician	150
+WaterSpout	39	0	NORMAL	false	1	Illuminate	1
+WaterSpout	39	0	NORMAL	false	1	Technician	1
+WaterSpout	39	0	NORMAL	false	200	Illuminate	150
+WaterSpout	39	0	NORMAL	false	200	Technician	150
+WaterSpout	39	0	NORMAL	true	1	Illuminate	1
+WaterSpout	39	0	NORMAL	true	1	Technician	1
+WaterSpout	39	0	NORMAL	true	200	Illuminate	150
+WaterSpout	39	0	NORMAL	true	200	Technician	150
+WaterSpout	39	0	WATER	false	1	Illuminate	1
+WaterSpout	39	0	WATER	false	1	Technician	1
+WaterSpout	39	0	WATER	false	200	Illuminate	150
+WaterSpout	39	0	WATER	false	200	Technician	150
+WaterSpout	39	0	WATER	true	1	Illuminate	1
+WaterSpout	39	0	WATER	true	1	Technician	1
+WaterSpout	39	0	WATER	true	200	Illuminate	150
+WaterSpout	39	0	WATER	true	200	Technician	150
+WaterSpout	39	0	STELLAR	false	1	Illuminate	1
+WaterSpout	39	0	STELLAR	false	1	Technician	1
+WaterSpout	39	0	STELLAR	false	200	Illuminate	150
+WaterSpout	39	0	STELLAR	false	200	Technician	150
+WaterSpout	39	0	STELLAR	true	1	Illuminate	1
+WaterSpout	39	0	STELLAR	true	1	Technician	1
+WaterSpout	39	0	STELLAR	true	200	Illuminate	150
+WaterSpout	39	0	STELLAR	true	200	Technician	150
+WaterSpout	40	0		false	1	Illuminate	1
+WaterSpout	40	0		false	1	Technician	1
+WaterSpout	40	0		false	200	Illuminate	150
+WaterSpout	40	0		false	200	Technician	150
+WaterSpout	40	0		true	1	Illuminate	1
+WaterSpout	40	0		true	1	Technician	1
+WaterSpout	40	0		true	200	Illuminate	150
+WaterSpout	40	0		true	200	Technician	150
+WaterSpout	40	0	NORMAL	false	1	Illuminate	1
+WaterSpout	40	0	NORMAL	false	1	Technician	1
+WaterSpout	40	0	NORMAL	false	200	Illuminate	150
+WaterSpout	40	0	NORMAL	false	200	Technician	150
+WaterSpout	40	0	NORMAL	true	1	Illuminate	1
+WaterSpout	40	0	NORMAL	true	1	Technician	1
+WaterSpout	40	0	NORMAL	true	200	Illuminate	150
+WaterSpout	40	0	NORMAL	true	200	Technician	150
+WaterSpout	40	0	WATER	false	1	Illuminate	1
+WaterSpout	40	0	WATER	false	1	Technician	1
+WaterSpout	40	0	WATER	false	200	Illuminate	150
+WaterSpout	40	0	WATER	false	200	Technician	150
+WaterSpout	40	0	WATER	true	1	Illuminate	1
+WaterSpout	40	0	WATER	true	1	Technician	1
+WaterSpout	40	0	WATER	true	200	Illuminate	150
+WaterSpout	40	0	WATER	true	200	Technician	150
+WaterSpout	40	0	STELLAR	false	1	Illuminate	1
+WaterSpout	40	0	STELLAR	false	1	Technician	1
+WaterSpout	40	0	STELLAR	false	200	Illuminate	150
+WaterSpout	40	0	STELLAR	false	200	Technician	150
+WaterSpout	40	0	STELLAR	true	1	Illuminate	1
+WaterSpout	40	0	STELLAR	true	1	Technician	1
+WaterSpout	40	0	STELLAR	true	200	Illuminate	150
+WaterSpout	40	0	STELLAR	true	200	Technician	150
+WaterSpout	59	0		false	1	Illuminate	1
+WaterSpout	59	0		false	1	Technician	1
+WaterSpout	59	0		false	200	Illuminate	150
+WaterSpout	59	0		false	200	Technician	150
+WaterSpout	59	0		true	1	Illuminate	1
+WaterSpout	59	0		true	1	Technician	1
+WaterSpout	59	0		true	200	Illuminate	150
+WaterSpout	59	0		true	200	Technician	150
+WaterSpout	59	0	NORMAL	false	1	Illuminate	1
+WaterSpout	59	0	NORMAL	false	1	Technician	1
+WaterSpout	59	0	NORMAL	false	200	Illuminate	150
+WaterSpout	59	0	NORMAL	false	200	Technician	150
+WaterSpout	59	0	NORMAL	true	1	Illuminate	1
+WaterSpout	59	0	NORMAL	true	1	Technician	1
+WaterSpout	59	0	NORMAL	true	200	Illuminate	150
+WaterSpout	59	0	NORMAL	true	200	Technician	150
+WaterSpout	59	0	WATER	false	1	Illuminate	1
+WaterSpout	59	0	WATER	false	1	Technician	1
+WaterSpout	59	0	WATER	false	200	Illuminate	150
+WaterSpout	59	0	WATER	false	200	Technician	150
+WaterSpout	59	0	WATER	true	1	Illuminate	1
+WaterSpout	59	0	WATER	true	1	Technician	1
+WaterSpout	59	0	WATER	true	200	Illuminate	150
+WaterSpout	59	0	WATER	true	200	Technician	150
+WaterSpout	59	0	STELLAR	false	1	Illuminate	1
+WaterSpout	59	0	STELLAR	false	1	Technician	1
+WaterSpout	59	0	STELLAR	false	200	Illuminate	150
+WaterSpout	59	0	STELLAR	false	200	Technician	150
+WaterSpout	59	0	STELLAR	true	1	Illuminate	1
+WaterSpout	59	0	STELLAR	true	1	Technician	1
+WaterSpout	59	0	STELLAR	true	200	Illuminate	150
+WaterSpout	59	0	STELLAR	true	200	Technician	150
+WaterSpout	60	0		false	1	Illuminate	1
+WaterSpout	60	0		false	1	Technician	1
+WaterSpout	60	0		false	200	Illuminate	150
+WaterSpout	60	0		false	200	Technician	150
+WaterSpout	60	0		true	1	Illuminate	1
+WaterSpout	60	0		true	1	Technician	1
+WaterSpout	60	0		true	200	Illuminate	150
+WaterSpout	60	0		true	200	Technician	150
+WaterSpout	60	0	NORMAL	false	1	Illuminate	1
+WaterSpout	60	0	NORMAL	false	1	Technician	1
+WaterSpout	60	0	NORMAL	false	200	Illuminate	150
+WaterSpout	60	0	NORMAL	false	200	Technician	150
+WaterSpout	60	0	NORMAL	true	1	Illuminate	1
+WaterSpout	60	0	NORMAL	true	1	Technician	1
+WaterSpout	60	0	NORMAL	true	200	Illuminate	150
+WaterSpout	60	0	NORMAL	true	200	Technician	150
+WaterSpout	60	0	WATER	false	1	Illuminate	1
+WaterSpout	60	0	WATER	false	1	Technician	1
+WaterSpout	60	0	WATER	false	200	Illuminate	150
+WaterSpout	60	0	WATER	false	200	Technician	150
+WaterSpout	60	0	WATER	true	1	Illuminate	1
+WaterSpout	60	0	WATER	true	1	Technician	1
+WaterSpout	60	0	WATER	true	200	Illuminate	150
+WaterSpout	60	0	WATER	true	200	Technician	150
+WaterSpout	60	0	STELLAR	false	1	Illuminate	1
+WaterSpout	60	0	STELLAR	false	1	Technician	1
+WaterSpout	60	0	STELLAR	false	200	Illuminate	150
+WaterSpout	60	0	STELLAR	false	200	Technician	150
+WaterSpout	60	0	STELLAR	true	1	Illuminate	1
+WaterSpout	60	0	STELLAR	true	1	Technician	1
+WaterSpout	60	0	STELLAR	true	200	Illuminate	150
+WaterSpout	60	0	STELLAR	true	200	Technician	150
+WaterSpout	61	0		false	1	Illuminate	1
+WaterSpout	61	0		false	1	Technician	1
+WaterSpout	61	0		false	200	Illuminate	150
+WaterSpout	61	0		false	200	Technician	150
+WaterSpout	61	0		true	1	Illuminate	1
+WaterSpout	61	0		true	1	Technician	1
+WaterSpout	61	0		true	200	Illuminate	150
+WaterSpout	61	0		true	200	Technician	150
+WaterSpout	61	0	NORMAL	false	1	Illuminate	1
+WaterSpout	61	0	NORMAL	false	1	Technician	1
+WaterSpout	61	0	NORMAL	false	200	Illuminate	150
+WaterSpout	61	0	NORMAL	false	200	Technician	150
+WaterSpout	61	0	NORMAL	true	1	Illuminate	1
+WaterSpout	61	0	NORMAL	true	1	Technician	1
+WaterSpout	61	0	NORMAL	true	200	Illuminate	150
+WaterSpout	61	0	NORMAL	true	200	Technician	150
+WaterSpout	61	0	WATER	false	1	Illuminate	1
+WaterSpout	61	0	WATER	false	1	Technician	1
+WaterSpout	61	0	WATER	false	200	Illuminate	150
+WaterSpout	61	0	WATER	false	200	Technician	150
+WaterSpout	61	0	WATER	true	1	Illuminate	1
+WaterSpout	61	0	WATER	true	1	Technician	1
+WaterSpout	61	0	WATER	true	200	Illuminate	150
+WaterSpout	61	0	WATER	true	200	Technician	150
+WaterSpout	61	0	STELLAR	false	1	Illuminate	1
+WaterSpout	61	0	STELLAR	false	1	Technician	1
+WaterSpout	61	0	STELLAR	false	200	Illuminate	150
+WaterSpout	61	0	STELLAR	false	200	Technician	150
+WaterSpout	61	0	STELLAR	true	1	Illuminate	1
+WaterSpout	61	0	STELLAR	true	1	Technician	1
+WaterSpout	61	0	STELLAR	true	200	Illuminate	150
+WaterSpout	61	0	STELLAR	true	200	Technician	150
+DragonEnergy	1	0		false	1	Illuminate	1
+DragonEnergy	1	0		false	1	Technician	1
+DragonEnergy	1	0		false	200	Illuminate	150
+DragonEnergy	1	0		false	200	Technician	150
+DragonEnergy	1	0		true	1	Illuminate	1
+DragonEnergy	1	0		true	1	Technician	1
+DragonEnergy	1	0		true	200	Illuminate	150
+DragonEnergy	1	0		true	200	Technician	150
+DragonEnergy	1	0	NORMAL	false	1	Illuminate	1
+DragonEnergy	1	0	NORMAL	false	1	Technician	1
+DragonEnergy	1	0	NORMAL	false	200	Illuminate	150
+DragonEnergy	1	0	NORMAL	false	200	Technician	150
+DragonEnergy	1	0	NORMAL	true	1	Illuminate	1
+DragonEnergy	1	0	NORMAL	true	1	Technician	1
+DragonEnergy	1	0	NORMAL	true	200	Illuminate	150
+DragonEnergy	1	0	NORMAL	true	200	Technician	150
+DragonEnergy	1	0	WATER	false	1	Illuminate	1
+DragonEnergy	1	0	WATER	false	1	Technician	1
+DragonEnergy	1	0	WATER	false	200	Illuminate	150
+DragonEnergy	1	0	WATER	false	200	Technician	150
+DragonEnergy	1	0	WATER	true	1	Illuminate	1
+DragonEnergy	1	0	WATER	true	1	Technician	1
+DragonEnergy	1	0	WATER	true	200	Illuminate	150
+DragonEnergy	1	0	WATER	true	200	Technician	150
+DragonEnergy	1	0	STELLAR	false	1	Illuminate	1
+DragonEnergy	1	0	STELLAR	false	1	Technician	1
+DragonEnergy	1	0	STELLAR	false	200	Illuminate	150
+DragonEnergy	1	0	STELLAR	false	200	Technician	150
+DragonEnergy	1	0	STELLAR	true	1	Illuminate	1
+DragonEnergy	1	0	STELLAR	true	1	Technician	1
+DragonEnergy	1	0	STELLAR	true	200	Illuminate	150
+DragonEnergy	1	0	STELLAR	true	200	Technician	150
+DragonEnergy	39	0		false	1	Illuminate	1
+DragonEnergy	39	0		false	1	Technician	1
+DragonEnergy	39	0		false	200	Illuminate	150
+DragonEnergy	39	0		false	200	Technician	150
+DragonEnergy	39	0		true	1	Illuminate	1
+DragonEnergy	39	0		true	1	Technician	1
+DragonEnergy	39	0		true	200	Illuminate	150
+DragonEnergy	39	0		true	200	Technician	150
+DragonEnergy	39	0	NORMAL	false	1	Illuminate	1
+DragonEnergy	39	0	NORMAL	false	1	Technician	1
+DragonEnergy	39	0	NORMAL	false	200	Illuminate	150
+DragonEnergy	39	0	NORMAL	false	200	Technician	150
+DragonEnergy	39	0	NORMAL	true	1	Illuminate	1
+DragonEnergy	39	0	NORMAL	true	1	Technician	1
+DragonEnergy	39	0	NORMAL	true	200	Illuminate	150
+DragonEnergy	39	0	NORMAL	true	200	Technician	150
+DragonEnergy	39	0	WATER	false	1	Illuminate	1
+DragonEnergy	39	0	WATER	false	1	Technician	1
+DragonEnergy	39	0	WATER	false	200	Illuminate	150
+DragonEnergy	39	0	WATER	false	200	Technician	150
+DragonEnergy	39	0	WATER	true	1	Illuminate	1
+DragonEnergy	39	0	WATER	true	1	Technician	1
+DragonEnergy	39	0	WATER	true	200	Illuminate	150
+DragonEnergy	39	0	WATER	true	200	Technician	150
+DragonEnergy	39	0	STELLAR	false	1	Illuminate	1
+DragonEnergy	39	0	STELLAR	false	1	Technician	1
+DragonEnergy	39	0	STELLAR	false	200	Illuminate	150
+DragonEnergy	39	0	STELLAR	false	200	Technician	150
+DragonEnergy	39	0	STELLAR	true	1	Illuminate	1
+DragonEnergy	39	0	STELLAR	true	1	Technician	1
+DragonEnergy	39	0	STELLAR	true	200	Illuminate	150
+DragonEnergy	39	0	STELLAR	true	200	Technician	150
+DragonEnergy	40	0		false	1	Illuminate	1
+DragonEnergy	40	0		false	1	Technician	1
+DragonEnergy	40	0		false	200	Illuminate	150
+DragonEnergy	40	0		false	200	Technician	150
+DragonEnergy	40	0		true	1	Illuminate	1
+DragonEnergy	40	0		true	1	Technician	1
+DragonEnergy	40	0		true	200	Illuminate	150
+DragonEnergy	40	0		true	200	Technician	150
+DragonEnergy	40	0	NORMAL	false	1	Illuminate	1
+DragonEnergy	40	0	NORMAL	false	1	Technician	1
+DragonEnergy	40	0	NORMAL	false	200	Illuminate	150
+DragonEnergy	40	0	NORMAL	false	200	Technician	150
+DragonEnergy	40	0	NORMAL	true	1	Illuminate	1
+DragonEnergy	40	0	NORMAL	true	1	Technician	1
+DragonEnergy	40	0	NORMAL	true	200	Illuminate	150
+DragonEnergy	40	0	NORMAL	true	200	Technician	150
+DragonEnergy	40	0	WATER	false	1	Illuminate	1
+DragonEnergy	40	0	WATER	false	1	Technician	1
+DragonEnergy	40	0	WATER	false	200	Illuminate	150
+DragonEnergy	40	0	WATER	false	200	Technician	150
+DragonEnergy	40	0	WATER	true	1	Illuminate	1
+DragonEnergy	40	0	WATER	true	1	Technician	1
+DragonEnergy	40	0	WATER	true	200	Illuminate	150
+DragonEnergy	40	0	WATER	true	200	Technician	150
+DragonEnergy	40	0	STELLAR	false	1	Illuminate	1
+DragonEnergy	40	0	STELLAR	false	1	Technician	1
+DragonEnergy	40	0	STELLAR	false	200	Illuminate	150
+DragonEnergy	40	0	STELLAR	false	200	Technician	150
+DragonEnergy	40	0	STELLAR	true	1	Illuminate	1
+DragonEnergy	40	0	STELLAR	true	1	Technician	1
+DragonEnergy	40	0	STELLAR	true	200	Illuminate	150
+DragonEnergy	40	0	STELLAR	true	200	Technician	150
+DragonEnergy	59	0		false	1	Illuminate	1
+DragonEnergy	59	0		false	1	Technician	1
+DragonEnergy	59	0		false	200	Illuminate	150
+DragonEnergy	59	0		false	200	Technician	150
+DragonEnergy	59	0		true	1	Illuminate	1
+DragonEnergy	59	0		true	1	Technician	1
+DragonEnergy	59	0		true	200	Illuminate	150
+DragonEnergy	59	0		true	200	Technician	150
+DragonEnergy	59	0	NORMAL	false	1	Illuminate	1
+DragonEnergy	59	0	NORMAL	false	1	Technician	1
+DragonEnergy	59	0	NORMAL	false	200	Illuminate	150
+DragonEnergy	59	0	NORMAL	false	200	Technician	150
+DragonEnergy	59	0	NORMAL	true	1	Illuminate	1
+DragonEnergy	59	0	NORMAL	true	1	Technician	1
+DragonEnergy	59	0	NORMAL	true	200	Illuminate	150
+DragonEnergy	59	0	NORMAL	true	200	Technician	150
+DragonEnergy	59	0	WATER	false	1	Illuminate	1
+DragonEnergy	59	0	WATER	false	1	Technician	1
+DragonEnergy	59	0	WATER	false	200	Illuminate	150
+DragonEnergy	59	0	WATER	false	200	Technician	150
+DragonEnergy	59	0	WATER	true	1	Illuminate	1
+DragonEnergy	59	0	WATER	true	1	Technician	1
+DragonEnergy	59	0	WATER	true	200	Illuminate	150
+DragonEnergy	59	0	WATER	true	200	Technician	150
+DragonEnergy	59	0	STELLAR	false	1	Illuminate	1
+DragonEnergy	59	0	STELLAR	false	1	Technician	1
+DragonEnergy	59	0	STELLAR	false	200	Illuminate	150
+DragonEnergy	59	0	STELLAR	false	200	Technician	150
+DragonEnergy	59	0	STELLAR	true	1	Illuminate	1
+DragonEnergy	59	0	STELLAR	true	1	Technician	1
+DragonEnergy	59	0	STELLAR	true	200	Illuminate	150
+DragonEnergy	59	0	STELLAR	true	200	Technician	150
+DragonEnergy	60	0		false	1	Illuminate	1
+DragonEnergy	60	0		false	1	Technician	1
+DragonEnergy	60	0		false	200	Illuminate	150
+DragonEnergy	60	0		false	200	Technician	150
+DragonEnergy	60	0		true	1	Illuminate	1
+DragonEnergy	60	0		true	1	Technician	1
+DragonEnergy	60	0		true	200	Illuminate	150
+DragonEnergy	60	0		true	200	Technician	150
+DragonEnergy	60	0	NORMAL	false	1	Illuminate	1
+DragonEnergy	60	0	NORMAL	false	1	Technician	1
+DragonEnergy	60	0	NORMAL	false	200	Illuminate	150
+DragonEnergy	60	0	NORMAL	false	200	Technician	150
+DragonEnergy	60	0	NORMAL	true	1	Illuminate	1
+DragonEnergy	60	0	NORMAL	true	1	Technician	1
+DragonEnergy	60	0	NORMAL	true	200	Illuminate	150
+DragonEnergy	60	0	NORMAL	true	200	Technician	150
+DragonEnergy	60	0	WATER	false	1	Illuminate	1
+DragonEnergy	60	0	WATER	false	1	Technician	1
+DragonEnergy	60	0	WATER	false	200	Illuminate	150
+DragonEnergy	60	0	WATER	false	200	Technician	150
+DragonEnergy	60	0	WATER	true	1	Illuminate	1
+DragonEnergy	60	0	WATER	true	1	Technician	1
+DragonEnergy	60	0	WATER	true	200	Illuminate	150
+DragonEnergy	60	0	WATER	true	200	Technician	150
+DragonEnergy	60	0	STELLAR	false	1	Illuminate	1
+DragonEnergy	60	0	STELLAR	false	1	Technician	1
+DragonEnergy	60	0	STELLAR	false	200	Illuminate	150
+DragonEnergy	60	0	STELLAR	false	200	Technician	150
+DragonEnergy	60	0	STELLAR	true	1	Illuminate	1
+DragonEnergy	60	0	STELLAR	true	1	Technician	1
+DragonEnergy	60	0	STELLAR	true	200	Illuminate	150
+DragonEnergy	60	0	STELLAR	true	200	Technician	150
+DragonEnergy	61	0		false	1	Illuminate	1
+DragonEnergy	61	0		false	1	Technician	1
+DragonEnergy	61	0		false	200	Illuminate	150
+DragonEnergy	61	0		false	200	Technician	150
+DragonEnergy	61	0		true	1	Illuminate	1
+DragonEnergy	61	0		true	1	Technician	1
+DragonEnergy	61	0		true	200	Illuminate	150
+DragonEnergy	61	0		true	200	Technician	150
+DragonEnergy	61	0	NORMAL	false	1	Illuminate	1
+DragonEnergy	61	0	NORMAL	false	1	Technician	1
+DragonEnergy	61	0	NORMAL	false	200	Illuminate	150
+DragonEnergy	61	0	NORMAL	false	200	Technician	150
+DragonEnergy	61	0	NORMAL	true	1	Illuminate	1
+DragonEnergy	61	0	NORMAL	true	1	Technician	1
+DragonEnergy	61	0	NORMAL	true	200	Illuminate	150
+DragonEnergy	61	0	NORMAL	true	200	Technician	150
+DragonEnergy	61	0	WATER	false	1	Illuminate	1
+DragonEnergy	61	0	WATER	false	1	Technician	1
+DragonEnergy	61	0	WATER	false	200	Illuminate	150
+DragonEnergy	61	0	WATER	false	200	Technician	150
+DragonEnergy	61	0	WATER	true	1	Illuminate	1
+DragonEnergy	61	0	WATER	true	1	Technician	1
+DragonEnergy	61	0	WATER	true	200	Illuminate	150
+DragonEnergy	61	0	WATER	true	200	Technician	150
+DragonEnergy	61	0	STELLAR	false	1	Illuminate	1
+DragonEnergy	61	0	STELLAR	false	1	Technician	1
+DragonEnergy	61	0	STELLAR	false	200	Illuminate	150
+DragonEnergy	61	0	STELLAR	false	200	Technician	150
+DragonEnergy	61	0	STELLAR	true	1	Illuminate	1
+DragonEnergy	61	0	STELLAR	true	1	Technician	1
+DragonEnergy	61	0	STELLAR	true	200	Illuminate	150
+DragonEnergy	61	0	STELLAR	true	200	Technician	150

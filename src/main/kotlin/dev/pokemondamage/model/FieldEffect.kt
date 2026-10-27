@@ -1,0 +1,24 @@
+package dev.pokemondamage.model
+
+enum class FieldEffect {
+    HELPING_HAND,
+    BATTERY,
+    POWER_SPOT,
+    STEELY_SPIRIT,
+    ATTACKER_FLOWER_GIFT,
+    DEFENDER_FLOWER_GIFT,
+    FRIEND_GUARD,
+    FAIRY_AURA,
+    DARK_AURA,
+    AURA_BREAK,
+    BEADS_OF_RUIN,
+    SWORD_OF_RUIN,
+    VESSEL_OF_RUIN,
+    TABLETS_OF_RUIN,
+    NEUTRALIZING_GAS,
+    UNNERVE,
+    MAGIC_ROOM,
+    WONDER_ROOM,
+    MUD_SPORT,
+    WATER_SPORT,
+}

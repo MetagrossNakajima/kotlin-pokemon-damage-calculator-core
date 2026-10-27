@@ -6,3 +6,8 @@ out/
 *.iml
 .DS_Store
 mise.local.toml
+node_modules/
+
+# Local data-generation and audit utilities
+/tools/
+/.testagent/
