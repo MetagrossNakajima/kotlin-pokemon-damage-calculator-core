@@ -45,7 +45,7 @@ jobs:
 
       - name: Generate checksums
         working-directory: build/libs
-        run: sha256sum *.jar > SHA256SUMS
+        run: sha256sum *-jvm-*.jar > SHA256SUMS
 
       - name: Publish GitHub Release
         env:
@@ -54,5 +54,5 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
           gh release create "$RELEASE_TAG" \
-            build/libs/*.jar build/libs/SHA256SUMS \
+            build/libs/*-jvm-*.jar build/libs/SHA256SUMS \
             --verify-tag --title "$RELEASE_TAG" --generate-notes

@@ -1,6 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.4.21"
-    `java-library`
+    kotlin("multiplatform") version "2.4.21"
     jacoco
     id("com.diffplug.spotless") version "8.10.4"
 }
@@ -24,43 +23,56 @@ spotless {
 
 kotlin {
     jvmToolchain(26)
-}
-
-java {
-    withSourcesJar()
-}
-
-tasks.withType<Jar>().configureEach {
-    from("LICENSE") {
-        into("META-INF")
+    jvm {
+        compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        testRuns["test"].executionTask.configure { useJUnitPlatform() }
+    }
+    iosArm64()
+    iosSimulatorArm64()
+    sourceSets {
+        commonMain.dependencies {
+            implementation("com.ionspin.kotlin:bignum:0.3.10")
+        }
+        commonTest.dependencies { implementation(kotlin("test")) }
+        jvmTest.dependencies {
+            implementation(kotlin("test-junit5"))
+            implementation(project.dependencies.platform("org.junit:junit-bom:5.14.0"))
+            implementation("org.junit.jupiter:junit-jupiter-engine")
+            runtimeOnly("org.junit.platform:junit-platform-launcher")
+        }
     }
 }
 
-dependencies {
-    testImplementation(kotlin("test-junit5"))
-    testImplementation(platform("org.junit:junit-bom:5.14.0"))
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
+tasks.register("test") { dependsOn("jvmTest") }
 
-tasks.test {
-    useJUnitPlatform()
+tasks.named("assemble") { dependsOn("jvmSourcesJar") }
+
+tasks.withType<Zip>().configureEach {
+    from("LICENSE") {
+        into("META-INF")
+    }
 }
 
 jacoco {
     toolVersion = "0.8.15"
 }
 
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn("jvmTest")
+    executionData(layout.buildDirectory.file("jacoco/jvmTest.exec"))
+    classDirectories.setFrom(layout.buildDirectory.dir("classes/kotlin/jvm/main"))
+    sourceDirectories.setFrom(files("src/commonMain/kotlin"))
     reports {
         xml.required = true
         html.required = true
     }
 }
 
-tasks.jacocoTestCoverageVerification {
-    dependsOn(tasks.jacocoTestReport)
+tasks.register<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+    dependsOn("jacocoTestReport")
+    executionData(layout.buildDirectory.file("jacoco/jvmTest.exec"))
+    classDirectories.setFrom(layout.buildDirectory.dir("classes/kotlin/jvm/main"))
+    sourceDirectories.setFrom(files("src/commonMain/kotlin"))
     violationRules {
         rule {
             limit {
@@ -80,5 +92,5 @@ tasks.jacocoTestCoverageVerification {
 }
 
 tasks.check {
-    dependsOn(tasks.jacocoTestCoverageVerification)
+    dependsOn("jacocoTestCoverageVerification")
 }

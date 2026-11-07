@@ -20,3 +20,11 @@ run = "./gradlew clean"
 [tasks.format]
 description = "Kotlinコードを100文字幅で整形"
 run = "./gradlew spotlessApply"
+
+[tasks.metadata]
+description = "共通Kotlinメタデータをコンパイル"
+run = "./gradlew compileCommonMainKotlinMetadata"
+
+[tasks."format:check"]
+description = "Kotlinの整形を検証"
+run = "./gradlew spotlessCheck"

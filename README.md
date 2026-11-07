@@ -1,13 +1,18 @@
 # kotlin-pokemon-damage-calculator-core
 
-ポケモンのダメージ計算用 Kotlin/JVM ライブラリ。
+ポケモンのダメージ計算用 Kotlin Multiplatform ライブラリ。
+
+計算実装は `commonMain` に置き、Androidから利用するJVMターゲットと
+iOS実機・Apple Siliconシミュレーターのターゲットを提供します。
+任意精度整数は `dev.pokemondamage.math.BigInteger` を使います。
+Java専用APIには依存しません。
 
 - `calculateDamage(request)`：単発のダメージ分布を計算
 - `calculateCombinedDamage(request)`：連続攻撃のHP推移・撃破率・確定数を計算
 
 ## 別プロジェクトから利用する
 
-GitHub ReleasesのJARをGradleから直接取得できます。公開リポジトリでは認証は不要です。
+JVM向けにはGitHub ReleasesのJARをGradleから直接取得できます。公開リポジトリでは認証は不要です。
 利用先はJDK 26と、互換性のあるKotlinコンパイラ（本ライブラリは2.4.21）を使用してください。
 以下は`v0.1.0`を公開した後に利用できる設定例です。
 
@@ -27,7 +32,7 @@ repositories {
                         "kotlin-pokemon-damage-calculator-core/releases/download",
                 )
                 patternLayout {
-                    artifact("v[revision]/[artifact]-[revision](-[classifier]).[ext]")
+                    artifact("v[revision]/[artifact]-jvm-[revision](-[classifier]).[ext]")
                 }
                 metadataSources { artifact() }
             }
@@ -41,12 +46,13 @@ repositories {
 dependencies {
     implementation("dev.pokemondamage:kotlin-pokemon-damage-calculator-core:0.1.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.4.21")
+    implementation("com.ionspin.kotlin:bignum-jvm:0.3.10")
 }
 ```
 
 `dev.pokemondamage`はこの取得設定内で使う識別子です。Maven Centralへの登録は不要です。
 Gradleが指定バージョンのJARをダウンロードしてキャッシュするため、手動コピーは不要です。
-JARには依存関係のメタデータがないので、Kotlin標準ライブラリは利用先で明示します。
+JARには依存関係のメタデータがないので、Kotlin標準ライブラリとbignumのJVM依存は利用先で明示します。
 更新時は依存関係のバージョンを公開済みのものに変更してください。
 非公開リポジトリからの取得には別途認証が必要で、この例は公開リポジトリ向けです。
 
@@ -54,7 +60,8 @@ JARには依存関係のメタデータがないので、Kotlin標準ライブ�
 
 `.github/workflows/release.yml`は、`v0.1.0`のような`vメジャー.マイナー.パッチ`タグのpushで起動します。
 テスト・カバレッジ・整形チェックの成功後、GitHub Releaseを作成し、
-本体JAR・ソースJAR・`SHA256SUMS`を添付します。両JARにはMITライセンスを同梱します。
+JVM本体JAR・JVMソースJAR・`SHA256SUMS`を添付します。
+両JARにはMITライセンスを同梱します。
 バージョンはタグから設定するため、通常開発用の`0.1.0-SNAPSHOT`を書き換える必要はありません。
 本名の登録や公開用トークンの追加は不要で、Actionsの`GITHUB_TOKEN`を使います。
 
@@ -145,7 +152,8 @@ val pokemon = attacker.copy(
 
 ## 開発
 
-JDK 26を使用します。miseを導入後、次を実行してください。
+JDK 26（mise）・Kotlin 2.4.21・Gradle Wrapper 9.7.0を使用します。
+JVMバイトコードはAndroid互換の17を対象にします。miseを導入後、次を実行してください。
 
 ```sh
 mise trust
@@ -174,3 +182,13 @@ mise run clean  # ビルド成果物の削除
 この場合、`DamageResult.hit`が特殊側、`alternativeHit`が物理側の計算根拠を保持し、
 `distribution`・`min`・`max`・割合には両方の結果を反映します。
 連続計算へは`DamageResult.distribution`を渡してください。
+
+### 共通コードの検証
+
+`mise run test` は共通テストとJVM上の参照値テストを実行します。
+`mise run metadata` は共通メタデータをコンパイルしてJVM専用APIの混入を検出します。
+iOSの実行テストにはmacOSとXcodeが必要です。Linux上ではiOS実行テストは行いません。
+
+任意精度整数の実装には `com.ionspin.kotlin:bignum:0.3.10` を使用します。
+元のJava実装との演算比較と、非正規化数・偶数丸め・命中率0%を含む既存テストで
+計算仕様を検証します。
