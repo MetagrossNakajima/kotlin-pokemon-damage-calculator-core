@@ -8,6 +8,7 @@ iOS実機・Apple Siliconシミュレーターのターゲットを提供しま�
 Java専用APIには依存しません。
 
 - `calculateDamage(request)`：単発のダメージ分布を計算
+- `previewMove(request)`：同じ計算ルールで表示用の技タイプ・基礎威力・分類を取得
 - `calculateCombinedDamage(request)`：連続攻撃のHP推移・撃破率・確定数を計算
 
 ## 使用例
@@ -41,6 +42,16 @@ when (val result = calculateDamage(DamageRequest(attacker, defender, move))) {
     is Calculation.Failure -> println("${result.kind}: ${result.path}")
 }
 ```
+
+## 技のプレビュー
+
+`previewMove(DamageRequest(...))`は`Calculation<MovePreview>`を返します。
+天候や体重補正などを解決したタイプ・技固有の基礎威力・分類を表示できます。
+威力は`Long`で、テクニシャン等の威力補正やダメージ計算の丸め処理を適用する前の値です。
+未対応の技はダメージ計算と同じ`Calculation.Failure`になります。
+シェルアームズの分類が同値の場合は、単発計算の主結果と同じ特殊側を返します。
+
+プレビューは表示専用です。変化を二重適用しないよう、ダメージ計算には元の技を渡してください。
 
 ## 状態とルールのモデル
 
