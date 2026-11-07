@@ -4,7 +4,7 @@ plugins {
     id("com.diffplug.spotless") version "8.10.4"
 }
 
-version = "0.1.0-SNAPSHOT"
+version = providers.gradleProperty("releaseVersion").getOrElse("0.1.0-SNAPSHOT")
 
 repositories {
     mavenCentral()
@@ -44,6 +44,14 @@ kotlin {
 }
 
 tasks.register("test") { dependsOn("jvmTest") }
+
+tasks.named("assemble") { dependsOn("jvmSourcesJar") }
+
+tasks.withType<Jar>().configureEach {
+    from("LICENSE") {
+        into("META-INF")
+    }
+}
 
 jacoco {
     toolVersion = "0.8.15"
