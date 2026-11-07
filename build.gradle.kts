@@ -47,7 +47,7 @@ tasks.register("test") { dependsOn("jvmTest") }
 
 tasks.named("assemble") { dependsOn("jvmSourcesJar") }
 
-tasks.withType<Jar>().configureEach {
+tasks.withType<Zip>().configureEach {
     from("LICENSE") {
         into("META-INF")
     }

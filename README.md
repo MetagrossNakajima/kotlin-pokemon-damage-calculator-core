@@ -60,8 +60,8 @@ JARには依存関係のメタデータがないので、Kotlin標準ライブ�
 
 `.github/workflows/release.yml`は、`v0.1.0`のような`vメジャー.マイナー.パッチ`タグのpushで起動します。
 テスト・カバレッジ・整形チェックの成功後、GitHub Releaseを作成し、
-JVM本体JAR・JVMソースJAR・メタデータJAR・`SHA256SUMS`を添付します。
-各JARにはMITライセンスを同梱します。
+JVM本体JAR・JVMソースJAR・`SHA256SUMS`を添付します。
+両JARにはMITライセンスを同梱します。
 バージョンはタグから設定するため、通常開発用の`0.1.0-SNAPSHOT`を書き換える必要はありません。
 本名の登録や公開用トークンの追加は不要で、Actionsの`GITHUB_TOKEN`を使います。
 
