@@ -76,6 +76,74 @@ class MovePreviewTest {
     }
 
     @Test
+    fun effectivePowerOverrideReplacesDynamicPowerButPreservesTypeAndModifiers() {
+        for (move in listOf(
+            Move(MoveId("WeatherBall"), PokemonType.NORMAL, 50, Category.SPECIAL),
+            Move(MoveId("LowKick"), PokemonType.FIGHTING, 1, Category.PHYSICAL),
+        )) {
+            val request =
+                DamageRequest(
+                    pokemon,
+                    pokemon,
+                    move,
+                    BattleField(weather = Weather.RAIN),
+                    effectivePowerOverride = 70,
+                )
+            val preview = assertIs<Calculation.Success<MovePreview>>(previewMove(request)).value
+            assertEquals(70L, preview.power)
+            val result =
+                assertIs<Calculation.Success<dev.pokemondamage.model.DamageResult>>(
+                    calculateDamage(request),
+                ).value
+            assertEquals(70, result.hit.power)
+            val expectedType =
+                if (move.id ==
+                    MoveId("WeatherBall")
+                ) {
+                    PokemonType.WATER
+                } else {
+                    PokemonType.FIGHTING
+                }
+            assertEquals(TeraType.valueOf(expectedType.name), preview.type)
+            val equivalent =
+                request.copy(
+                    move = Move(MoveId("Tackle"), expectedType, 70, move.category),
+                    effectivePowerOverride = null,
+                )
+            assertEquals(
+                assertIs<Calculation.Success<dev.pokemondamage.model.DamageResult>>(
+                    calculateDamage(equivalent),
+                ).value.hit.rolls,
+                result.hit.rolls,
+            )
+            val technician =
+                request.copy(
+                    attacker = pokemon.copy(ability = AbilityId("Technician")),
+                    effectivePowerOverride = 40,
+                )
+            assertEquals(
+                60,
+                assertIs<Calculation.Success<dev.pokemondamage.model.DamageResult>>(
+                    calculateDamage(technician),
+                ).value.hit.power,
+            )
+            for (power in listOf(0, 1000)) {
+                assertEquals(
+                    power.toLong(),
+                    assertIs<Calculation.Success<MovePreview>>(
+                        previewMove(request.copy(effectivePowerOverride = power)),
+                    ).value.power,
+                )
+            }
+            for (power in listOf(-1, 1001)) {
+                kotlin.test.assertFailsWith<dev.pokemondamage.model.InputValidationException> {
+                    request.copy(effectivePowerOverride = power)
+                }
+            }
+        }
+    }
+
+    @Test
     fun unsupportedMovesReturnTheSameFailureContractAsDamage() {
         val request =
             DamageRequest(

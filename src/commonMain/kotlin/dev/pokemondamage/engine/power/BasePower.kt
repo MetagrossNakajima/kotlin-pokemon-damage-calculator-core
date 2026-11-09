@@ -13,6 +13,7 @@ import dev.pokemondamage.rules.BattleEffects
 internal object BasePower {
     // 大きな命中位置でも移植元と同じ計算になるよう64ビット整数を使う
     fun calculate(context: DamageContext): Long {
+        context.request.effectivePowerOverride?.let { return it.toLong() }
         val attacker = context.attacker
         val defender = context.defender
         val power = context.move.power.toLong()
