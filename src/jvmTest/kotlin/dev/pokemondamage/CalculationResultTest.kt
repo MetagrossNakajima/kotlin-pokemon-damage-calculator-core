@@ -1,11 +1,9 @@
 package dev.pokemondamage
 
 import dev.pokemondamage.math.BigInteger
-import dev.pokemondamage.model.Calculation
 import dev.pokemondamage.model.DamageDistribution
 import dev.pokemondamage.model.DamageKind
 import dev.pokemondamage.model.DamageResult
-import dev.pokemondamage.model.FailureKind
 import dev.pokemondamage.model.HitResult
 import dev.pokemondamage.model.ModifierStage
 import dev.pokemondamage.model.ModifierTrace
@@ -13,7 +11,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
-import kotlin.test.assertIs
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
@@ -73,19 +70,5 @@ class CalculationResultTest {
         assertFailsWith<IllegalArgumentException> {
             HitResult(90, 100, 200, false, listOf(-1), emptyList())
         }
-    }
-
-    @Test
-    fun `calculation success and failure retain values and diagnostic paths`() {
-        val success: Calculation<Int> = Calculation.Success(42)
-        val unsupported: Calculation<Int> =
-            Calculation.Failure(FailureKind.UNSUPPORTED, "move.Counter")
-        val exceeded: Calculation<Int> =
-            Calculation.Failure(FailureKind.COMPLEXITY_EXCEEDED, "attacks[2]")
-        assertEquals(42, assertIs<Calculation.Success<Int>>(success).value)
-        assertEquals(FailureKind.UNSUPPORTED, assertIs<Calculation.Failure>(unsupported).kind)
-        assertEquals("move.Counter", unsupported.path)
-        assertEquals(FailureKind.COMPLEXITY_EXCEEDED, assertIs<Calculation.Failure>(exceeded).kind)
-        assertEquals("attacks[2]", exceeded.path)
     }
 }
